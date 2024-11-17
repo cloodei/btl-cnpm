@@ -1,21 +1,18 @@
 import './globals.css';
-import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Navbar } from '@/components/navbar';
 import { ThemeProvider } from '@/components/theme-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'FlashMaster - Smart Flashcard Learning',
-  description: 'Create, study, and master any subject with AI-powered flashcards',
+export const metadata = {
+  title: {
+    default: 'CoinCard',
+    template: '%s | CoinCard'
+  }
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
