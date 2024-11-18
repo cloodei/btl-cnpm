@@ -1,3 +1,5 @@
+export const dynamic = 'force-static';
+
 import './globals.css';
 import { Inter } from 'next/font/google';
 import { Navbar } from '@/components/navbar';
@@ -10,7 +12,7 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata = {
   title: {
     default: 'CoinCard',
-    template: '%s | CoinCard'
+    template: '%s'
   }
 };
 

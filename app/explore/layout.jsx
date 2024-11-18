@@ -1,5 +1,5 @@
 export const metadata = {
-    title: 'Browse'
+    title: 'Browse | CoinCard'
 };
 
 export default function CreateLayout({ children }) {

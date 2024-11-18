@@ -1,7 +1,7 @@
 export const metadata = {
-    title: 'Login'
+  title: 'Registration | CoinCard'
 };
 
-export default function CreateLayout({ children }) {
-    return children;
+export default function AuthLayout({ children }) {
+  return children;
 }

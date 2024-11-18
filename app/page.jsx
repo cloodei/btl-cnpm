@@ -1,3 +1,6 @@
+"use client";
+export const dynamic = 'force-static';
+
 import { GraduationCap, Brain, Users, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -7,20 +10,20 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-b from-background dark:from-[#0f131b] to-secondary">
       <div className="container mx-auto px-4 pt-20 pb-16">
         <div className="text-center max-w-3xl mx-auto">
-          <h1 className="text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">
             Master Any Subject with Smart Flashcards
           </h1>
-          <p className="text-xl text-muted-foreground mb-8">
+          <p className="text-lg lg:text-xl text-muted-foreground mb-8">
             Create, study, and share flashcards to accelerate your learning journey. Join thousands of students achieving their goals.
           </p>
           <div className="flex gap-4 justify-center">
             <Link href="/create">
-              <Button size="lg" className="text-lg">
+              <Button size="lg" className="lg:text-lg text-base px-5 lg:px-8">
                 Create Flashcards
               </Button>
             </Link>
             <Link href="/explore">
-              <Button size="lg" variant="outline" className="text-lg">
+              <Button size="lg" variant="outline" className="lg:text-lg text-base px-5 lg:px-8">
                 Explore Decks
               </Button>
             </Link>

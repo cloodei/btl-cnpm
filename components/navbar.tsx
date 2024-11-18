@@ -108,7 +108,9 @@ export function Navbar() {
                 My Decks
               </Button>
             </Link>
-            <Button variant="default" className="w-full">Sign In</Button>
+            <Link href="/login" onClick={toggleSidebar}>
+              <Button variant="default" className="w-full">Sign In</Button>
+            </Link>
           </div>
         </div>
       </div>

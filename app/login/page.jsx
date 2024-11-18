@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = 'force-static';
 
 import React, { Suspense } from "react";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,10 @@ function AuthContent() {
   const defaultTab = searchParams.get('tab') || 'login';
 
   const handleTabChange = (value) => {
-    router.push(`/login?tab=${value}`, { scroll: false });
+    router.push(`/login?tab=${value}`, { 
+      scroll: false,
+      shallow: true
+    });
   };
 
   return (
