@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -10,7 +10,7 @@ import Link from "next/link";
 import { LogIn, UserPlus, ArrowLeftFromLine } from "lucide-react";
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function AuthPage() {
+function AuthContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'login';
@@ -20,10 +20,39 @@ export default function AuthPage() {
   };
 
   return (
+    <Tabs defaultValue={defaultTab} className="w-full" onValueChange={handleTabChange}>
+      <TabsList className="grid w-full grid-cols-2 mb-6 bg-[#1a1a1a]">
+        <TabsTrigger 
+          value="login" 
+          className="text-[#e1e1e1] data-[state=active]:bg-[#2a2a2a] data-[state=active]:text-white"
+        >
+          Login
+        </TabsTrigger>
+        <TabsTrigger 
+          value="register" 
+          className="text-[#e1e1e1] data-[state=active]:bg-[#2a2a2a] data-[state=active]:text-white"
+        >
+          Register
+        </TabsTrigger>
+      </TabsList>
+      
+      <TabsContent value="login" className="mt-0">
+        <LoginForm />
+      </TabsContent>
+      
+      <TabsContent value="register" className="mt-0">
+        <RegisterForm />
+      </TabsContent>
+    </Tabs>
+  );
+}
+
+export default function AuthPage() {
+  return (
     <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-[#0a0b0f]">
       <div className="absolute inset-0 bg-gradient-to-b from-[#000000] via-gray-800 to-[#000000] opacity-85" />
 
-      <Card className="w-full max-w-md mx-4 p-8 bg-[#0f0f0f] backdrop-blur-sm shadow-xl relative border-[#2a2a2a]">
+      <Card className="w-full max-w-md mx-4 p-8 bg-[#060708] backdrop-blur-sm shadow-xl relative border-[#2a2a2a]">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -37,31 +66,14 @@ export default function AuthPage() {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-      
-        <Tabs defaultValue={defaultTab} className="w-full" onValueChange={handleTabChange}>
-          <TabsList className="grid w-full grid-cols-2 mb-6 bg-[#1a1a1a]">
-            <TabsTrigger 
-              value="login" 
-              className="text-[#e1e1e1] data-[state=active]:bg-[#2a2a2a] data-[state=active]:text-white"
-            >
-              Login
-            </TabsTrigger>
-            <TabsTrigger 
-              value="register" 
-              className="text-[#e1e1e1] data-[state=active]:bg-[#2a2a2a] data-[state=active]:text-white"
-            >
-              Register
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="login" className="mt-0">
-            <LoginForm />
-          </TabsContent>
-          
-          <TabsContent value="register" className="mt-0">
-            <RegisterForm />
-          </TabsContent>
-        </Tabs>
+
+        <Suspense fallback={
+          <div className="flex items-center justify-center h-[400px]">
+            <div className="animate-pulse text-[#a1a1a1]">Loading...</div>
+          </div>
+        }>
+          <AuthContent />
+        </Suspense>
       </Card>
     </div>
   );
@@ -80,16 +92,16 @@ function LoginForm() {
         <Input 
           type="email" 
           placeholder="Email"
-          className="bg-[#1a1a1a] border-[#2a2a2a] text-white placeholder:text-[#6b7280]"
+          className="bg-[#1a1a1a] border-[#242424] text-white placeholder:text-[#99a3b9]"
         />
         <Input 
           type="password" 
           placeholder="Password"
-          className="bg-[#1a1a1a] border-[#2a2a2a] text-white placeholder:text-[#6b7280]"
+          className="bg-[#1a1a1a] border-[#242424] text-white placeholder:text-[#99a3b9]"
         />
       </div>
 
-      <Button className="w-full bg-[#2a2a2a] hover:bg-[#3a3a3a] text-white">
+      <Button className="w-full bg-[#242424] hover:bg-[#3a3a3a] text-white">
         Sign In
       </Button>
 
@@ -120,12 +132,12 @@ function RegisterForm() {
             key={placeholder}
             type={placeholder.toLowerCase().includes('password') ? 'password' : 'text'}
             placeholder={placeholder}
-            className="bg-[#1a1a1a] border-[#2a2a2a] text-white placeholder:text-[#6b7280]"
+            className="bg-[#1a1a1a] border-[#242424] text-white placeholder:text-[#99a3b9]"
           />
         ))}
       </div>
 
-      <Button className="w-full bg-[#2a2a2a] hover:bg-[#3a3a3a] text-white">
+      <Button className="w-full bg-[#242424] hover:bg-[#3a3a3a] text-white">
         Create Account
       </Button>
     </div>
