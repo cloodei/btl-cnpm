@@ -6,11 +6,14 @@ import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-// import { cn } from "@/lib/utils";
 
 export function Navbar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const pathname = usePathname();
+
+  if (pathname === '/login' || pathname === '/register') {
+    return null;
+  }
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -59,7 +62,9 @@ export function Navbar() {
 
             <div className="flex items-center ml-auto space-x-4">
               <ModeToggle />
-              <Button variant="default" className="hidden md:flex">Sign In</Button>
+              <Link href="/login">
+                <Button variant="default" className="hidden md:flex">Sign In</Button>
+              </Link>
               <Button variant="ghost" className="md:hidden" onClick={toggleSidebar}>
                 {isSidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </Button>
