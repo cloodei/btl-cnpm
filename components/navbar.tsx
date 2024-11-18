@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+// import { cn } from "@/lib/utils";
 
 export function Navbar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -32,21 +32,17 @@ export function Navbar() {
 
             <div className="hidden md:flex items-center space-x-6 ml-6">
               <Link href="/explore">
-                <Button 
+                <Button
                   variant={isActiveLink("/explore") ? "default" : "ghost"}
-                  className={cn(
-                    isActiveLink("/explore") && "pointer-events-none"
-                  )}
+                  className={`${isActiveLink("/explore") && "pointer-events-none"}`}
                 >
                   Explore
                 </Button>
               </Link>
               <Link href="/create">
-                <Button 
+                <Button
                   variant={isActiveLink("/create") ? "default" : "ghost"}
-                  className={cn(
-                    isActiveLink("/create") && "pointer-events-none"
-                  )}
+                  className={`${isActiveLink("/create") && "pointer-events-none"}`}
                 >
                   Create
                 </Button>
@@ -54,16 +50,13 @@ export function Navbar() {
               <Link href="/my-decks">
                 <Button 
                   variant={isActiveLink("/my-decks") ? "default" : "ghost"}
-                  className={cn(
-                    isActiveLink("/my-decks") && "pointer-events-none"
-                  )}
+                  className={`${isActiveLink("/my-decks") && "pointer-events-none"}`}
                 >
                   My Decks
                 </Button>
               </Link>
             </div>
 
-            {/* Rest of navbar content */}
             <div className="flex items-center ml-auto space-x-4">
               <ModeToggle />
               <Button variant="default" className="hidden md:flex">Sign In</Button>
@@ -75,7 +68,6 @@ export function Navbar() {
         </nav>
       </div>
 
-      {/* Mobile sidebar */}
       <div className={`
         fixed inset-y-0 left-0 z-50 w-64 bg-background border-r transform transition-transform duration-300 ease-in-out
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}

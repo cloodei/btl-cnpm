@@ -51,9 +51,9 @@ export default function CreatePage() {
           />
         </div>
 
-        <div className="lg:space-y-[30px] space-y-6 shadow-sm border-none">
+        <div className="lg:space-y-[36px] space-y-6 shadow-sm border-none">
           {cards.map((card, index) => (
-            <Card key={index} className={`border-gray-300 dark:border-[#1e2130] ${styles.shadow}`}>
+            <Card key={index} className={`border-none ${styles.shadow}`}>
               <div className="font-medium pt-3 pl-5 pr-4 text-[22px] flex items-center justify-between">
                 <span>
                   Card {index + 1}
