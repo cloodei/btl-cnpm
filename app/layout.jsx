@@ -20,7 +20,7 @@ export const metadata = {
 export default async function RootLayout({ children }) {
   return (
   <ClerkProvider>
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <SidebarProvider>
         <body className={inter.className}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>

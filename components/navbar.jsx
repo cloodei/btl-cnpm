@@ -1,30 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Brain, Menu, X, User } from "lucide-react";
+import { Brain, Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
-import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import LogoutButton from "@/components/logout-button";
-import { motion } from 'framer-motion';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useSidebar } from "./ui/sidebar";
-
-const linkVariants = {
-  initial: { opacity: 0, x: -20 },
-  animate: (i) => ({
-    opacity: 1,
-    x: 0,
-    transition: {
-      delay: i * 0.1,
-      duration: 0.4,
-      ease: [0.23, 1, 0.32, 1]
-    }
-  }),
-  exit: { opacity: 0, x: -20 }
-};
 
 export function NavbarComponent({ dbUser }) {
   const pathname = usePathname();
