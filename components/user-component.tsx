@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Calendar } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CardContent, CardHeader } from "@/components/ui/card";
+import LogoutButton from "./logout-button";
 
 type UserData = {
   id: string;
@@ -16,13 +16,7 @@ type UserData = {
 };
 
 export default function ProfileComponent({ userData }: { userData: UserData }) {
-  const { signOut } = useClerk();
   const router = useRouter();
-
-  const handleSignOut = async () => {
-    await signOut();
-    router.push("/");
-  };
 
   return (
     <div className="container mx-auto max-w-6xl py-8">
@@ -97,9 +91,9 @@ export default function ProfileComponent({ userData }: { userData: UserData }) {
           <Button onClick={() => router.push('/my-decks')} className="lg:px-[18px] px-[10px] lg:py-2 py-[4px] lg:text-base text-sm">
             View {userData.username}'s Decks
           </Button>
-          <Button variant="destructive" onClick={handleSignOut} className="lg:px-[18px] px-[10px] lg:py-2 py-[4px] lg:text-base text-sm">
+          <LogoutButton variant="destructive" className="lg:px-[18px] px-[10px] lg:py-2 py-[4px] lg:text-base text-sm">
             Sign Out
-          </Button>
+          </LogoutButton>
         </div>
       </Card>
     </div>
