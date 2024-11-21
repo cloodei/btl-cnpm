@@ -36,8 +36,9 @@
     "app/create/page.jsx",
     "app/page.jsx",
     "app/layout.jsx",
-    "app/login/layout.jsx"
-  ],
+    "app/login/layout.jsx",
+    "app/login/page.jsx"
+, "components/navbar.jsx"  ],
   "exclude": [
     "node_modules"
   ]
