@@ -15,7 +15,7 @@ export const metadata = {
     default: 'CoinCard',
     template: '%s'
   }
-};
+}; 
 
 export default async function RootLayout({ children }) {
   const { userId } = await auth();
