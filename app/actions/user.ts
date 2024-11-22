@@ -1,11 +1,22 @@
 'use server';
 import sql from '@/lib/db';
-import { revalidatePath } from 'next/cache';
-import { cache } from 'react';
+import { unstable_cache } from 'next/cache';
+import { revalidateTag } from 'next/cache';
+
+export const getCachedUserInfo = unstable_cache(async (userId: string) => {
+    try {
+      const user = await sql`SELECT * FROM users WHERE id = ${userId}`;
+      return { success: true, user: user[0] };
+    }
+    catch(error) {
+      return { success: false, error };
+    }
+  }, ['user-info'], { tags: ["user"], revalidate: 900 }
+);
 
 export async function revalidateUser() {
   'use server';
-  revalidatePath('/', 'layout');
+  revalidateTag('user');
 }
 
 export async function getUserInfo(userId: string) {
@@ -17,10 +28,3 @@ export async function getUserInfo(userId: string) {
     return { success: false, error };
   }
 }
-
-export const getCachedUser = cache(async(userId: string) => {
-  if(!userId)
-    return null;
-  const { user, success } = await getUserInfo(userId);
-  return (success ? user : null);
-});

@@ -14,7 +14,7 @@ export default function Home() {
             Master Any Subject with Smart Flashcards
           </h1>
           <p className="text-lg lg:text-xl text-muted-foreground mb-8">
-            Create, study, and share flashcards to accelerate your learning journey. Join thousands of students achieving their goals.
+            Create, study, and share flashcards to accelerate your learning journey. Join team 65CNTT01 to get full A CNPM!
           </p>
           <div className="flex gap-4 justify-center">
             <Link href="/create">
@@ -23,7 +23,7 @@ export default function Home() {
               </Button>
             </Link>
             <Link href="/explore">
-              <Button size="lg" variant="outline" className="lg:text-lg text-base px-5 lg:px-8">
+              <Button size="lg" variant="outline" className="lg:text-lg text-base px-5 lg:px-8 border-gray-400 dark:border-gray-700">
                 Explore Decks
               </Button>
             </Link>

@@ -17,7 +17,7 @@ type UserData = {
 
 export default function ProfileComponent({ userData }: { userData: UserData }) {
   const router = useRouter();
-
+  
   return (
     <div className="container mx-auto max-w-6xl py-8">
     <div className="grid gap-8">

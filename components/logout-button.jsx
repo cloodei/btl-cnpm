@@ -18,8 +18,8 @@ export default function LogoutButton({ className = "", variant = "outline", size
   const { toast } = useToast();
 
   const handleSignOut = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       await signOut();
       await revalidateUser();
       toast({ title: "Successfully logged out", description: "See you next time! 👋", duration: 3000, });

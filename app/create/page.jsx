@@ -1,5 +1,4 @@
 "use client";
-export const dynamic = "force-static";
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,12 +6,75 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, Save, X } from "lucide-react";
 import { FloatInput } from "@/components/ui/float-input";
 import { useRef, useState } from "react";
-import styles from "@/app/styles/create.module.css"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Loader2 } from "lucide-react";
+import { createDeck } from "@/app/actions/deck";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CreateComponent() {
   const [cards, setCards] = useState([{ front: "", back: "" }]);
   const [deckTitle, setDeckTitle] = useState("");
   const bottomRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const { toast } = useToast();
+
+  const handleSave = async () => {
+    if(!deckTitle.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a deck title",
+        variant: "destructive",
+        duration: 2400,
+      });
+      setIsOpen(false);
+      return;
+    }
+    const validCards = cards.filter(card => card.front.trim() && card.back.trim());
+    if(!validCards.length) {
+      toast({
+        title: "Error",
+        description: "Please add at least one complete card",
+        variant: "destructive",
+        duration: 2700,
+      });
+      setIsOpen(false);
+      return;
+    }
+    setIsSaving(true);
+    try {
+      const result = await createDeck(deckTitle, validCards);
+      if(result.success) {
+        toast({
+          title: "Success!",
+          description: "Your deck has been created successfully.",
+          duration: 2700,
+        });
+        setCards([{ front: "", back: "" }]);
+        setDeckTitle("");
+      }
+      else {
+        toast({
+          title: "Error",
+          description: result.error,
+          variant: "destructive",
+          duration: 2700,
+        });
+      }
+    }
+    catch(error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+        duration: 2700,
+      });
+    }
+    finally {
+      setIsSaving(false);
+      setIsOpen(false);
+    }
+  };
 
   const addCard = () => {
     setCards([...cards, { front: "", back: "" }]);
@@ -22,7 +84,7 @@ export default function CreateComponent() {
   };
 
   const deleteCard = (index) => {
-    const newCards = cards.filter((_, i) => i !== index);
+    const newCards = cards.filter((_, idx) => idx !== index);
     setCards(newCards);
   };
 
@@ -32,16 +94,13 @@ export default function CreateComponent() {
     setCards(newCards);
   };
 
-  const saveDeck = () => {
-    1;
-  };
-
   return (
-    <div className="container mx-auto px-4 pt-8">
+  <>
+    <div className="container mx-auto px-4 pt-8 pb-6">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8 border-none">
           <h1 className="text-3xl font-bold">Create New Flashcard Deck</h1>
-          <Button onClick={saveDeck}>
+          <Button onClick={() => setIsOpen(true)}>
             <Save className="mr-2 h-4 w-4" />
             Save Deck
           </Button>
@@ -55,10 +114,10 @@ export default function CreateComponent() {
             className="border-gray-300 dark:border-[#282e41] font-medium"
           />
         </div>
-
+        
         <div className="lg:space-y-[36px] space-y-6 shadow-sm border-none">
           {cards.map((card, index) => (
-            <Card key={index} className={`border-none ${styles.shadow}`}>
+            <Card key={index} className="border-none shadow-[0_12px_24px_rgba(64,86,109,0.24)]">
               <div className="font-medium pt-3 pl-5 pr-4 text-[22px] flex items-center justify-between">
                 <span>
                   Card {index + 1}
@@ -103,5 +162,28 @@ export default function CreateComponent() {
         </div>
       </div>
     </div>
+
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle className="text-2xl">Save Deck</DialogTitle>
+          <DialogDescription className="text-muted-foreground pt-2">
+            This will create a new flashcard deck with {cards.filter(c => c.front && c.back).length} cards.
+            {cards.some(c => !c.front || !c.back) && (" Incomplete cards will be removed.")}
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="mt-4 gap-2">
+          <Button variant="outline" onClick={() => setIsOpen(false)} disabled={isSaving}>
+            Cancel
+          </Button>
+          <Button onClick={handleSave} disabled={isSaving} className="flex gap-2">
+            {isSaving && <Loader2 className="h-4 w-4 animate-spin" />}
+            {isSaving ? "Saving..." : "Save Deck"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  </>
   );
 }

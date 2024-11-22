@@ -1,17 +1,23 @@
 import ProfileComponent from "@/components/user-component"
-import { getUserInfo } from "../actions/user";
 import { auth } from "@clerk/nextjs/server";
+import { Suspense } from "react";
+import { getCachedUserInfo } from "../actions/user";
+
+const fetchUser = async () => {
+  const { userId } = await auth();
+  const user = await getCachedUserInfo(userId);
+  return user;
+}
 
 export default async function ProfilePage() {
-  const { userId } = await auth();
-  if(!userId) {
-    return <div>Not authorized!!</div>;
+  const result = await fetchUser();
+  if(!result.success) {
+    return <div>Error: {result.error.message}</div>;
   }
-  try {
-    const { user } = await getUserInfo(userId);
-    return <ProfileComponent userData={user} />;
-  }
-  catch(err) {
-    return <div>Error loading profile... Try again later</div>;
-  }
+
+  return (
+    <Suspense fallback={<div className="m-auto p-10 text-center text-4xl font-medium">Loading...</div>}>
+      <ProfileComponent userData={result.user} />
+    </Suspense>
+  );
 }

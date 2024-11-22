@@ -38,7 +38,7 @@
     "app/layout.jsx",
     "app/login/layout.jsx",
     "app/login/page.jsx"
-, "components/navbar.jsx"  ],
+, "components/navbar.jsx", "app/my-decks/page.jsx"  ],
   "exclude": [
     "node_modules"
   ]

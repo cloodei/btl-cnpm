@@ -20,15 +20,12 @@ export default function RegisterFormClient() {
     formData.username = formData.username.trim()
     formData.password = formData.password.trim()
     formData.confirmPassword = formData.confirmPassword.trim()
-    const newErrors = {}
-    const usernameError = (!(!formData.username) ? null : "Username is required")
-    const passwordError = (!(!formData.password) ? null : "Password is required")
-    const confirmPasswordError = (!(!formData.confirmPassword) ? null : "Confirm Password is required")
+    const newErrors = {};
     if(usernameError)
-      newErrors.username = usernameError
+      newErrors.username = (!(!formData.username) ? null : "Username is required")
     if(passwordError)
-      newErrors.password = passwordError
-    if(confirmPasswordError && formData.password !== formData.confirmPassword)
+      newErrors.password = (!(!formData.password) ? null : "Password is required")
+    if((!(!formData.confirmPassword) ? null : "Confirm Password is required") && formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = confirmPasswordError
 
     setError(usernameError || passwordError || confirmPasswordError)
@@ -41,7 +38,7 @@ export default function RegisterFormClient() {
     setError("");
     setLoading(true);
     if(validateForm())
-      return
+      return;
     try {
       const result = await signUp.create({ username: formData.username, password: formData.password });
       if(result.status !== "complete") {
@@ -116,11 +113,7 @@ export default function RegisterFormClient() {
         </div>
       )}
 
-      <Button
-        type="submit"
-        disabled={loading}
-        className="w-full"
-      >
+      <Button type="submit" disabled={loading} className="w-full">
         {loading ? "Creating Account..." : "Sign Up"}
       </Button>
     </form>

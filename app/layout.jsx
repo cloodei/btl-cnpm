@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { ClerkProvider } from '@clerk/nextjs';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { Toaster } from "@/components/ui/toaster"
 import Navbar from "@/components/navbar-client";
 import MobileSidebar from '@/components/mobile-sidebar';
 
@@ -26,6 +27,7 @@ export default async function RootLayout({ children }) {
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
             <Navbar />
             <main>{children}</main>
+            <Toaster />
             <MobileSidebar />
             <Analytics />
             <SpeedInsights />
