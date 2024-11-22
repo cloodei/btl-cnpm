@@ -3,21 +3,33 @@ import { auth } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import { getCachedUserInfo } from "../actions/user";
 
-const fetchUser = async () => {
-  const { userId } = await auth();
-  const user = await getCachedUserInfo(userId);
-  return user;
+async function PageWrapper() {
+  try {
+    const { userId } = await auth();
+    if(!userId) {
+      throw new Error("User not found");
+    }
+    const result = await getCachedUserInfo(userId);
+    if(!result.success) {
+      throw new Error("Error fetching user data");
+    }
+    return (
+      <ProfileComponent userData={result.user} />
+    )
+  }
+  catch(error) {
+    return (
+      <div className="m-auto p-10 text-center text-4xl font-medium">
+        {error.message ? error.message : (error ? error : "An error occurred")}
+      </div>
+    );
+  }
 }
 
 export default async function ProfilePage() {
-  const result = await fetchUser();
-  if(!result.success) {
-    return <div>Error: {result.error.message}</div>;
-  }
-
   return (
     <Suspense fallback={<div className="m-auto p-10 text-center text-4xl font-medium">Loading...</div>}>
-      <ProfileComponent userData={result.user} />
+      <PageWrapper />
     </Suspense>
   );
 }

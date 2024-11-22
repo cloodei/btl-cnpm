@@ -3,27 +3,35 @@ import { auth } from "@clerk/nextjs/server";
 import { getDeck } from "@/app/actions/deck";
 import { Suspense } from "react";
 
-const fetchData = async (id) => {
+async function PageWrapper({ id }) {
   try {
     const { userId } = await auth();
-    const result = await getDeck(id, userId);
-    if(!result.success) {
-      return null
+    if(!userId) {
+      throw new Error("User not found!");
     }
-    return result;
+    const result = await getDeck(parseInt(id), userId);
+    if(!result.success) {
+      throw new Error("Deck not found or you don't have permission to view it...");
+    }
+    return (
+      <DeckViewer deck={result.deck} cards={result.cards} />
+    );
   }
   catch(error) {
-    return null;
+    return (
+      <div className="m-auto py-14 pb-8 text-center text-4xl font-medium text-red-500">
+        {error.message ? error.message : (error ? error : "An error occurred")}
+      </div>
+    );
   }
 }
 
 export default async function DeckPage({ params }) {
   const { id } = await params;
-  const { deck, cards } = await fetchData(id);
 
   return (
-    <Suspense fallback={<div className="m-auto p-10 text-center text-4xl font-medium">Loading...</div>}>
-      <DeckViewer deck={deck} cards={cards} />
+    <Suspense fallback={<div className="m-auto lg:pt-20 md:pt-16 pt-12 pb-8 text-center lg:text-4xl text-3xl font-medium">Fetching cards...</div>}>
+      <PageWrapper id={id} />
     </Suspense>
   );
 }

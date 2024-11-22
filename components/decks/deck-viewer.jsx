@@ -35,12 +35,6 @@ export default function DeckViewer({ deck, cards }) {
     });
   };
 
-  if(!deck)
-    return <div className="flex items-center justify-center" style={{ minHeight: "calc(100vh - 48px)" }}>Deck not found!</div>
-
-  if(!cards?.length)
-    return <div className="flex items-center justify-center" style={{ minHeight: "calc(100vh - 48px)" }}>No cards found!</div>
-
   return (
     <div className="bg-gradient-to-b from-background to-secondary/20 pt-8 px-4" style={{ minHeight: "calc(100vh - 48px)" }}>
       <div className="max-w-4xl mx-auto lg:pb-8 md:pb-7 pb-6">

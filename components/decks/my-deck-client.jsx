@@ -14,22 +14,6 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 
 export default function MyDecksClient({ decks }) {
-  if(!decks || decks?.length === 0) {
-    return (
-      <div className="flex items-center justify-center" style={{ minHeight: "calc(90vh - 48px)" }}>
-        <div className="text-center">
-          <h2 className="text-4xl font-semibold mb-4">No decks found</h2>
-          <p className="text-muted-foreground mb-3">You haven't created any flashcard decks yet.</p>
-          <Link href="/create" className="w-full">
-            <Button className="border-gray-400 dark:border-[#3c4152] w-full hover:bg-[#ced4e0] dark:hover:bg-gray-800 duration-200" variant="outline">
-              <Plus className="border-gray-300 dark:border-[#282e41] mr-2 h-4 w-4" />
-              Add Card
-            </Button>
-          </Link>
-        </div>
-      </div>
-    )
-  }
   const [deleteDialog, setDeleteDialog] = useState({ isOpen: false, deckId: null, deckName: "" });
   const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
@@ -107,20 +91,6 @@ export default function MyDecksClient({ decks }) {
           </Link>
         </div>
 
-        {decks.length === 0 ? (
-          <div className="flex items-center justify-center" style={{ minHeight: "calc(90vh - 48px)" }}>
-            <div className="text-center">
-              <h2 className="text-4xl font-semibold mb-4">No decks found</h2>
-              <p className="text-muted-foreground mb-3">You haven't created any flashcard decks yet.</p>
-              <Link href="/create" className="w-full">
-                <Button className="border-gray-400 dark:border-[#3c4152] w-full hover:bg-[#ced4e0] dark:hover:bg-gray-800 duration-200" variant="outline">
-                  <Plus className="border-gray-300 dark:border-[#282e41] mr-2 h-4 w-4" />
-                  Add Card
-                </Button>
-              </Link>
-            </div>
-          </div>
-        ) : (
         <motion.div
           variants={container}
           initial="hidden"
@@ -129,7 +99,7 @@ export default function MyDecksClient({ decks }) {
         >
           {decks.map((deck) => (
             <motion.div key={deck.id} variants={item}>
-              <Card className="relative group transition-all duration-200 hover:shadow-[0_16px_36px_rgba(0,0,0,0.21)] hover:scale-[1.02] dark:hover:shadow-[0_6px_20px_rgba(255,255,255,0.17)]">
+              <Card className="relative group transition-all duration-200 shadow-lg hover:shadow-[0_8px_36px_rgba(0,0,0,0.24)] hover:scale-[1.02] dark:hover:shadow-[0_6px_20px_rgba(255,255,255,0.19)]">
                 <div className="absolute top-4 right-4">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -192,7 +162,6 @@ export default function MyDecksClient({ decks }) {
             </motion.div>
           ))}
         </motion.div>
-        )}
       </div>
     </div>
       
