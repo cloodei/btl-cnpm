@@ -20,10 +20,10 @@ export default function LogoutButton({ className = "", variant = "outline", size
   const handleSignOut = async () => {
     setIsLoading(true);
     try {
+      router.push('/');
       await signOut();
       await revalidateUser();
       toast({ title: "Successfully logged out", description: "See you next time! 👋", duration: 3000, });
-      router.push('/');
     }
     catch(error) {
       toast({ title: "Error logging out", description: "Please try again", variant: "destructive", });

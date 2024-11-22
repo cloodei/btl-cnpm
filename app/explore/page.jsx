@@ -1,13 +1,78 @@
-"use client";
-
-import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Clock, Users, BookOpen } from "lucide-react";
+import { Sparkles, BookOpenCheck, Users, BookOpen, Plus } from "lucide-react";
+import { Suspense } from "react";
+import { auth } from "@clerk/nextjs/server";
+import { getCachedDecksWithCardsCount } from "../actions/deck";
 import Link from "next/link";
 
-export default function ExplorePage() {
+async function PageWrapper() {
+  try {
+    const { userId } = await auth();
+    if(!userId) {
+      throw new Error("User not found");
+    }
+    const result = await getCachedDecksWithCardsCount(userId);
+    if(!result.success) {
+      throw new Error("Error fetching decks");
+    }
+    let decks = [];
+    if(result.decks.length > 4) {
+      decks[0] = result.decks[0];
+      decks[1] = result.decks[1];
+      decks[2] = result.decks[2];
+      decks[3] = result.decks[3];
+    }
+    else {
+      decks = result.decks;
+    }
+    if(decks.length === 0) {
+      throw new Error("Your decks are empty");
+    }
+    return (
+    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {decks.map((item, index) => (
+        <Card key={index} className="p-4 hover:shadow-xl hover:scale-[1.02] transition-all">
+          <h3 className="font-semibold mb-2">{item.name}</h3>
+          <p className="text-sm text-muted-foreground mb-3">
+            Pick up where you left off
+          </p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2 text-sm">
+              <BookOpenCheck className="h-4 w-4" />
+              <span>{item.totalcards} Cards</span>
+            </div>
+            <Link href={`/decks/${item.id}`} passHref>
+              <Button variant="secondary" className="bg-gray-200 dark:bg-gray-900 hover:bg-gray-400 dark:hover:bg-gray-950">Continue</Button>
+            </Link>
+          </div>
+        </Card>
+      ))}
+    </div>
+    );
+  }
+  catch(error) {
+    return (
+      <div className="flex items-center justify-center mx-auto w-full">
+        <div className="text-center mx-auto w-full">
+          <h2 className="text-3xl font-semibold mb-4">
+            {error.message ? error.message : (error ? error : "An error occurred")}!
+          </h2>
+          <p className="text-muted-foreground mb-3">You haven't created any flashcard decks yet.</p>
+          <Link href="/create" className="w-full">
+            <Button className="border-gray-400 dark:border-[#3c4152] w-[50%] hover:bg-[#ced4e0] dark:hover:bg-gray-800 duration-200" variant="outline">
+              <Plus className="border-gray-300 dark:border-[#282e41] mr-2 h-4 w-4" />
+              Add Card
+            </Button>
+          </Link>
+        </div>
+      </div>
+    )
+  }
+}
+
+export default async function ExplorePage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <Tabs defaultValue="recommended" className="space-y-8">
@@ -47,28 +112,14 @@ export default function ExplorePage() {
             </div>
           </section>
 
-          <section className="pb-8">
+          <section className="pb-10">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold">Your Decks</h2>
               <Button variant="outline">View All</Button>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {["English", "Marxism Leninism", "Software Development", "Artificial Intelligence"].map((item, index) => (
-                <Card key={index} className="p-4 hover:shadow-xl hover:scale-[1.02] transition-all">
-                  <h3 className="font-semibold mb-2">{item}</h3>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Last studied 2 days ago
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2 text-sm">
-                      <Clock className="h-4 w-4" />
-                      <span>30 cards</span>
-                    </div>
-                    <Button variant="ghost" size="sm">Continue</Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
+            <Suspense fallback={<div className="m-auto p-4 text-center text-4xl font-medium">Loading your Decks...</div>}>
+              <PageWrapper />
+            </Suspense>
           </section>
 
           <section>

@@ -19,12 +19,10 @@ export default function DeckViewer({ deck, cards }) {
   }, [deck]);
 
   const handlePrevCard = () => {
-    setIsFlipped(false);
     setCurrentCardIndex((prev) => (prev ? prev - 1 : prev));
   };
 
   const handleNextCard = () => {
-    setIsFlipped(false);
     setCurrentCardIndex((prev) => (prev < cards.length - 1 ? prev + 1 : prev));
   };
 
@@ -78,7 +76,7 @@ export default function DeckViewer({ deck, cards }) {
         <div className="relative lg:h-[280px] md:h-[232px] h-40 mb-8">
           <ReactCardFlip isFlipped={isFlipped} flipDirection="horizontal" className="h-full">
             <div className="w-full h-full cursor-pointer" onClick={() => setIsFlipped(true)}>
-              <div className="h-full bg-card rounded-xl p-8 dark:shadow-[0_4px_40px_rgba(64,86,109,0.28)] shadow-[0_8px_24px_rgba(0,0,0,0.28)]">
+              <div className="h-full bg-card rounded-xl p-8 dark:shadow-[0_4px_40px_rgba(64,86,109,0.28)] shadow-[0_8px_36px_rgba(0,0,0,0.28)]">
                 <div className="flex flex-col justify-center items-center h-full">
                   <p className="text-2xl font-medium text-center">
                     {cards[currentCardIndex].front}
@@ -89,7 +87,7 @@ export default function DeckViewer({ deck, cards }) {
             </div>
 
             <div className="w-full h-full cursor-pointer" onClick={() => setIsFlipped(false)}>
-              <div className="h-full bg-card rounded-xl p-8 dark:shadow-[0_4px_40px_rgba(64,86,109,0.28)] shadow-[0_8px_24px_rgba(0,0,0,0.28)]">
+              <div className="h-full bg-card rounded-xl p-8 dark:shadow-[0_4px_40px_rgba(64,86,109,0.28)] shadow-[0_8px_36px_rgba(0,0,0,0.28)]">
                 <div className="flex flex-col justify-center items-center h-full">
                   <p className="text-xl text-center">
                     {cards[currentCardIndex].back}

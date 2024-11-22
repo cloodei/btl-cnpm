@@ -117,7 +117,7 @@ export default function CreateComponent() {
         
         <div className="lg:space-y-[36px] space-y-6 shadow-sm border-none">
           {cards.map((card, index) => (
-            <Card key={index} className="border-none shadow-[0_12px_24px_rgba(64,86,109,0.24)]">
+            <Card key={index} className="border-none shadow-[0_1px_16px_rgba(64,86,109,0.29)]">
               <div className="font-medium pt-3 pl-5 pr-4 text-[22px] flex items-center justify-between">
                 <span>
                   Card {index + 1}

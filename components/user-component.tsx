@@ -83,7 +83,7 @@ export default function ProfileComponent({ userData }: { userData: UserData }) {
         </CardContent>
       </Card>
       
-      <Card className="md:col-span-3 p-6 shadow-[0_4px_16px_rgba(0,0,0,0.2)] dark:shadow-[0_4px_12px_rgba(255,255,255,0.12)]">
+      <Card className="md:col-span-3 p-6 shadow-[0_4px_20px_rgba(0,0,0,0.22)] dark:shadow-[0px_0px_7px_rgba(255,255,255,0.1)]">
         <div className="flex flex-wrap lg:gap-4 gap-3">
           <Button onClick={() => router.push('/create')} className="lg:px-[18px] px-[10px] lg:py-2 py-[4px] lg:text-base text-sm">
             Create New Deck
