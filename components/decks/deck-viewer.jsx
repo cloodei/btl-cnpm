@@ -1,18 +1,16 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import Link from "next/link";
 import ReactCardFlip from "react-card-flip";
-import { ChevronLeft, ChevronRight, Bookmark, Share2, Heart } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight, Bookmark, Settings, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { useToast } from "@/hooks/use-toast";
 
-export default function DeckViewer({ deck, cards }) {
+export default function DeckViewer({ deck, cards, permissions }) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => {
     document.querySelector('.react-card-flip').style.height = "100%";
@@ -26,13 +24,6 @@ export default function DeckViewer({ deck, cards }) {
     setCurrentCardIndex((prev) => (prev < cards.length - 1 ? prev + 1 : prev));
   };
 
-  const handleShare = () => {
-    toast({
-      title: "Share link copied!",
-      description: "The link to this deck has been copied to your clipboard.",
-    });
-  };
-
   return (
     <div className="bg-gradient-to-b from-background to-secondary/20 pt-8 px-4" style={{ minHeight: "calc(100vh - 48px)" }}>
       <div className="max-w-4xl mx-auto lg:pb-8 md:pb-7 pb-6">
@@ -40,30 +31,26 @@ export default function DeckViewer({ deck, cards }) {
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-4xl font-bold">{deck.name}</h1>
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setIsSaved(!isSaved)}
-                className={isSaved ? "text-primary" : ""}
-              >
+              <Button variant="outline" size="icon" onClick={() => setIsSaved(!isSaved)} className={isSaved ? "text-primary" : ""}>
                 <Bookmark className={`h-5 w-5 ${isSaved ? "fill-current" : ""}`} />
               </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setIsLiked(!isLiked)}
-                className={isLiked ? "text-red-500" : ""}
-              >
+              <Button variant="outline" size="icon" onClick={() => setIsLiked(!isLiked)} className={isLiked ? "text-red-500" : ""}>
                 <Heart className={`h-5 w-5 ${isLiked ? "fill-current" : ""}`} />
               </Button>
-              <Button variant="outline" size="icon" onClick={handleShare}>
-                <Share2 className="h-5 w-5" />
-              </Button>
+              {permissions && (
+                <Link href={`/decks/${deck.id}/edit`}>
+                  <Button variant="outline" size="icon">
+                    <Settings className="h-5 w-5" />
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
-          <p className="text-muted-foreground mb-4">
-            Going through
-            <span className="font-semibold text-primary"> {deck.name} </span>
+          <p className="font-medium text-primary mb-4">
+            Going through <span className="font-semibold md:mx-[5px] mx-[3px]"> &lt;{deck.name}&gt;</span>
+            <span className="text-gray-400 dark:text-gray-500">
+              {` from ${deck.username}`}
+            </span>
           </p>
           <div className="flex items-center gap-4">
             <Progress value={(currentCardIndex + 1) / cards.length * 100} className="w-full" />

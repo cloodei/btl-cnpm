@@ -1,22 +1,23 @@
 "use client";
-
+import { useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Save, X } from "lucide-react";
 import { FloatInput } from "@/components/ui/float-input";
-import { useRef, useState } from "react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus, Save, X } from "lucide-react";
 import { createDeck } from "@/app/actions/deck";
 import { useToast } from "@/hooks/use-toast";
 
 export default function CreateComponent() {
   const [cards, setCards] = useState([{ front: "", back: "" }]);
   const [deckTitle, setDeckTitle] = useState("");
-  const bottomRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isPublic, setIsPublic] = useState(false);
+  const bottomRef = useRef(null);
   const { toast } = useToast();
 
   const handleSave = async () => {
@@ -24,6 +25,16 @@ export default function CreateComponent() {
       toast({
         title: "Error",
         description: "Please enter a deck title",
+        variant: "destructive",
+        duration: 2400,
+      });
+      setIsOpen(false);
+      return;
+    }
+    if(deckTitle.length > 64) {
+      toast({
+        title: "Error",
+        description: "Deck title must be 64 characters or less",
         variant: "destructive",
         duration: 2400,
       });
@@ -43,7 +54,7 @@ export default function CreateComponent() {
     }
     setIsSaving(true);
     try {
-      const result = await createDeck(deckTitle, validCards);
+      const result = await createDeck({ title: deckTitle, isPublic, cards: validCards });
       if(result.success) {
         toast({
           title: "Success!",
@@ -73,6 +84,7 @@ export default function CreateComponent() {
     finally {
       setIsSaving(false);
       setIsOpen(false);
+      setIsPublic(false);
     }
   };
 
@@ -106,13 +118,22 @@ export default function CreateComponent() {
           </Button>
         </div>
 
-        <div className="mb-8 shadow-sm">
+        <div className="mb-8 shadow-md">
           <FloatInput
             label="Deck Title"
             value={deckTitle}
             onChange={(e) => setDeckTitle(e.target.value)}
             className="border-gray-300 dark:border-[#282e41] font-medium"
           />
+        </div>
+
+        <div className="flex items-center space-x-2 mb-8">
+          <Switch
+            id="public"
+            checked={isPublic}
+            onCheckedChange={setIsPublic}
+          />
+          <Label htmlFor="public">Make deck public</Label>
         </div>
         
         <div className="lg:space-y-[36px] space-y-6 shadow-sm border-none">

@@ -9,41 +9,18 @@ export default sql;
 
 // CREATE TABLE users (
 //   id VARCHAR PRIMARY KEY,
-//   name VARCHAR NOT NULL,
-//   email VARCHAR NOT NULL UNIQUE,
-//   image VARCHAR,
-//   is_verified BOOLEAN DEFAULT FALSE,
-//   last_login TIMESTAMP,
-//   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-//   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-// );
-
-// CREATE TABLE users (
-//   id SERIAL PRIMARY KEY,
-//   name VARCHAR NOT NULL,
-//   email VARCHAR NOT NULL UNIQUE,
-//   password VARCHAR NOT NULL,
-//   image VARCHAR,
-//   is_verified BOOLEAN DEFAULT FALSE,
-//   last_login TIMESTAMP,
-//   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-//   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-// );
-
-// CREATE TABLE users ( (newest)
-//   id VARCHAR PRIMARY KEY,
-//   name VARCHAR NOT NULL,
-//   image VARCHAR,
+//   username VARCHAR NOT NULL,
+//   imageUrl VARCHAR,
 //   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 //   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 // );
 
 // CREATE TABLE decks (
 //   id SERIAL PRIMARY KEY,
-//   creator_id SERIAL REFERENCES users(id) ON DELETE CASCADE,
+//   creator_id VARCHAR REFERENCES users(id) ON DELETE CASCADE,
 //   name VARCHAR NOT NULL,
 //   public BOOLEAN DEFAULT FALSE,
-//   image VARCHAR,
+//   imageUrl VARCHAR,
 //   total_rating INT DEFAULT 0,
 //   count_ratings INT DEFAULT 0,
 //   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -60,7 +37,7 @@ export default sql;
 // );
 
 // CREATE TABLE comments (
-//   commenter_id SERIAL REFERENCES users(id) ON DELETE CASCADE,
+//   commenter_id VARCHAR REFERENCES users(id) ON DELETE CASCADE,
 //   deck_id SERIAL REFERENCES decks(id) ON DELETE CASCADE,
 //   comment TEXT NOT NULL,
 //   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -70,6 +47,8 @@ export default sql;
 
 // CREATE TABLE favorite_decks (
 //   deck_id SERIAL REFERENCES decks(id) ON DELETE CASCADE,
-//   viewer_id SERIAL REFERENCES users(id) ON DELETE CASCADE,
+//   viewer_id VARCHAR REFERENCES users(id) ON DELETE CASCADE,
+//   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 //   PRIMARY KEY (deck_id, viewer_id)
 // );

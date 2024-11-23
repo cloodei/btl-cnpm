@@ -5,6 +5,7 @@ import { getCachedDecksWithCardsCount } from "../actions/deck";
 import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { FancySpinner } from "@/components/ui/fancy-spinner";
 
 async function PageWrapper() {
   try {
@@ -42,7 +43,11 @@ async function PageWrapper() {
 
 export default async function MyDecksPage() {
   return (
-    <Suspense fallback={<div className="m-auto p-10 text-center text-4xl font-medium">Loading...</div>}>
+    <Suspense fallback={(
+      <div className="m-auto p-10 text-center text-4xl font-medium">
+        <FancySpinner text="Loading decks..." size={30} />
+      </div>
+    )}>
       <PageWrapper />
     </Suspense>
   );

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { handleDelete, revalidateDeckByPath, revalidateDecks } from "@/app/actions/deck";
+import { handleDelete } from "@/app/actions/deck";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 
@@ -24,24 +24,21 @@ export default function MyDecksClient({ decks }) {
     setIsDeleting(true);
     try {
       const result = await handleDelete({ deckId: deleteDialog.deckId, userId });
-      if(result.success) {
-        await revalidateDeckByPath("/my-decks");
-        await revalidateDecks();
-        router.refresh();
-        toast({
-          title: "Success",
-          description: "Deck deleted successfully",
-          duration: 2400,
-        });
-      }
-      else {
+      if(!result.success) {
         toast({
           title: "Error",
           description: "Failed to delete deck",
           variant: "destructive",
           duration: 2400,
         });
+        return;
       }
+      router.refresh();
+      toast({
+        title: "Success",
+        description: "Deck deleted successfully",
+        duration: 2400,
+      });
     }
     catch(error) {
       toast({
@@ -59,16 +56,11 @@ export default function MyDecksClient({ decks }) {
 
   const container = {
     hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
+    show: { opacity: 1, transition: { staggerChildren: 0.15 } }
   };
 
   const item = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { y: 24, opacity: 0 },
     show: { y: 0, opacity: 1 }
   };
 
@@ -91,12 +83,7 @@ export default function MyDecksClient({ decks }) {
           </Link>
         </div>
 
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
+        <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {decks.map((deck) => (
             <motion.div key={deck.id} variants={item}>
               <Card className="relative group transition-all duration-200 shadow-lg hover:shadow-[0_8px_36px_rgba(0,0,0,0.24)] hover:scale-[1.02] dark:hover:shadow-[0_6px_20px_rgba(255,255,255,0.19)]">
@@ -108,9 +95,11 @@ export default function MyDecksClient({ decks }) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                      <DropdownMenuItem>
-                        <Edit className="mr-2 h-4 w-4" />
-                        Edit Deck
+                      <DropdownMenuItem onClick={() => router.push(`/decks/${deck.id}/edit`)}>
+                        <div className="flex items-center">
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit Deck
+                        </div>
                       </DropdownMenuItem>
                       <DropdownMenuItem className="text-destructive" onClick={() => setDeleteDialog({ isOpen: true, deckId: deck.id, deckName: deck.name })}>
                         <Trash2 className="mr-2 h-4 w-4" />
@@ -124,7 +113,6 @@ export default function MyDecksClient({ decks }) {
                   <div className="p-6">
                     <h3 className="text-xl font-semibold mb-2 pr-12">{deck.name}</h3>
                     <p className="text-muted-foreground mb-4">{deck.description}</p>
-                    
                     <div className="space-y-4">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">Cards</span>
@@ -133,7 +121,6 @@ export default function MyDecksClient({ decks }) {
                           {deck.totalcards}
                         </div>
                       </div>
-                      
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">Ratings</span>
                         <div className="flex items-center gap-[6px]">
@@ -150,7 +137,6 @@ export default function MyDecksClient({ decks }) {
                           )}
                         </div>
                       </div>
-
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">Created At</span>
                         <span>{new Date(deck.created_at).toLocaleDateString('zh-CN', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>

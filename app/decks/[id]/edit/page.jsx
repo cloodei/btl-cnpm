@@ -1,4 +1,4 @@
-import DeckViewer from "@/components/decks/deck-viewer";
+import UpdateDeckComponent from "@/components/decks/update-deck-client";
 import { Suspense } from "react";
 import { FancySpinner } from "@/components/ui/fancy-spinner";
 import { getDeck } from "@/app/actions/deck";
@@ -11,26 +11,26 @@ async function PageWrapper({ id }) {
       throw new Error("User not found!");
     }
     const result = await getDeck(parseInt(id));
-    if(!result.success || (!result.deck.public && result.deck.creator_id !== userId)) {
-      throw new Error("Deck not found or you don't have permission to view it...");
+    if(!result.success || result.deck.creator_id !== userId) {
+      throw new Error("Deck not found or no permission");
     }
-    return <DeckViewer deck={result.deck} cards={result.cards} permissions={result.deck.creator_id === userId} />;
+    return <UpdateDeckComponent deck={result.deck} cards={result.cards} />;
   }
   catch(error) {
     return (
-      <div className="m-auto py-14 pb-8 text-center text-4xl font-medium text-red-500">
+      <div className="m-auto py-14 text-center text-4xl font-medium text-red-500">
         {error.message ? error.message : (error ? error : "An error occurred")}
       </div>
     );
   }
 }
 
-export default async function DeckPage({ params }) {
+export default async function EditDeckPage({ params }) {
   const { id } = await params;
 
   return (
     <Suspense fallback={(
-      <div className="m-auto lg:pt-20 md:pt-16 pt-12 pb-8 text-center lg:text-4xl text-3xl font-medium">
+      <div className="m-auto lg:pt-20 pt-12 text-center lg:text-4xl text-3xl">
         <FancySpinner text="Loading deck..." size={30} />
       </div>
     )}>

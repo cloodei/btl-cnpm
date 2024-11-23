@@ -2,6 +2,7 @@ import ProfileComponent from "@/components/user-component"
 import { auth } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import { getCachedUserInfo } from "../actions/user";
+import { FancySpinner } from "@/components/ui/fancy-spinner";
 
 async function PageWrapper() {
   try {
@@ -28,7 +29,11 @@ async function PageWrapper() {
 
 export default async function ProfilePage() {
   return (
-    <Suspense fallback={<div className="m-auto p-10 text-center text-4xl font-medium">Loading...</div>}>
+    <Suspense fallback={(
+      <div className="m-auto p-10 text-center text-4xl font-medium">
+        <FancySpinner text="Loading decks..." size={26} />
+      </div>
+    )}>
       <PageWrapper />
     </Suspense>
   );
