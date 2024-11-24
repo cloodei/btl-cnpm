@@ -185,7 +185,7 @@ export async function getFeaturedDeck(deckId: number) {
         `
       ]);
       return { success: true, deck: deck[0], cards };
-    }, [`featured-deck-${deckId}`], { tags: [`featured-deck-${deckId}`], revalidate: 900 }
+    }, [`get-featured-deck-${deckId}`], { tags: [`featured-deck-${deckId}`], revalidate: 900 }
   )();
 }
 
