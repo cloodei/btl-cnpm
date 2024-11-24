@@ -1,8 +1,54 @@
-import { neon } from '@neondatabase/serverless';
+import { neon, Pool, PoolClient } from '@neondatabase/serverless';
 
 const sql = neon(process.env.DATABASE_URL!);
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 export default sql;
+
+export async function withConnection<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
+  const client = await pool.connect();
+  try {
+    return await callback(client);
+  }
+  finally {
+    client.release();
+  }
+}
+
+export async function query<T = any>(text: string, params: any[] = []): Promise<T[]> {
+  return withConnection(async (client) => {
+    const result = await client.query(text, params);
+    return result.rows;
+  });
+}
+
+export async function multiQuery(queries: string[], params: any[][] = []) {
+  return withConnection(async (client) => {
+    const results = [];
+    for(let i = 0; i < queries.length; i++) {
+      const result = await client.query(queries[i], params[i] || []);
+      results.push(result.rows);
+    }
+    return results;
+  });
+}
+
+export async function withTransaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const result = await callback(client);
+    await client.query('COMMIT');
+    return result;
+  }
+  catch(error) {
+    await client.query('ROLLBACK');
+    throw error;
+  }
+  finally {
+    client.release();
+  }
+}
 
 
 // Toàn bộ mô hình database

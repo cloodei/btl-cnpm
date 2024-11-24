@@ -92,11 +92,12 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
   const handleDeleteDeck = async () => {
     setIsDeleting(true);
     try {
-      const result = await handleDelete({ deckId: deck.id });
+      const result = await handleDelete(deck.id);
       if(result.success) {
         toast({ title: "Success", description: "Deck deleted successfully" });
         router.push('/my-decks');
-      } else {
+      }
+      else {
         toast({
           title: "Error",
           description: "Failed to delete deck",

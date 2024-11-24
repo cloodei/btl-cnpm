@@ -1,9 +1,7 @@
 'use server';
 import sql from '@/lib/db';
-import { revalidatePath } from 'next/cache';
 import { auth } from '@clerk/nextjs/server';
-import { unstable_cache } from 'next/cache';
-import { revalidateTag } from 'next/cache';
+import { unstable_cache, revalidateTag, revalidatePath } from 'next/cache';
 
 export async function revalidateDecks() {
   "use server";
@@ -35,6 +33,9 @@ export async function createDeck({ title, cards, isPublic }: { title: string, ca
     `;
     revalidateTag('decks');
     revalidateTag(`deck-${deck.id}`);
+    if(isPublic) {
+      revalidateTag('recent-decks');
+    }
     return { success: true };
   }
   catch(error) {
@@ -74,6 +75,28 @@ export const getCachedDecksWithCardsCount = unstable_cache(async (userId: string
       return { success: false, error };
     }
   }, ["get-decks"], { tags: ['decks'], revalidate: 120 }
+);
+
+export const getRecentDecksWithCardsCount = unstable_cache(async () => {
+    try {
+      const decks = await sql`
+        SELECT d.*, COUNT(c.id) AS totalcards, u.username
+        FROM decks AS d
+        INNER JOIN users AS u
+        ON d.creator_id = u.id
+        LEFT JOIN cards AS c
+        ON d.id = c.deck_id
+        WHERE d.public = true
+        AND u.id != 'user_2pARGljiy1lvZFgeFNCWGeN5JWG'
+        GROUP BY d.id, u.username, u.id
+        ORDER BY d.created_at DESC
+      `;
+      return { success: true, decks };
+    }
+    catch(error) {
+      return { success: false, error };
+    }
+  }, ["get-recent-decks"], { tags: ['recent-decks'], revalidate: 90 }
 );
 
 export const getFeaturedDecksWithCardsCount = unstable_cache(async (userId: string = "user_2pARGljiy1lvZFgeFNCWGeN5JWG") => {
@@ -125,31 +148,45 @@ export async function getCachedDeck(deckId: number) {
   if(isNaN(deckId) || !deckId) {
     return { success: false, error: 'Invalid deck ID' };
   }
-  const callInner = unstable_cache(async () => {
-    try {
-      const [deck] = await sql`
-        SELECT d.id, d.creator_id, d.name, d.total_rating, d.count_ratings, d.public, d.created_at, d.updated_at, u.username
-        FROM decks AS d
-        INNER JOIN users AS u
-        ON d.creator_id = u.id
-        WHERE d.id = ${deckId}
-      `;
-      if(!deck) {
-        return { success: false, error: 'Deck not found' };
-      }
-      const cards = await sql`
-        SELECT id, front, back
-        FROM cards
-        WHERE deck_id = ${deckId}
-      `;
-      return { success: true, deck, cards };
-    }
-    catch(error) {
-      return { success: false, error };
-    }
-  }, ["get-deck"], { tags: [`deck-${deckId}`], revalidate: 150 });
-  const result = await callInner();
-  return result;
+  return unstable_cache(async () => {
+      const [deck, cards] = await Promise.all([
+        sql`
+          SELECT d.id, d.creator_id, d.name, d.total_rating, d.count_ratings, d.public, d.created_at, d.updated_at, u.username
+          FROM decks AS d
+          INNER JOIN users AS u
+          ON d.creator_id = u.id
+          WHERE d.id = ${deckId}
+        `,
+        sql`
+          SELECT id, front, back
+          FROM cards
+          WHERE deck_id = ${deckId}
+        `
+      ]);
+      return { success: true, deck: deck[0], cards };
+    }, [`deck-${deckId}`], { tags: [`deck-${deckId}`], revalidate: 60 }
+  )();
+}
+
+export async function getFeaturedDeck(deckId: number) {
+  return unstable_cache(async () => {
+      const [deck, cards] = await Promise.all([
+        sql`
+          SELECT d.id, d.creator_id, d.name, d.total_rating, d.count_ratings, d.public, d.created_at, d.updated_at, u.username
+          FROM decks AS d
+          INNER JOIN users AS u
+          ON d.creator_id = u.id
+          WHERE d.id = ${deckId}
+        `,
+        sql`
+          SELECT id, front, back
+          FROM cards
+          WHERE deck_id = ${deckId}
+        `
+      ]);
+      return { success: true, deck: deck[0], cards };
+    }, [`featured-deck-${deckId}`], { tags: [`featured-deck-${deckId}`], revalidate: 900 }
+  )();
 }
 
 export async function updateDeck({ deckId, title, cards, isPublic }: { deckId: number, title: string, cards: { front: string, back: string }[], isPublic: boolean }) {
@@ -157,27 +194,26 @@ export async function updateDeck({ deckId, title, cards, isPublic }: { deckId: n
     if(!deckId) {
       return { success: false, error: 'Deck ID is required' };
     }
-    const currentTime = new Date().toISOString();
-    await sql`
-      UPDATE decks
-      SET name = ${title}, public = ${isPublic}, updated_at = ${currentTime}
-      WHERE id = ${deckId}
-    `;
-    await sql`
-      DELETE FROM cards
-      WHERE deck_id = ${deckId}
-    `;
-    await sql`
-      INSERT INTO cards(deck_id, front, back)
-      SELECT ${deckId}, front, back
-      FROM json_to_recordset(${JSON.stringify(cards)})
-      AS cards(front varchar, back varchar)
-    `;
+    await Promise.all([
+      sql`
+        UPDATE decks
+        SET name = ${title}, public = ${isPublic}, updated_at = ${new Date().toISOString()}
+        WHERE id = ${deckId}
+      `,
+      sql`
+        DELETE FROM cards
+        WHERE deck_id = ${deckId}
+      `,
+      sql`
+        INSERT INTO cards(deck_id, front, back)
+        SELECT ${deckId}, front, back
+        FROM json_to_recordset(${JSON.stringify(cards)})
+        AS cards(front varchar, back varchar)
+      `
+    ]);
     revalidateTag('decks');
     revalidateTag(`deck-${deckId}`);
-    revalidatePath('/my-decks');
-    revalidatePath(`/decks/${deckId}`);
-    revalidatePath(`/decks/${deckId}/edit`);
+    revalidateTag('recent-decks');
     return { success: true };
   }
   catch(error) {
@@ -185,18 +221,16 @@ export async function updateDeck({ deckId, title, cards, isPublic }: { deckId: n
   }
 }
 
-export async function handleDelete({ deckId, userId }: { deckId: number, userId: string }) {
+export async function handleDelete(deckId: number) {
   "use server";
   try {
     await sql`
       DELETE FROM decks
-      WHERE creator_id = ${userId} AND id = ${deckId}
+      WHERE id = ${deckId}
     `;
     revalidateTag('decks');
     revalidateTag(`deck-${deckId}`);
-    revalidatePath('/my-decks');
-    revalidatePath(`/decks/${deckId}`);
-    revalidatePath(`/decks/${deckId}/edit`);
+    revalidateTag('recent-decks');
     return { success: true };
   }
   catch(error) {

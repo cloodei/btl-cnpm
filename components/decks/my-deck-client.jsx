@@ -11,19 +11,17 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useToast } from "@/hooks/use-toast";
 import { handleDelete } from "@/app/actions/deck";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
 
 export default function MyDecksClient({ decks }) {
   const [deleteDialog, setDeleteDialog] = useState({ isOpen: false, deckId: null, deckName: "" });
   const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
-  const { userId } = useAuth();
 
   const handleDeleteDeck = async () => {
     setIsDeleting(true);
     try {
-      const result = await handleDelete({ deckId: deleteDialog.deckId, userId });
+      const result = await handleDelete(deleteDialog.deckId);
       if(!result.success) {
         toast({
           title: "Error",

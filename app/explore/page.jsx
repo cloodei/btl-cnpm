@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, BookOpenCheck, Users, BookOpen, Plus, Crown } from "lucide-react";
 import { Suspense } from "react";
 import { auth } from "@clerk/nextjs/server";
-import { getCachedDecksWithCardsCount, getFeaturedDecksWithCardsCount } from "../actions/deck";
+import { getCachedDecksWithCardsCount } from "../actions/deck";
 import { FancySpinner } from "@/components/ui/fancy-spinner";
 import Link from "next/link";
+import RecentTab from "@/components/explore-content/recent-tab";
 
 async function PageWrapper() {
   try {
@@ -18,17 +19,15 @@ async function PageWrapper() {
     if(!result.success) {
       throw new Error("Error fetching decks");
     }
-    let decks = [];
+    let decks = null;
     if(result.decks.length > 4) {
-      decks[0] = result.decks[0];
-      decks[1] = result.decks[1];
-      decks[2] = result.decks[2];
-      decks[3] = result.decks[3];
+      decks = [{}, {}, {}, {}];
+      decks[0] = result.decks[0]; decks[1] = result.decks[1]; decks[2] = result.decks[2]; decks[3] = result.decks[3];
     }
     else {
       decks = result.decks;
     }
-    if(!decks.length) {
+    if(!decks || !decks?.length) {
       throw new Error("Your decks are empty");
     }
     return (
@@ -73,57 +72,36 @@ async function PageWrapper() {
   }
 }
 
-async function FeaturedDecksWrapper() {
-  let result = await getFeaturedDecksWithCardsCount();
-  if(result.success && result.decks.length) {
-    return (
-      result.decks.map((deck, index) => (
-        <Card key={index} className="p-6 hover:shadow-xl hover:scale-[1.02] transition-all">
-          <div className="flex items-center space-x-2 mb-4">
-            <Sparkles className="h-5 w-5 text-primary" />
-            <span className="font-semibold">Featured</span>
-          </div>
-          <h3 className="text-2xl font-bold md:mb-[7px] mb-1">{deck.name}</h3>
-          <div className="text-muted-foreground md:mb-[19px] mb-[13px] flex items-center lg:gap-2 gap-[6px]">
-            <Crown className="h-4 w-4 text-primary font-semibold" />
-            Recommended for you
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <BookOpen className="h-4 w-4" />
-              <span>{deck.totalcards} cards</span>
-            </div>
-            <Link href={`/decks/${deck.id}`} passHref>
-              <Button>Study Now</Button>
-            </Link>
-          </div>
-        </Card>
-      ))
-    );
-  }
+function FeaturedDecksWrapper() {
+  const decks = [
+    { id: 11, name: "Another Test", description: "Recommended by Experts", totalcards: 3 },
+    { id: 12, name: "Special Test", description: "Highly Educative Card Selections", totalcards: 2 },
+    { id: 13, name: "Official Test", description: "Learn from the best", totalcards: 5 },
+  ]
   return (
-    [1, 2, 3].map((i) => (
-      <Card key={i} className="p-6 hover:shadow-xl hover:scale-[1.02] transition-all">
+    decks.map((deck, index) => (
+      <Card key={index} className="p-6 hover:shadow-xl hover:scale-[1.02] transition-all">
         <div className="flex items-center space-x-2 mb-4">
           <Sparkles className="h-5 w-5 text-primary" />
           <span className="font-semibold">Featured</span>
         </div>
-        <h3 className="text-xl font-bold mb-2">JavaScript Basics</h3>
-        <p className="text-muted-foreground mb-4">
-          Master the fundamentals of JavaScript programming
-        </p>
+        <h3 className="text-2xl font-bold md:mb-[7px] mb-1">{deck.name}</h3>
+        <div className="text-muted-foreground md:mb-[19px] mb-[13px] flex items-center lg:gap-2 gap-[6px]">
+          <Crown className="h-4 w-4 text-primary font-semibold" />
+          <span>{deck.description}</span>
+        </div>
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <BookOpen className="h-4 w-4" />
-            <span>50 cards</span>
+            <span>{deck.totalcards} cards</span>
           </div>
-          <Link href="https://www.w3schools.com/js/js_intro.asp" target="_blank" passHref>
+          <Link href={`/decks/${deck.id}`} passHref>
             <Button>Study Now</Button>
           </Link>
         </div>
       </Card>
     ))
-  )
+  );
 }
 
 export default async function ExplorePage() {
@@ -142,13 +120,7 @@ export default async function ExplorePage() {
           <section>
             <h2 className="text-2xl font-bold mb-4">Featured Decks</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Suspense fallback={(
-                <div className="m-auto p-4 text-center text-4xl font-medium">
-                  <FancySpinner text="Loading featured decks..." size={20} />
-                </div>
-              )}>
-                <FeaturedDecksWrapper />
-              </Suspense>
+              <FeaturedDecksWrapper />
             </div>
           </section>
 
@@ -202,9 +174,7 @@ export default async function ExplorePage() {
         </TabsContent>
 
         <TabsContent value="recent">
-          <div className="text-center py-8 text-muted-foreground">
-            Chưa có data Recent
-          </div>
+          <RecentTab />
         </TabsContent>
 
         <TabsContent value="popular">

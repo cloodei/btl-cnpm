@@ -1,16 +1,28 @@
 import DeckViewer from "@/components/decks/deck-viewer";
 import { Suspense } from "react";
 import { FancySpinner } from "@/components/ui/fancy-spinner";
-import { getDeck } from "@/app/actions/deck";
+import { getCachedDeck, getFeaturedDeck } from "@/app/actions/deck";
 import { auth } from "@clerk/nextjs/server";
 
 async function PageWrapper({ id }) {
+  if(id === 11 || id === 12 || id === 13) {
+    const { userId } = await auth();
+    if(!userId) {
+      return (
+        <div className="m-auto py-14 pb-8 text-center text-4xl font-medium text-red-500">
+          User not found!
+        </div>
+      );
+    }
+    const result = await getFeaturedDeck(id);
+    return <DeckViewer deck={result.deck} cards={result.cards} permissions={result.deck.creator_id === userId} />;
+  }
   try {
     const { userId } = await auth();
     if(!userId) {
       throw new Error("User not found!");
     }
-    const result = await getDeck(parseInt(id));
+    const result = await getCachedDeck(id);
     if(!result.success || (!result.deck.public && result.deck.creator_id !== userId)) {
       throw new Error("Deck not found or you don't have permission to view it...");
     }
@@ -27,6 +39,7 @@ async function PageWrapper({ id }) {
 
 export default async function DeckPage({ params }) {
   const { id } = await params;
+  const ID = parseInt(id);
 
   return (
     <Suspense fallback={(
@@ -34,7 +47,7 @@ export default async function DeckPage({ params }) {
         <FancySpinner text="Loading deck..." size={30} />
       </div>
     )}>
-      <PageWrapper id={id} />
+      <PageWrapper id={ID} />
     </Suspense>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useClerk, useSignUp } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
@@ -11,24 +10,26 @@ export default function RegisterFormClient() {
   const [formData, setFormData] = useState({ username: '', email: '', password: '', confirmPassword: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const { signUp } = useSignUp();
-  const router = useRouter();
   const [errors, setErrors] = useState({});
+  const { signUp } = useSignUp();
   const { setActive } = useClerk();
+  const router = useRouter();
 
   const validateForm = () => {
-    formData.username = formData.username.trim()
-    formData.password = formData.password.trim()
-    formData.confirmPassword = formData.confirmPassword.trim()
+    const usernameError = !(formData.username = formData.username.trim())
+    const passwordError = !(formData.password = formData.password.trim())
+    const confirmPasswordError = !(formData.confirmPassword = formData.confirmPassword.trim())
     const newErrors = {};
     if(usernameError)
       newErrors.username = (!(!formData.username) ? null : "Username is required")
     if(passwordError)
       newErrors.password = (!(!formData.password) ? null : "Password is required")
-    if((!(!formData.confirmPassword) ? null : "Confirm Password is required") && formData.password !== formData.confirmPassword)
-      newErrors.confirmPassword = confirmPasswordError
+    if(confirmPasswordError)
+      newErrors.confirmPassword = (!(!formData.confirmPassword) ? null : "Confirm Password is required")
+    else if(formData.password !== formData.confirmPassword)
+      newErrors.confirmPassword = "Passwords do not match"
 
-    setError(usernameError || passwordError || confirmPasswordError)
+    setError((usernameError || passwordError || confirmPasswordError) ? "Please fill in all fields" : "")
     setErrors(newErrors)
     return Object.keys(newErrors).length;
   };
@@ -37,8 +38,10 @@ export default function RegisterFormClient() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    if(validateForm())
+    if(validateForm()) {
+      setLoading(false);
       return;
+    }
     try {
       const result = await signUp.create({ username: formData.username, password: formData.password });
       if(result.status !== "complete") {
@@ -59,8 +62,8 @@ export default function RegisterFormClient() {
       await setActive({ session: result.createdSessionId });
       router.push("/");
     }
-    catch(err) {
-      setError(err.message || "Something went wrong");
+    catch(error) {
+      setError(error.message ? error.message : (error ? error : "An error occurred"));
     }
     finally {
       setLoading(false);

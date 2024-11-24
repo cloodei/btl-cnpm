@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import Link from "next/link";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
 import { LogIn } from "lucide-react";
 import { validateUsername, validatePassword } from "@/lib/validator";
 import { useSignIn } from "@clerk/nextjs";
@@ -104,12 +104,7 @@ export default function LoginFormClient() {
         </div>
       )}
 
-      <Button
-        type="submit"
-        disabled={loading}
-        variant="outline"
-        className="w-full border-gray-300 dark:border-gray-600 dark:bg-[#242424] dark:hover:bg-[#3a3a3a] bg-[#eef0f3] hover:bg-[#dee2e6] text-gray-950 dark:text-white"
-      >
+      <Button type="submit" disabled={loading} className="w-full">
         {loading ? "Loading..." : "Sign in"}
       </Button>
 
