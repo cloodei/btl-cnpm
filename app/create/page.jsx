@@ -47,7 +47,7 @@ export default function CreateComponent() {
         title: "Error",
         description: "Please add at least one complete card",
         variant: "destructive",
-        duration: 2700,
+        duration: 2400,
       });
       setIsOpen(false);
       return;
@@ -59,7 +59,7 @@ export default function CreateComponent() {
         toast({
           title: "Success!",
           description: "Your deck has been created successfully.",
-          duration: 2700,
+          duration: 2400,
         });
         setCards([{ front: "", back: "" }]);
         setDeckTitle("");
@@ -69,7 +69,7 @@ export default function CreateComponent() {
           title: "Error",
           description: result.error,
           variant: "destructive",
-          duration: 2700,
+          duration: 2400,
         });
       }
     }
@@ -78,7 +78,7 @@ export default function CreateComponent() {
         title: "Error",
         description: error.message,
         variant: "destructive",
-        duration: 2700,
+        duration: 2400,
       });
     }
     finally {

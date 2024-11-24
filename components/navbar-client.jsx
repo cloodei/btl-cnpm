@@ -1,12 +1,11 @@
 "use client";
-
 import Link from "next/link";
+import LogoutButton from "@/components/logout-button";
 import { Brain, Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
 import { usePathname } from "next/navigation";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
-import LogoutButton from "@/components/logout-button";
 import { useSidebar } from "./ui/sidebar";
 import { useEffect } from "react";
 
@@ -20,33 +19,13 @@ export default function Navbar() {
     return null;
   }
 
-  const isActiveLink = (path) => {
-    return pathname === path;
-  };
-
   const NavLink = ({ href, children }) => (
     <Link href={href}>
-      <Button variant={isActiveLink(href) ? "default" : "ghost"}
-        className={`${isActiveLink(href) && "pointer-events-none"} transition-all duration-300 hover:scale-105 active:scale-95`}>
+      <Button variant={pathname === href ? "default" : "link"}
+        className= {`${pathname === href && "pointer-events-none"} transition-all duration-300 hover:scale-[1.09] active:scale-95`}>
         {children}
       </Button>
     </Link>
-  );
-
-  const UserAvatar = () => (
-    <div className="h-8 w-8 transition-all duration-200 cursor-pointer hover:opacity-80 flex items-center justify-center bg-gray-200 dark:bg-gray-800 rounded-full">
-      <User className="h-4 w-4" />
-    </div>
-  );
-
-  const DesktopNav = () => (
-    <div className="hidden md:flex items-center space-x-6 ml-6">
-      <NavLink href="/explore">Explore</NavLink>
-      <NavLink href="/create">Create</NavLink>
-      <SignedIn>
-        <NavLink href="/my-decks">My Decks</NavLink>
-      </SignedIn>
-    </div>
   );
 
   return (
@@ -58,8 +37,13 @@ export default function Navbar() {
           <span className="font-bold">CoinCard</span>
         </Link>
 
-        <DesktopNav />
-
+        <div className="hidden md:flex items-center space-x-6 ml-6">
+          <NavLink href="/explore">Explore</NavLink>
+          <NavLink href="/create">Create</NavLink>
+          <SignedIn>
+            <NavLink href="/my-decks">My Decks</NavLink>
+          </SignedIn>
+        </div>
         <div className="flex items-center ml-auto space-x-4">
           <ModeToggle />
           <SignedOut>
@@ -69,11 +53,12 @@ export default function Navbar() {
           </SignedOut>
           <SignedIn>
             <Link href="/profile">
-              <UserAvatar />
+              <div className="h-8 w-8 transition-all duration-200 cursor-pointer hover:opacity-80 flex items-center justify-center bg-gray-200 dark:bg-gray-800 rounded-full">
+                <User className="h-4 w-4" />
+              </div>
             </Link>
             <LogoutButton className="hidden md:flex" />
           </SignedIn>
-
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setOpenMobile(true)}>
             <Menu className="h-6 w-6" />
           </Button>

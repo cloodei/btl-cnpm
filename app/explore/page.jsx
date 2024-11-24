@@ -172,11 +172,9 @@ export default async function ExplorePage() {
             </div>
           </section>
         </TabsContent>
-
         <TabsContent value="recent">
           <RecentTab />
         </TabsContent>
-
         <TabsContent value="popular">
           <div className="text-center py-8 text-muted-foreground">
             Chưa có data Popular

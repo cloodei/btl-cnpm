@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import { BookOpen, Settings2, Sparkle, Loader } from 'lucide-react';
+import { BookOpen, Settings2, Sparkle, Loader, CircleUser } from 'lucide-react';
 
 export default function RecentTabClient({ decks, userId }) {
   const container = {
@@ -46,14 +46,21 @@ export default function RecentTabClient({ decks, userId }) {
                     ) : (
                       <>
                         <Loader />
-                        <span className="text-muted-foreground">None</span>
+                        <span className="font-medium">None</span>
                       </>
                     )}
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground text-sm">Created By</span>
-                  <span className='font-medium text-base'>{deck.username}</span>
+                  {deck.creator_id === userId ? (
+                    <span className="text-base font-semibold flex items-center">
+                      <CircleUser className="h-5 w-5 md:mr-[6px] mr-1" />
+                      You
+                    </span>
+                  ) : (
+                    <span className="text-base font-semibold">{deck.username}</span>
+                  )}
                 </div>
               </div>
             </div>

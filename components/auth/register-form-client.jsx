@@ -37,11 +37,10 @@ export default function RegisterFormClient() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
     if(validateForm()) {
-      setLoading(false);
       return;
     }
+    setLoading(true);
     try {
       const result = await signUp.create({ username: formData.username, password: formData.password });
       if(result.status !== "complete") {

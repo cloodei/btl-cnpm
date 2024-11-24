@@ -1,5 +1,4 @@
-'use client'
-
+'use client';
 import { useClerk } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
@@ -14,8 +13,8 @@ export default function LogoutButton({ className = "", variant = "outline", size
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { signOut } = useClerk();
-  const router = useRouter();
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleSignOut = async () => {
     setIsLoading(true);

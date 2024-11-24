@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { Suspense } from "react";
-import { getCachedUserInfo } from "../actions/user";
+import { getCachedUserInfoWithDecks } from "../actions/user";
 import { FancySpinner } from "@/components/ui/fancy-spinner";
 import { Card } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
@@ -15,33 +15,40 @@ async function PageWrapper() {
     if(!userId) {
       throw new Error("User not found");
     }
-    const result = await getCachedUserInfo(userId);
+    const result = await getCachedUserInfoWithDecks(userId);
     if(!result.success) {
       throw new Error("Error fetching user data");
     }
-    const userData = result.user;
+    const { user, decks } = result;
     return (
     <div className="container mx-auto max-w-6xl py-8">
-      <div className="grid gap-8">
+      <div className="grid gap-6">
         <div className="flex flex-col items-center justify-center space-y-4">
           <Avatar className="h-28 w-28">
-            <AvatarImage src={userData?.imageUrl} alt={userData.username} />
+            <AvatarImage src={user?.imageUrl} alt={user.username} />
             <AvatarFallback className="lg:text-3xl text-2xl font-medium bg-[#e3e6ec] dark:bg-gray-700">
-              {userData.username.split(' ').map(n => n[0]).join('').toUpperCase()}
+              {user.username.split(' ').map(n => n[0]).join('').toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="text-center">
-            <h1 className="text-3xl font-bold mb-1">{userData.username}</h1>
+            <h1 className="text-3xl font-bold mb-1">{user.username}</h1>
             <p className="text-sm text-muted-foreground">Flashcard Enthusiast</p>
           </div>
         </div>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <h3 className="text-sm font-medium">Total Decks</h3>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">12</div>
+              <div className="text-2xl font-bold">
+                {decks.totaldecks}
+                {decks.totaldecks === '1' ? (
+                  <span className="ml-[5px]"> deck</span>
+                ) : (
+                  <span className="ml-[5px]"> decks</span>
+                )}
+              </div>
               <p className="text-xs text-muted-foreground">
                 Created flashcard decks
               </p>
@@ -63,7 +70,14 @@ async function PageWrapper() {
               <h3 className="text-sm font-medium">Cards Mastered</h3>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">89</div>
+              <div className="text-2xl font-bold">
+                {decks.totalcards}
+                {decks.totalcards === '1' ? (
+                  <span className="ml-[4px]"> card</span>
+                ) : (
+                  <span className="ml-[4px]"> cards</span>
+                )}
+              </div>
               <p className="text-xs text-muted-foreground">
                 Across all decks
               </p>
@@ -78,7 +92,7 @@ async function PageWrapper() {
             <div className="flex items-center space-x-4 text-sm">
               <Calendar className="h-4 w-4 text-muted-foreground" />
               <span className="text-muted-foreground">Joined </span>
-              <span>{new Date(userData.created_at).toLocaleDateString()}</span>
+              <span>{new Date(user.created_at).toLocaleDateString()}</span>
             </div>
           </CardContent>
         </Card>
@@ -88,7 +102,7 @@ async function PageWrapper() {
               Create New Deck
             </Link>
             <Link href={'/my-decks'} className="lg:px-[18px] px-[10px] lg:py-2 py-[4px] lg:text-base text-primary text-sm bg-primary-foreground rounded-lg transition hover:bg-slate-300 dark:hover:bg-gray-800 border border-gray-300 dark:border-gray-800">
-              View {userData.username}'s Decks
+              View {user.username}'s Decks
             </Link>
             <LogoutButton variant="destructive" className="lg:px-[18px] px-[10px] lg:py-2 py-[4px] lg:text-base text-sm">
               Sign Out

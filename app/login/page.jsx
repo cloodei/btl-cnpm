@@ -4,7 +4,6 @@ export const dynamic = "force-static";
 import { Suspense } from "react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ArrowLeftFromLine } from "lucide-react";
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from "next/link";

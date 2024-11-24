@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LogIn } from "lucide-react";
-import { validateUsername, validatePassword } from "@/lib/validator";
 import { useSignIn } from "@clerk/nextjs";
 
 export default function LoginFormClient() {
@@ -28,8 +27,8 @@ export default function LoginFormClient() {
 
   const validateForm = () => {
     const newErrors = {};
-    const usernameError = validateUsername(formData.username);
-    const passwordError = validatePassword(formData.password);
+    const usernameError = !(formData.username = formData.username.trim());
+    const passwordError = !(formData.password = formData.password.trim());
     if(usernameError)
       newErrors.username = usernameError.message;
     if(passwordError)
@@ -41,11 +40,11 @@ export default function LoginFormClient() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setServerError('');
-    if(validateForm())
+    if(validateForm()) {
       return;
+    }
     setLoading(true);
     const { username, password } = formData;
-
     try {
       const result = await signIn.create({ identifier: username, password })
       if(result.status !== 'complete') {
