@@ -63,16 +63,16 @@ export default function MyDecksClient({ decks }) {
 
   return (
   <>
-    <div className="bg-gradient-to-b from-background to-secondary/20 pt-8 px-4" style={{ minHeight: "calc(100vh - 48px)" }}>
-      <div className="max-w-6xl mx-auto lg:pb-8 md:pb-7 pb-6">
-        <div className="lg:flex lg:justify-between lg:items-center md:flex md:justify-between md:items-center lg:mb-8 md:mb-6 mb-4">
+    <div className="bg-gradient-to-b from-background to-secondary/20 lg:pb-8 md:pb-7 pb-6 pt-8 px-4" style={{ minHeight: "calc(100vh - 48px)" }}>
+      <div className="max-w-7xl mx-auto">
+        <div className="lg:flex lg:justify-between lg:items-center md:flex md:justify-between md:items-center lg:mb-8 md:mb-6 mb-4 md:px-8 px-5">
           <div className="mb-4">
             <h1 className="lg:text-4xl text-[28px] font-bold mb-2">My Flashcard Decks</h1>
             <p className="text-muted-foreground text-sm">
               Manage and study your personal collection of flashcard decks
             </p>
           </div>
-          <Link href="/create">
+          <Link href="/create" className="mb-4">
             <Button className="lg:px-4 pr-3 pl-2 lg:py-2 py-[4px] lg:text-base text-sm">
               <Plus className="lg:mr-2 mr-1 h-4 w-4" />
               Create New Deck

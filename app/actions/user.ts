@@ -15,7 +15,7 @@ export const getCachedUserInfo = unstable_cache(async (userId: string) => {
     catch(error) {
       return { success: false, error };
     }
-  }, ['user-info'], { tags: ["user-info"], revalidate: 900 }
+  }, ['user-info'], { tags: ["user-info"], revalidate: 1800 }
 );
 
 export const getCachedUserInfoWithDecks = unstable_cache(async (userId: string) => {
@@ -36,7 +36,7 @@ export const getCachedUserInfoWithDecks = unstable_cache(async (userId: string) 
   catch(error) {
     return { success: false, error };
   }
-}, ['user-info-decks'], { tags: ["user-info-decks"], revalidate: 900 });
+}, ['user-info-decks'], { tags: ["user-info-decks"], revalidate: 1800 });
 
 export async function getUserInfo(userId: string) {
   'use server';

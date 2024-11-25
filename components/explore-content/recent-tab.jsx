@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 import { getRecentDecksWithCardsCount } from '@/app/actions/deck';
 import { auth } from '@clerk/nextjs/server';
-import { FancySpinner } from '@/components/ui/fancy-spinner';
 import RecentTabClient from './recent-tab-client';
 
 async function TabWrapper() {
@@ -37,11 +36,7 @@ async function TabWrapper() {
 
 export default function RecentTab() {
   return (
-    <Suspense fallback={(
-      <div className="m-auto lg:pt-20 md:pt-16 pt-12 pb-8 text-center lg:text-4xl text-3xl font-medium">
-        <FancySpinner text="Loading recent decks..." size={26} />
-      </div>
-    )}>
+    <Suspense fallback={<div className="m-auto lg:pt-20 md:pt-16 pt-12 pb-8 text-center lg:text-4xl text-3xl font-medium">Loading recent decks...</div>}>
       <TabWrapper />
     </Suspense>
   );

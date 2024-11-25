@@ -155,27 +155,6 @@ export const getRecentDecksWithCardsCount = unstable_cache(async (userId: string
   }, ["get-recent-decks"], { tags: ['recent-decks', 'favorites'], revalidate: 90 }
 );
 
-export const getFeaturedDecksWithCardsCount = unstable_cache(async (userId: string = "user_2pARGljiy1lvZFgeFNCWGeN5JWG") => {
-    try {
-      const decks = await sql`
-        SELECT d.id, d.name, d.public, d.total_rating, d.count_ratings, d.created_at, d.updated_at, COUNT(c.id) AS totalcards
-        FROM decks AS d
-        LEFT JOIN cards AS c
-        ON d.id = c.deck_id
-        WHERE d.creator_id = ${userId}
-        AND d.public = true
-        GROUP BY d.id
-        ORDER BY d.created_at DESC
-        LIMIT 3
-      `;
-      return { success: true, decks };
-    }
-    catch(error) {
-      return { success: false, error };
-    }
-  }, ["get-featured-decks"], { tags: ['featured-decks'], revalidate: 600 }
-);
-
 export async function getDeck(deckId: number) {
   try {
     const [deck] = await sql`

@@ -1,9 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import { getCachedUserInfoWithDecks } from "../actions/user";
-import { FancySpinner } from "@/components/ui/fancy-spinner";
 import { Card } from "@/components/ui/card";
-import { Calendar } from "lucide-react";
+import { Calendar, Loader } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CardContent, CardHeader } from "@/components/ui/card";
 import Link from "next/link";
@@ -124,11 +123,7 @@ async function PageWrapper() {
 
 export default function ProfilePage() {
   return (
-    <Suspense fallback={(
-      <div className="m-auto p-10 text-center text-4xl font-medium">
-        <FancySpinner text="Loading profile..." size={26} />
-      </div>
-    )}>
+    <Suspense fallback={<div className="m-auto p-10 text-center text-4xl font-medium">Loading profile... <Loader className="ml-1 animate-spin" /></div>}>
       <PageWrapper />
     </Suspense>
   );
