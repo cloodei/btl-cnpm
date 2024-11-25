@@ -14,7 +14,7 @@ export function FloatInput({ label, className, ...props }: FloatInputProps) {
         className={cn(
           "block w-full rounded-md border bg-background px-3 pt-3 pb-2 text-base ring-offset-background",
           "text-gray-950 dark:text-gray-100 dark:placeholder:text-zinc-300 focus-visible:outline-none",
-          "peer", // Important for sibling selection
+          "peer",
           className
         )}
       />

@@ -17,14 +17,14 @@ export default function CreateComponent() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
-  const bottomRef = useRef(null);
   const { toast } = useToast();
+  const bottomRef = useRef(null);
 
   const handleSave = async () => {
     if(!deckTitle.trim()) {
       toast({
         title: "Error",
-        description: "Please enter a deck title",
+        description: "Deck title is required!",
         variant: "destructive",
         duration: 2400,
       });
@@ -45,7 +45,7 @@ export default function CreateComponent() {
     if(!validCards.length) {
       toast({
         title: "Error",
-        description: "Please add at least one complete card",
+        description: "Deck must have at least one complete card!",
         variant: "destructive",
         duration: 2400,
       });
@@ -67,7 +67,7 @@ export default function CreateComponent() {
       else {
         toast({
           title: "Error",
-          description: result.error,
+          description: result.error?.message || result.error || "An error occurred",
           variant: "destructive",
           duration: 2400,
         });
@@ -76,7 +76,7 @@ export default function CreateComponent() {
     catch(error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: error?.message || error || "An error occurred",
         variant: "destructive",
         duration: 2400,
       });
@@ -84,7 +84,6 @@ export default function CreateComponent() {
     finally {
       setIsSaving(false);
       setIsOpen(false);
-      setIsPublic(false);
     }
   };
 

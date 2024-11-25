@@ -6,7 +6,11 @@ import RecentTabClient from './recent-tab-client';
 
 async function TabWrapper() {
   try {
-    const result = await getRecentDecksWithCardsCount();
+    const { userId } = await auth();
+    if(!userId) {
+      throw new Error("User not found!");
+    }
+    const result = await getRecentDecksWithCardsCount(userId);
     if(!result.success) {
       throw new Error("Failed to fetch recent decks");
     }
@@ -18,7 +22,6 @@ async function TabWrapper() {
         </div>
       );
     }
-    const { userId } = await auth();
     return (
       <RecentTabClient decks={decks} userId={userId} />
     )

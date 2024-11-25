@@ -2,14 +2,14 @@
 import Link from "next/link";
 import ReactCardFlip from "react-card-flip";
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Bookmark, Settings, Heart } from "lucide-react";
+import { ChevronLeft, ChevronRight, Settings, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import FavoritesButton from "../favorites-button";
 
-export default function DeckViewer({ deck, cards, permissions }) {
+export default function DeckViewer({ deck, cards, permissions, userId }) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
@@ -29,29 +29,32 @@ export default function DeckViewer({ deck, cards, permissions }) {
       <div className="max-w-4xl mx-auto lg:pb-8 md:pb-7 pb-6">
         <div className="mb-8">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-4xl font-bold">{deck.name}</h1>
+            <h1 className="text-4xl font-bold truncate overflow-hidden" title={deck.name}>{deck.name}</h1>
             <div className="flex gap-2">
-              <Button variant="outline" size="icon" onClick={() => setIsSaved(!isSaved)} className={isSaved ? "text-primary" : ""}>
-                <Bookmark className={`h-5 w-5 ${isSaved ? "fill-current" : ""}`} />
-              </Button>
-              <Button variant="outline" size="icon" onClick={() => setIsLiked(!isLiked)} className={isLiked ? "text-red-500" : ""}>
-                <Heart className={`h-5 w-5 ${isLiked ? "fill-current" : ""}`} />
-              </Button>
-              {permissions && (
+              {permissions ? (
                 <Link href={`/decks/${deck.id}/edit`}>
                   <Button variant="outline" size="icon">
                     <Settings className="h-5 w-5" />
                   </Button>
                 </Link>
+              )
+              : (
+                <>
+                  <FavoritesButton deckId={deck.id} is_favorite={deck.is_favorite} size="5" userId={userId} />
+                  <Button variant="outline" size="icon" onClick={() => setIsLiked(!isLiked)} className={isLiked ? "text-red-500" : ""}>
+                    <Heart className={`h-5 w-5 ${isLiked ? "fill-current" : ""}`} />
+                  </Button>
+                </>
               )}
             </div>
           </div>
-          <p className="font-medium text-primary mb-4">
-            Going through <span className="font-semibold md:mx-[5px] mx-[3px]"> &lt;{deck.name}&gt;</span>
+          <div className="font-medium text-primary mb-4 truncate overflow-hidden" title={deck.name + ` from ${deck.username}`}>
+            Going through  
+            <span className="font-semibold md:mx-[5px] mx-[3px]"> &lt;{deck.name}&gt; </span>
             <span className="text-gray-400 dark:text-gray-500">
               {` from ${deck.username}`}
             </span>
-          </p>
+          </div>
           <div className="flex items-center gap-4">
             <Progress value={(currentCardIndex + 1) / cards.length * 100} className="w-full" />
             <span className="text-sm text-muted-foreground whitespace-nowrap">

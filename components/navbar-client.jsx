@@ -42,6 +42,7 @@ export default function Navbar() {
           <NavLink href="/create">Create</NavLink>
           <SignedIn>
             <NavLink href="/my-decks">My Decks</NavLink>
+            <NavLink href="/favorites">Favorites</NavLink>
           </SignedIn>
         </div>
         <div className="flex items-center ml-auto space-x-4">

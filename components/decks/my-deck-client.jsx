@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -84,7 +83,7 @@ export default function MyDecksClient({ decks }) {
         <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {decks.map((deck) => (
             <motion.div key={deck.id} variants={item}>
-              <Card className="relative group transition-all duration-200 shadow-lg hover:shadow-[0_8px_36px_rgba(0,0,0,0.24)] hover:scale-[1.02] dark:hover:shadow-[0_6px_20px_rgba(255,255,255,0.19)]">
+              <Card title={deck.name} className="relative group transition-all duration-200 shadow-lg hover:shadow-[0_8px_36px_rgba(0,0,0,0.24)] hover:scale-[1.02] dark:hover:shadow-[0_6px_20px_rgba(255,255,255,0.19)]">
                 <div className="absolute top-4 right-4">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -109,8 +108,7 @@ export default function MyDecksClient({ decks }) {
 
                 <Link href={`/decks/${deck.id}`}>
                   <div className="p-6">
-                    <h3 className="text-xl font-semibold mb-2 pr-12">{deck.name}</h3>
-                    <p className="text-muted-foreground mb-4">{deck.description}</p>
+                    <h3 className="text-xl font-semibold mb-2 pr-12 truncate overflow-hidden">{deck.name}</h3>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">Cards</span>
@@ -149,12 +147,15 @@ export default function MyDecksClient({ decks }) {
       </div>
     </div>
       
-    <Dialog open={deleteDialog.isOpen} onOpenChange={(open) => !isDeleting && setDeleteDialog({ isOpen: open, deckId: null, deckName: "" })}>
+    <Dialog open={deleteDialog.isOpen} onOpenChange={(open) => setDeleteDialog({ isOpen: open, deckId: null, deckName: "" })}>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
+        <DialogHeader className="truncate">
           <DialogTitle className="text-xl font-semibold">Delete Deck</DialogTitle>
-          <DialogDescription className="pt-3">
-            Are you sure you want to delete <span className="font-medium text-foreground">{deleteDialog.deckName}</span>? This action cannot be undone.
+          <DialogDescription className="pt-3" title={deleteDialog.deckName}>
+            Are you sure you want to delete <span className="font-medium text-foreground">{deleteDialog.deckName}</span> ?
+          </DialogDescription>
+          <DialogDescription>
+            This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="mt-4 gap-2">

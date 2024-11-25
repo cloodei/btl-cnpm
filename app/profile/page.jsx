@@ -21,12 +21,12 @@ async function PageWrapper() {
     }
     const { user, decks } = result;
     return (
-    <div className="container mx-auto max-w-6xl py-8">
+    <div className="container mx-auto max-w-6xl py-8 px-4">
       <div className="grid gap-6">
         <div className="flex flex-col items-center justify-center space-y-4">
-          <Avatar className="h-28 w-28">
+          <Avatar className="md:h-28 md:w-28 w-24 h-24">
             <AvatarImage src={user?.imageUrl} alt={user.username} />
-            <AvatarFallback className="lg:text-3xl text-2xl font-medium bg-[#e3e6ec] dark:bg-gray-700">
+            <AvatarFallback className="text-3xl font-medium bg-[#d6dae2] dark:bg-gray-700">
               {user.username.split(' ').map(n => n[0]).join('').toUpperCase()}
             </AvatarFallback>
           </Avatar>
@@ -98,13 +98,13 @@ async function PageWrapper() {
         </Card>
         <Card className="md:col-span-3 p-6 shadow-[0_4px_20px_rgba(0,0,0,0.22)] dark:shadow-[0px_0px_7px_rgba(255,255,255,0.1)]">
           <div className="flex flex-wrap lg:gap-4 gap-3">
-            <Link href={'/create'} className="lg:px-[18px] px-[10px] lg:py-2 py-[4px] lg:text-base text-primary text-sm bg-primary-foreground rounded-lg transition hover:bg-slate-300 dark:hover:bg-gray-800 border border-gray-300 dark:border-gray-800">
+            <Link href={'/create'} className="lg:px-[18px] px-[10px] pt-[8px] pb-[2px] lg:pt-2 lg:pb-2 lg:text-base text-primary text-sm bg-primary-foreground rounded-lg transition hover:bg-slate-300 dark:hover:bg-gray-800 border border-gray-300 dark:border-gray-800">
               Create New Deck
             </Link>
-            <Link href={'/my-decks'} className="lg:px-[18px] px-[10px] lg:py-2 py-[4px] lg:text-base text-primary text-sm bg-primary-foreground rounded-lg transition hover:bg-slate-300 dark:hover:bg-gray-800 border border-gray-300 dark:border-gray-800">
+            <Link href={'/my-decks'} className="lg:px-[18px] px-[10px] pt-[8px] pb-[2px] lg:pt-2 lg:pb-2 lg:text-base text-primary text-sm bg-primary-foreground rounded-lg transition hover:bg-slate-300 dark:hover:bg-gray-800 border border-gray-300 dark:border-gray-800">
               View {user.username}'s Decks
             </Link>
-            <LogoutButton variant="destructive" className="lg:px-[18px] px-[10px] lg:py-2 py-[4px] lg:text-base text-sm">
+            <LogoutButton variant="destructive" className="lg:px-[18px] px-[10px] py-[4px] lg:py-2 lg:text-base text-sm">
               Sign Out
             </LogoutButton>
           </div>
@@ -122,7 +122,7 @@ async function PageWrapper() {
   }
 }
 
-export default async function ProfilePage() {
+export default function ProfilePage() {
   return (
     <Suspense fallback={(
       <div className="m-auto p-10 text-center text-4xl font-medium">

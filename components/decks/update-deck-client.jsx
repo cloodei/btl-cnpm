@@ -45,7 +45,12 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
       setSaveDialog(false);
       return;
     }
-    const validCards = cards.filter(card => card.front.trim() && card.back.trim());
+    const validCards = [];
+    for(const card of cards) {
+      if(card.front.trim() && card.back.trim()) {
+        validCards.push({ deck_id: deck.id, front: card.front, back: card.back });
+      }
+    }
     if(!validCards.length) {
       toast({
         title: "Error",

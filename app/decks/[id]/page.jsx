@@ -5,28 +5,24 @@ import { getCachedDeck, getFeaturedDeck } from "@/app/actions/deck";
 import { auth } from "@clerk/nextjs/server";
 
 async function PageWrapper({ id }) {
+  const { userId } = await auth();
+  if(!userId) {
+    return (
+      <div className="m-auto py-14 pb-8 text-center text-4xl font-medium text-red-500">
+        User not found!
+      </div>
+    );
+  }
   if(id === 11 || id === 12 || id === 13) {
-    const { userId } = await auth();
-    if(!userId) {
-      return (
-        <div className="m-auto py-14 pb-8 text-center text-4xl font-medium text-red-500">
-          User not found!
-        </div>
-      );
-    }
-    const result = await getFeaturedDeck(id);
-    return <DeckViewer deck={result.deck} cards={result.cards} permissions={result.deck.creator_id === userId} />;
+    const result = await getFeaturedDeck({ deckId: id, userId });
+    return <DeckViewer deck={result.deck} cards={result.cards} userId={userId} permissions={result.deck.creator_id === userId} />;
   }
   try {
-    const { userId } = await auth();
-    if(!userId) {
-      throw new Error("User not found!");
-    }
-    const result = await getCachedDeck(id);
+    const result = await getCachedDeck({ deckId: id, userId });
     if(!result.success || (!result.deck.public && result.deck.creator_id !== userId)) {
       throw new Error("Deck not found or you don't have permission to view it...");
     }
-    return <DeckViewer deck={result.deck} cards={result.cards} permissions={result.deck.creator_id === userId} />;
+    return <DeckViewer deck={result.deck} cards={result.cards} userId={userId} permissions={result.deck.creator_id === userId} />;
   }
   catch(error) {
     return (

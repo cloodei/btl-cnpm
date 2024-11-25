@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { Home, User, Brain, SquarePen, Telescope } from 'lucide-react';
+import { Home, User, Brain, SquarePen, Telescope, Layers, Bookmark } from 'lucide-react';
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { useSidebar } from "@/components/ui/sidebar"
 import { usePathname } from "next/navigation";
@@ -20,7 +20,9 @@ export default function MobileSidebar() {
     { href: "/", icon: Home, label: "Home" },
     { href: "/profile", icon: User, label: "Profile" },
     { href: "/create", icon: SquarePen, label: "Create" },
-    { href: "/explore", icon: Telescope, label: "Explore" }
+    { href: "/explore", icon: Telescope, label: "Explore" },
+    { href: "/my-decks", icon: Layers, label: "My Decks" },
+    { href: "/favorites", icon: Bookmark, label: "Favorites" }
   ]
 
   return (

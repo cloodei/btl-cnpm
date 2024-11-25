@@ -1,7 +1,7 @@
 import UpdateDeckComponent from "@/components/decks/update-deck-client";
 import { Suspense } from "react";
 import { FancySpinner } from "@/components/ui/fancy-spinner";
-import { getDeck } from "@/app/actions/deck";
+import { getCachedDeck } from "@/app/actions/deck";
 import { auth } from "@clerk/nextjs/server";
 
 async function PageWrapper({ id }) {
@@ -10,7 +10,7 @@ async function PageWrapper({ id }) {
     if(!userId) {
       throw new Error("User not found!");
     }
-    const result = await getDeck(parseInt(id));
+    const result = await getCachedDeck({ deckId: parseInt(id), userId });
     if(!result.success || result.deck.creator_id !== userId) {
       throw new Error("Deck not found or no permission");
     }

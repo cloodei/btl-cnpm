@@ -1,20 +1,6 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 
-// export async function POST(req: Request) {
-//   try {
-//     const { clerkId, username } = await req.json();
-//     await sql`
-//       INSERT INTO users (id, username)
-//       VALUES (${clerkId}, ${username})
-//     `;
-//     return NextResponse.json({ status: 'success' });
-//   }
-//   catch(error) {
-//     return NextResponse.json({ error: 'Failed to register user!' }, { status: 500 });
-//   }
-// }
-
 export async function POST(req: Request) {
   try {
     const { clerkId, username } = await req.json();
