@@ -16,16 +16,16 @@ const item = {
 
 export default function RecentTabClient({ decks, userId }) {
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
     {decks.map((deck) => (
       <motion.div key={deck.id} variants={item}>
         <Card className="relative group transition-all duration-200 shadow-lg hover:shadow-[0_8px_36px_rgba(0,0,0,0.24)] hover:scale-[1.02] dark:hover:shadow-[0_6px_20px_rgba(255,255,255,0.19)]">
           {(userId === deck.creator_id) ? (
-            <Link href={`/decks/${deck.id}/edit`} className="absolute top-[10px] right-[20px] transition hover:bg-gray-200 dark:hover:bg-gray-900 rounded-full p-2">
-              <Settings2 className="h-6 w-6" />
+            <Link href={`/decks/${deck.id}/edit`} className="absolute top-[10px] lg:top-[14px] right-[20px] transition hover:bg-gray-200 dark:hover:bg-gray-900 rounded-full p-2">
+              <Settings2 className="h-6 lg:h-4 w-6 lg:w-4" />
             </Link>
             ) : (
-            <FavoritesButton deckId={deck.id} is_favorite={deck.is_favorite} size="6" userId={userId} className="absolute top-[10px] right-[20px] transition hover:bg-gray-200 dark:hover:bg-gray-900 rounded-full p-2" />
+            <FavoritesButton deckId={deck.id} is_favorite={deck.is_favorite} size="6" userId={userId} className="absolute top-[10px] lg:top-[14px] right-[20px] transition hover:bg-gray-200 dark:hover:bg-gray-900 rounded-full p-2" />
             )
           }
           <Link href={`/decks/${deck.id}`}>

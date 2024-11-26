@@ -2,22 +2,6 @@ import Link from "next/link";
 import FavoritesClient from "@/components/decks/favorites-client";
 import { auth } from "@clerk/nextjs/server";
 import { getFavoriteDecksWithCardsCount } from "../actions/deck";
-import { Suspense } from "react";
-import { FancySpinner } from "@/components/ui/fancy-spinner";
-
-async function FavoritesContent() {
-  const { userId } = await auth();
-  if(!userId) {
-    return <EmptyState message="Please sign in to view favorites" />;
-  }
-  const { success, decks } = await getFavoriteDecksWithCardsCount(userId);
-  if(!success || !decks?.length) {
-    return (
-      <EmptyState message="Your favorites list is empty" description="Start adding decks to your favorites!" />
-    );
-  }
-  return <FavoritesClient decks={decks} />;
-}
 
 function EmptyState({ message, description }) {
   return (
@@ -35,14 +19,25 @@ function EmptyState({ message, description }) {
   );
 }
 
-export default function FavoritesPage() {
-  return (
-    <Suspense fallback={
-      <div className="flex min-h-[80vh] items-center justify-center">
-        <FancySpinner text="Loading your favorites..." size={32} />
-      </div>
-    }>
-      <FavoritesContent />
-    </Suspense>
-  );
+export default async function FavoritesPage() {
+  const { userId } = await auth();
+  if(!userId) {
+    return <EmptyState message="Please sign in to view favorites" />;
+  }
+  const { success, decks } = await getFavoriteDecksWithCardsCount(userId);
+  if(!success || !decks?.length) {
+    return (
+      <EmptyState message="Your favorites list is empty" description="Start adding decks to your favorites!" />
+    );
+  }
+  return <FavoritesClient decks={decks} />;
+  // return (
+  //   <Suspense fallback={
+  //     <div className="flex min-h-[80vh] items-center justify-center">
+  //       <FancySpinner text="Loading your favorites..." size={32} />
+  //     </div>
+  //   }>
+  //     <FavoritesContent />
+  //   </Suspense>
+  // );
 }

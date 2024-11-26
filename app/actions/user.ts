@@ -4,7 +4,8 @@ import { query } from '@/lib/db';
 
 export async function revalidateUser() {
   'use server';
-  revalidateTag('user');
+  revalidateTag('user-info');
+  revalidateTag('user-info-decks');
 }
 
 export const getCachedUserInfo = unstable_cache(async (userId: string) => {
@@ -25,10 +26,10 @@ export const getCachedUserInfoWithDecks = unstable_cache(async (userId: string) 
         SELECT * FROM users WHERE id = $1
       `, [userId]),
       query(`
-      SELECT COUNT(DISTINCT d.id) as totaldecks, COUNT(c.id) as totalcards
-      FROM decks d
-      LEFT JOIN cards c ON d.id = c.deck_id
-      WHERE d.creator_id = $1
+        SELECT COUNT(DISTINCT d.id) as totaldecks, COUNT(c.id) as totalcards
+        FROM decks d
+        LEFT JOIN cards c ON d.id = c.deck_id
+        WHERE d.creator_id = $1
       `, [userId])
     ]);
     return { success: true, user: users[0], decks: stats[0] };

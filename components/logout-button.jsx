@@ -19,13 +19,13 @@ export default function LogoutButton({ className = "", variant = "outline", size
   const handleSignOut = async () => {
     setIsLoading(true);
     try {
-      router.push('/');
       await signOut();
       await revalidateUser();
-      toast({ title: "Successfully logged out", description: "See you next time! 👋", duration: 3000, });
+      router.push('/');
+      toast({ title: "Successfully logged out", description: "See you next time! 👋", duration: 2500 });
     }
     catch(error) {
-      toast({ title: "Error logging out", description: "Please try again", variant: "destructive", });
+      toast({ title: "Error logging out", description: "Please try again", variant: "destructive", duration: 2500 });
     }
     finally {
       setIsLoading(false);

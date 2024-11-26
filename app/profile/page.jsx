@@ -121,9 +121,14 @@ async function PageWrapper() {
   }
 }
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
   return (
-    <Suspense fallback={<div className="m-auto p-10 text-center text-4xl font-medium">Loading profile... <Loader className="ml-1 animate-spin" /></div>}>
+    <Suspense fallback={
+      <div className="m-auto md:py-14 py-9 text-center md:text-4xl text-3xl font-medium flex justify-center items-center">
+        Loading profile...
+        <Loader className="ml-1 animate-spin md:h-12 md:w-12 h-7 w-7" />
+      </div>
+    }>
       <PageWrapper />
     </Suspense>
   );

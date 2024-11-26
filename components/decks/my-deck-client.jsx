@@ -10,6 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useToast } from "@/hooks/use-toast";
 import { handleDelete } from "@/app/actions/deck";
 import { useRouter } from "next/navigation";
+import { getTimeIndicator } from "@/lib/utils";
 
 export default function MyDecksClient({ decks }) {
   const [deleteDialog, setDeleteDialog] = useState({ isOpen: false, deckId: null, deckName: "" });
@@ -63,8 +64,8 @@ export default function MyDecksClient({ decks }) {
 
   return (
   <>
-    <div className="bg-gradient-to-b from-background to-secondary/20 lg:pb-8 md:pb-7 pb-6 pt-8 px-4" style={{ minHeight: "calc(100vh - 48px)" }}>
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-gradient-to-b from-background to-secondary/20 lg:pb-8 md:pb-7 pb-6 pt-8" style={{ minHeight: "calc(100vh - 48px)" }}>
+      <div className="max-w-7xl mx-auto px-7">
         <div className="lg:flex lg:justify-between lg:items-center md:flex md:justify-between md:items-center lg:mb-8 md:mb-6 mb-4 md:px-8 px-5">
           <div className="mb-4">
             <h1 className="lg:text-4xl text-[28px] font-bold mb-2">My Flashcard Decks</h1>
@@ -134,8 +135,8 @@ export default function MyDecksClient({ decks }) {
                         </div>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Created At</span>
-                        <span>{new Date(deck.created_at).toLocaleDateString('zh-CN', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
+                        <span className="text-muted-foreground">Created </span>
+                        <span>{getTimeIndicator(deck.updated_at)}</span>
                       </div>
                     </div>
                   </div>

@@ -2,6 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Users, BookOpen, Crown } from "lucide-react";
+import { Suspense } from "react";
 import Link from "next/link";
 import RecentTab from "@/components/explore-content/recent-tab";
 
@@ -85,7 +86,9 @@ export default async function ExplorePage() {
           </section>
         </TabsContent>
         <TabsContent value="recent">
-          <RecentTab />
+          <Suspense fallback={<div className="text-center text-2xl py-8 text-muted-foreground">Loading Recent Decks...</div>}>
+            <RecentTab />
+          </Suspense>
         </TabsContent>
         <TabsContent value="popular">
           <div className="text-center py-8 text-muted-foreground">
