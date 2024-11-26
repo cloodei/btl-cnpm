@@ -6,44 +6,14 @@ import { unstable_cache, revalidateTag, revalidatePath } from 'next/cache';
 export async function revalidateDecks() {
   "use server";
   revalidateTag('decks');
+  revalidateTag('recent-decks');
+  revalidateTag('favorites');
 }
 
 export async function revalidateDeckByPath(path: string) {
   "use server";
   revalidatePath(path);
 }
-
-// type FormState = {
-//   status: 'idle' | 'success' | 'error';
-//   message?: string;
-//   errors?: { title?: string; cards?: string; };
-// };
-
-// export async function createDeckAction(prevState: FormState, formData: FormData): Promise<FormState> {
-//   try {
-//     const title = (formData.get('title') as string).trim();
-//     const isPublic = (formData.get('isPublic') === 'true');
-//     const cards = JSON.parse(formData.get('cards') as string);
-//     if(!title) {
-//       return { status: 'error', errors: { title: 'Title is required' } };
-//     }
-//     if(title.length > 64) {
-//       return { status: 'error', errors: { title: 'Title must be 64 characters or less' } };
-//     }
-//     const validCards = cards.filter((card: { front: string, back: string }) => card.front.trim() && card.back.trim());
-//     if(!validCards.length) {
-//       return { status: 'error', errors: { cards: 'At least one complete card is required' } };
-//     }
-//     const result = await createDeck({ title, cards: validCards, isPublic });
-//     if(!result.success) {
-//       return { status: 'error', message: result.error as string };
-//     }
-//     return { status: 'success', message: 'Deck created successfully' };
-//   }
-//   catch (error) {
-//     return { status: 'error', message: 'An unexpected error occurred' };
-//   }
-// }
 
 export async function createDeck({ title, cards, isPublic }: { title: string, cards: { front: string, back: string }[], isPublic: boolean }) {
   "use server";

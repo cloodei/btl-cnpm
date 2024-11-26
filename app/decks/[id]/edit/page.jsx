@@ -16,9 +16,12 @@ export default async function EditDeckPage({ params }) {
   if(!userId) {
     return DeckException("User not found!");
   }
-  const result = await getCachedDeck({ deckId: parseInt(id), userId });
-  if(!result.success) {
+  const { success, deck, cards } = await getCachedDeck({ deckId: parseInt(id), userId });
+  if(!success || !deck) {
     return DeckException("Deck not found!");
   }
-  return <UpdateDeckComponent deck={result.deck} cards={result.cards} userId={userId} />;
+  if(deck.creator_id !== userId) {
+    return DeckException("You do not have permission to edit this deck!");
+  }
+  return <UpdateDeckComponent deck={deck} cards={cards} userId={userId} />;
 }

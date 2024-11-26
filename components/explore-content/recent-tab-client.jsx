@@ -29,8 +29,10 @@ export default function RecentTabClient({ decks, userId }) {
             )
           }
           <Link href={`/decks/${deck.id}`}>
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-2 pr-12">{deck.name}</h3>
+            <div className="p-6 xl:pt-5">
+              <div className="mb-2 xl:mb-3 pr-9" title={deck.name}>
+                <h3 className="text-xl font-semibold truncate">{deck.name}</h3>
+              </div>
               <div className="space-y-4">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Cards</span>
