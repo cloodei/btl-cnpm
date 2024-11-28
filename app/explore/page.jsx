@@ -7,8 +7,8 @@ import Link from "next/link";
 import RecentTab from "@/components/explore-content/recent-tab";
 
 const featured = [
-  { id: 11, name: "Another Test", description: "Recommended by Experts", totalcards: 3 },
-  { id: 12, name: "Special Test", description: "Highly Educative Card Selections", totalcards: 2 },
+  { id: 11, name: "Everyday Words: From English to French", description: "Quickstart Guide to speaking French", totalcards: 25 },
+  { id: 12, name: "Vocabulary Expansion", description: "Highly Educative Expressions", totalcards: 20 },
   { id: 13, name: "Official Test", description: "Learn from the best", totalcards: 5 },
 ];
 
@@ -29,12 +29,14 @@ export default async function ExplorePage() {
             <h2 className="text-2xl font-bold mb-4">Featured Decks</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featured.map((deck, index) => (
-                <Card key={index} className="p-6 hover:shadow-xl hover:scale-[1.02] transition-all">
+                <Card key={index} title={deck.name} className="p-6 hover:shadow-xl hover:scale-[1.02] transition-all">
                   <div className="flex items-center space-x-2 mb-4">
                     <Sparkles className="h-5 w-5 text-primary" />
                     <span className="font-semibold">Featured</span>
                   </div>
-                  <h3 className="text-2xl font-bold md:mb-[7px] mb-1">{deck.name}</h3>
+                  <div className="pr-4">
+                    <h3 className="text-2xl font-bold md:mb-[7px] truncate mb-1">{deck.name}</h3>
+                  </div>
                   <div className="text-muted-foreground md:mb-[19px] mb-[13px] flex items-center lg:gap-2 gap-[6px]">
                     <Crown className="h-4 w-4 text-primary font-semibold" />
                     <span>{deck.description}</span>
@@ -44,8 +46,8 @@ export default async function ExplorePage() {
                       <BookOpen className="h-4 w-4" />
                       <span>{deck.totalcards} cards</span>
                     </div>
-                    <Link href={`/decks/${deck.id}`} passHref>
-                      <Button>Study Now</Button>
+                    <Link href={`/decks/${deck.id}`}>
+                      <Button size="lg">Study Now</Button>
                     </Link>
                   </div>
                 </Card>

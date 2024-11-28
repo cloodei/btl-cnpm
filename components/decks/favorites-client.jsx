@@ -20,7 +20,7 @@ const animations = {
 
 export default function FavoritesClient({ decks }) {
   return (
-    <div className="min-h-[calc(100vh-48px)] bg-gradient-to-b from-background to-muted/20 px-4 py-8">
+    <div className="min-h-[calc(100vh-48px)] bg-gradient-to-b from-background to-muted/20 px-6 py-8">
       <div className="max-w-7xl mx-auto">
         <header className="mb-8 md:px-8 px-5">
           <h1 className="text-4xl font-bold mb-2">My Favorites</h1>
@@ -32,17 +32,17 @@ export default function FavoritesClient({ decks }) {
           variants={animations.container}
           initial="hidden"
           animate="show"
-          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+          className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
         >
           {decks.map((deck) => (
             <motion.div key={deck.id} variants={animations.item}>
               <Link href={`/decks/${deck.id}`}>
-                <div className="group relative overflow-hidden rounded-lg border bg-card p-6 transition-all duration-200 shadow-[0_3px_12px_rgba(0,0,0,0.23)] hover:shadow-[0_8px_36px_rgba(0,0,0,0.28)] hover:scale-[1.02] dark:hover:shadow-[0_6px_20px_rgba(255,255,255,0.19)]">
+                <div className="group relative rounded-lg border bg-card p-6 transition-all duration-200 shadow-[0_3px_12px_rgba(0,0,0,0.23)] hover:shadow-[0_8px_36px_rgba(0,0,0,0.28)] hover:scale-[1.02] dark:hover:shadow-[0_6px_20px_rgba(255,255,255,0.19)]">
                   <div className="absolute md:right-6 right-4 md:top-6 top-4">
                     <Heart className="h-5 w-5 text-red-500" fill="currentColor" />
                   </div>
-                  <div className="mb-4 pr-8 truncate">
-                    <h3 className="text-xl font-semibold">{deck.name}</h3>
+                  <div className="mb-4 pr-8">
+                    <h3 className="text-xl font-semibold truncate">{deck.name}</h3>
                   </div>
                   <div className="space-y-3">
                     <div className="flex items-center text-sm text-muted-foreground">

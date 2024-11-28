@@ -150,7 +150,7 @@ export async function getDeck(deckId: number) {
 }
 
 export async function getCachedDeck({ deckId, userId }: { deckId: number, userId: string }) {
-  if(isNaN(deckId) || !deckId) {
+  if(!deckId || isNaN(deckId)) {
     return { success: false, error: 'Invalid deck ID' };
   }
   return unstable_cache(async () => {
@@ -170,7 +170,7 @@ export async function getCachedDeck({ deckId, userId }: { deckId: number, userId
         `
       ]);
       return { success: true, deck: deck[0], cards };
-    }, [`deck-${deckId}`], { tags: [`deck-${deckId}`], revalidate: 60 }
+    }, [`deck-${deckId}`], { tags: [`deck-${deckId}`], revalidate: 105 }
   )();
 }
 
@@ -197,6 +197,7 @@ export async function getFeaturedDeck({ deckId, userId }: { deckId: number, user
 }
 
 export async function updateDeck({ deckId, title, cards, isPublic }: { deckId: number, title: string, cards: { front: string, back: string }[], isPublic: boolean }) {
+  "use server";
   try {
     if(!deckId) {
       return { success: false, error: 'Deck ID is required' };
@@ -236,6 +237,7 @@ export async function addToFavorites({ deckId, userId }: { deckId: number, userI
       VALUES (${deckId}, ${userId})
     `;
     revalidateTag('favorites');
+    revalidateTag(`deck-${deckId}`);
     return { success: true };
   }
   catch(error) {
@@ -252,6 +254,7 @@ export async function removeFromFavorites({ deckId, userId }: { deckId: number, 
       AND viewer_id = ${userId}
     `;
     revalidateTag('favorites');
+    revalidateTag(`deck-${deckId}`);
     return { success: true };
   }
   catch(error) {
@@ -269,6 +272,7 @@ export async function handleDelete(deckId: number) {
     revalidateTag('decks');
     revalidateTag(`deck-${deckId}`);
     revalidateTag('recent-decks');
+    revalidateTag('favorites');
     return { success: true };
   }
   catch(error) {

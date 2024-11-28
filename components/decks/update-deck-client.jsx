@@ -47,8 +47,10 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
     }
     const validCards = [];
     for(const card of cards) {
-      if(card.front.trim() && card.back.trim()) {
-        validCards.push({ deck_id: deck.id, front: card.front, back: card.back });
+      const fr = card.front.trim();
+      const bk = card.back.trim();
+      if(fr && bk) {
+        validCards.push({ deck_id: deck.id, front: fr, back: bk });
       }
     }
     if(!validCards.length) {
@@ -219,8 +221,8 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
         </div>
       </div>
 
-      <Dialog open={saveDialog} onOpenChange={setSaveDialog}>
-        <DialogContent>
+      <Dialog open={saveDialog} onOpenChange={(open) => { if(!isSaving) setSaveDialog(open) }} modal={true}>
+        <DialogContent closebutton={!isSaving}>
           <DialogTitle>
             <p className="md:text-3xl text-2xl font-medium md:mb-4 mb-[10px]">Save Changes</p>
             <p className="md:text-base text-sm font-normal text-muted-foreground">
@@ -228,7 +230,7 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
             </p>
           </DialogTitle>
           <DialogFooter className="mt-4 gap-2">
-            <Button variant="outline" onClick={() => setSaveDialog(false)}>
+            <Button variant="outline" onClick={() => setSaveDialog(false)} disabled={isSaving}>
               Cancel
             </Button>
             <Button 
@@ -243,8 +245,8 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={deleteDialog} onOpenChange={setDeleteDialog}>
-        <DialogContent>
+      <Dialog open={deleteDialog} onOpenChange={(open) => { if(!isDeleting) setDeleteDialog(open) }} modal={true}>
+        <DialogContent closebutton={(!isDeleting).toString()}>
           <DialogTitle>
             <p className="md:text-3xl text-2xl font-medium text-destructive md:mb-4 mb-[10px]">Delete Deck</p>
             <p className="md:text-base text-sm font-normal text-muted-foreground">
@@ -252,7 +254,7 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
             </p>
           </DialogTitle>
           <DialogFooter className="mt-4 gap-2">
-            <Button variant="outline" onClick={() => setDeleteDialog(false)}>
+            <Button variant="outline" onClick={() => setDeleteDialog(false)} disabled={isDeleting}>
               Cancel
             </Button>
             <Button 

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import ReactCardFlip from "react-card-flip";
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Settings, Heart } from "lucide-react";
+import { ChevronLeft, ChevronRight, Settings, Heart, CirclePlay } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import FavoritesButton from "../favorites-button";
@@ -30,7 +30,13 @@ export default function DeckViewer({ deck, cards, permissions, userId }) {
         <div className="mb-8">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-4xl font-bold truncate overflow-hidden" title={deck.name}>{deck.name}</h1>
-            <div className="flex gap-2">
+            <div className="flex gap-2 ml-2">
+              <Link href={`/decks/${deck.id}/quiz`}>
+                <Button variant="outline">
+                  <CirclePlay className="h-6 w-6" />
+                  Begin Test
+                </Button>
+              </Link>
               {permissions ? (
                 <Link href={`/decks/${deck.id}/edit`}>
                   <Button variant="outline" size="icon">
@@ -48,9 +54,9 @@ export default function DeckViewer({ deck, cards, permissions, userId }) {
               )}
             </div>
           </div>
-          <div className="font-medium text-primary mb-4 truncate overflow-hidden" title={deck.name + ` from ${deck.username}`}>
+          <div className="font-medium text-primary truncate mb-4 pr-7" title={deck.name + ` from ${deck.username}`}>
             Going through  
-            <span className="font-semibold md:mx-[5px] mx-[3px]"> &lt;{deck.name}&gt; </span>
+            <span className="font-semibold md:mx-[5px] mx-[3px] truncate"> &lt;{deck.name}&gt; </span>
             <span className="text-gray-400 dark:text-gray-500">
               {` from ${deck.username}`}
             </span>

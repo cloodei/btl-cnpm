@@ -31,13 +31,4 @@ export default async function FavoritesPage() {
     );
   }
   return <FavoritesClient decks={decks} />;
-  // return (
-  //   <Suspense fallback={
-  //     <div className="flex min-h-[80vh] items-center justify-center">
-  //       <FancySpinner text="Loading your favorites..." size={32} />
-  //     </div>
-  //   }>
-  //     <FavoritesContent />
-  //   </Suspense>
-  // );
 }

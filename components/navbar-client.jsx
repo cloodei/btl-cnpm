@@ -8,14 +8,15 @@ import { usePathname } from "next/navigation";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { useSidebar } from "./ui/sidebar";
 import { useEffect } from "react";
+import { useQuiz } from '@/contexts/QuizContext';
 
 export default function Navbar() {
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
-
+  const { isQuizActive } = useQuiz();
   useEffect(() => document.querySelector('.flex.min-h-svh.w-full')?.classList.add('hidden'), []);
-  
-  if(pathname === '/login' || pathname === '/register') {
+
+  if(isQuizActive || pathname === '/login' || pathname === '/register') {
     return null;
   }
 
@@ -30,7 +31,7 @@ export default function Navbar() {
 
   return (
   <div className="h-12">
-    <nav className="border-b border-gray-300 dark:border-gray-800 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed inset-x-0 top-0 z-30">
+    <nav className="border-b border-gray-300 dark:border-gray-800 bg-background/50 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed inset-x-0 top-0 z-30">
       <div className="container mx-auto lg:px-8 md:px-6 px-4 flex h-14 items-center">
         <Link href="/" className="flex items-center space-x-2">
           <Brain className="h-6 w-6" />

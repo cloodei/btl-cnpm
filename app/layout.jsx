@@ -6,6 +6,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { ClerkProvider } from '@clerk/nextjs';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from "@/components/ui/toaster"
+import { QuizProvider } from '@/contexts/QuizContext';
 import Navbar from "@/components/navbar-client";
 import MobileSidebar from '@/components/mobile-sidebar';
 
@@ -25,12 +26,14 @@ export default function RootLayout({ children }) {
       <SidebarProvider>
         <body className={inter.className}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
-            <Navbar />
-            <main>{children}</main>
-            <Toaster />
-            <MobileSidebar />
-            <Analytics />
-            <SpeedInsights />
+            <QuizProvider>
+              <Navbar />
+              <main>{children}</main>
+              <Toaster />
+              <MobileSidebar />
+              <Analytics />
+              <SpeedInsights />
+            </QuizProvider>
           </ThemeProvider>
         </body>
       </SidebarProvider>
