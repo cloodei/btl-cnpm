@@ -5,15 +5,16 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 import QuizPageClient from "@/app/decks/[id]/quiz/quiz-client";
-import Link from "next/link";
 
-export function QuizSummary({ results, totalTime, totalQuestions, deck }) {
+export function QuizSummary({ results, totalTime, totalQuestions, deckTitle, cards }) {
   const [retake, setRetake] = useState(false);
   const [visibleResults, setVisibleResults] = useState(Math.min(5, results.length));
   if(retake) {
-    return <QuizPageClient deck={deck} />;
+    return <QuizPageClient deckTitle={deckTitle} cards={cards} />;
   }
+  const router = useRouter();
   const correctAnswers = results.filter(r => r.isCorrect).length
   const accuracy = (correctAnswers / totalQuestions) * 100
   const averageTime = totalTime / totalQuestions
@@ -139,11 +140,9 @@ export function QuizSummary({ results, totalTime, totalQuestions, deck }) {
         </motion.div>
 
         <div className="flex justify-center gap-4 mt-12">
-          <Link href={`/decks/${deck.deck.id}`}>
-            <Button variant="outline" size="lg">
-              Back to Deck
-            </Button>
-          </Link>
+          <Button variant="outline" size="lg" onClick={() => router.back()}>
+            Back to Deck
+          </Button>
           <Button size="lg" onClick={() => setRetake(true)}>
             Try Again
           </Button>

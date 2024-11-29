@@ -15,15 +15,16 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function CreateComponent() {
   const [cards, setCards] = useState([{ front: "", back: "" }]);
-  const [deckTitle, setDeckTitle] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [deckTitle, setDeckTitle] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const { toast } = useToast();
   const bottomRef = useRef(null);
 
   const handleSave = async () => {
-    if(!deckTitle.trim()) {
+    const title = deckTitle.trim();
+    if(!title) {
       toast({
         title: "Error",
         description: "Deck title is required!",
@@ -33,7 +34,7 @@ export default function CreateComponent() {
       setIsOpen(false);
       return;
     }
-    if(deckTitle.length > 64) {
+    if(title > 64) {
       toast({
         title: "Error",
         description: "Deck title must be 64 characters or less",
@@ -43,7 +44,14 @@ export default function CreateComponent() {
       setIsOpen(false);
       return;
     }
-    const validCards = cards.filter(card => card.front.trim() && card.back.trim());
+    let validCards = [];
+    for(let i = 0; i < cards.length; i++) {
+      const front = cards[i].front.trim();
+      const back = cards[i].back.trim();
+      if(front && back) {
+        validCards.push({ front, back });
+      }
+    }
     if(!validCards.length) {
       toast({
         title: "Error",
@@ -55,27 +63,18 @@ export default function CreateComponent() {
       return;
     }
     setIsSaving(true);
-    try {
-      const result = await createDeck({ title: deckTitle, isPublic, cards: validCards });
-      if(result.success) {
-        toast({
-          title: "Success!",
-          description: "Your deck has been created successfully.",
-          duration: 2400,
-        });
-        setCards([{ front: "", back: "" }]);
-        setDeckTitle("");
-      }
-      else {
-        toast({
-          title: "Error",
-          description: result.error?.message || result.error || "An error occurred",
-          variant: "destructive",
-          duration: 2400,
-        });
-      }
+    const { success, error } = await createDeck({ title, isPublic, cards: validCards });
+    if(success) {
+      toast({
+        title: "Success!",
+        description: "Your deck has been created successfully.",
+        duration: 2400,
+      });
+      setCards([{ front: "", back: "" }]);
+      setDeckTitle("");
+      setIsPublic(false);
     }
-    catch(error) {
+    else {
       toast({
         title: "Error",
         description: error?.message || error || "An error occurred",
@@ -83,10 +82,8 @@ export default function CreateComponent() {
         duration: 2400,
       });
     }
-    finally {
-      setIsSaving(false);
-      setIsOpen(false);
-    }
+    setIsSaving(false);
+    setIsOpen(false);
   };
 
   const addCard = () => {
@@ -107,33 +104,36 @@ export default function CreateComponent() {
     setCards(newCards);
   };
 
+  const generateDescription = () => {
+    const complete = []
+    const incomplete = []
+    cards.forEach((card) => {
+      if(card.front.trim() && card.back.trim()) {
+        complete.push(1);
+      }
+      else {
+        incomplete.push(1);
+      }
+    });
+    return `Saving will create a new flashcard deck with ${complete.length} cards.\n${incomplete.length ? `${incomplete.length > 1 ? `${incomplete.length} cards are` : "One card is"} incomplete and will not be saved.` : ""}`;
+  }
+
   return (
   <>
-    <div className="container mx-auto px-4 pt-8 pb-6">
+    <div className="container mx-auto px-6 pt-8 pb-6">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8 border-none">
-          <h1 className="text-3xl font-bold">Create New Flashcard Deck</h1>
+          <h1 className="md:text-3xl text-2xl font-bold">Create New Flashcard Deck</h1>
           <Button onClick={() => setIsOpen(true)}>
             <Save className="mr-2 h-4 w-4" />
             Save Deck
           </Button>
         </div>
-
-        <div className="mb-8 shadow-md">
-          <FloatInput
-            label="Deck Title"
-            value={deckTitle}
-            onChange={(e) => setDeckTitle(e.target.value)}
-            className="border-gray-300 dark:border-[#282e41] font-medium"
-          />
+        <div className="mb-5 shadow-md">
+          <FloatInput label="Deck Title" value={deckTitle} className="border-gray-300 dark:border-[#282e41] font-medium" onChange={(e) => setDeckTitle(e.target.value)} />
         </div>
-
-        <div className="flex items-center space-x-2 mb-8">
-          <Switch
-            id="public"
-            checked={isPublic}
-            onCheckedChange={setIsPublic}
-          />
+        <div className="flex items-center space-x-2 mb-5 pl-2">
+          <Switch id="public" checked={isPublic} onCheckedChange={setIsPublic} />
           <Label htmlFor="public">Make deck public</Label>
         </div>
         
@@ -161,6 +161,7 @@ export default function CreateComponent() {
                     value={card.front}
                     onChange={(e) => updateCard(index, "front", e.target.value)}
                     className="border-gray-300 dark:border-[#282e41] h-32 px-[18px] py-[14px]"
+                    maxLength={128}
                   />
                 </div>
                 <div>
@@ -170,6 +171,7 @@ export default function CreateComponent() {
                     value={card.back}
                     onChange={(e) => updateCard(index, "back", e.target.value)}
                     className="border-gray-300 dark:border-[#282e41] h-32 px-[18px] py-[14px]"
+                    maxLength={128}
                   />
                 </div>
               </div>
@@ -186,15 +188,13 @@ export default function CreateComponent() {
     </div>
 
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[408px]">
         <DialogHeader>
           <DialogTitle className="text-2xl">Save Deck</DialogTitle>
           <DialogDescription className="text-muted-foreground pt-2">
-            This will create a new flashcard deck with {cards.filter(c => c.front && c.back).length} cards.
-            {cards.some(c => !c.front || !c.back) && (" Incomplete cards will be removed.")}
+            {generateDescription()}
           </DialogDescription>
         </DialogHeader>
-
         <DialogFooter className="mt-4 gap-2">
           <Button variant="outline" onClick={() => setIsOpen(false)} disabled={isSaving}>
             Cancel

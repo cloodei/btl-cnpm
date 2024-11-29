@@ -20,41 +20,30 @@ export default function MyDecksClient({ decks }) {
 
   const handleDeleteDeck = async () => {
     setIsDeleting(true);
-    try {
-      const result = await handleDelete(deleteDialog.deckId);
-      if(!result.success) {
-        toast({
-          title: "Error",
-          description: "Failed to delete deck",
-          variant: "destructive",
-          duration: 2400,
-        });
-        return;
-      }
-      router.refresh();
+    const result = await handleDelete(deleteDialog.deckId);
+    if(!result.success) {
+      toast({
+        title: "Error",
+        description: result.error?.message || result.error || "Failed to delete deck",
+        variant: "destructive",
+        duration: 2400,
+      });
+    }
+    else {
       toast({
         title: "Success",
         description: "Deck deleted successfully",
         duration: 2400,
       });
     }
-    catch(error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-        duration: 2400,
-      });
-    }
-    finally {
-      setIsDeleting(false);
-      setDeleteDialog({ isOpen: false, deckId: null, deckName: "" });
-    }
+    setIsDeleting(false);
+    setDeleteDialog({ isOpen: false, deckId: null, deckName: "" });
+    router.refresh();
   };
 
   const container = {
     hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.15 } }
+    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
   };
 
   const item = {

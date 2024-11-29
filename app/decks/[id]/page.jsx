@@ -29,7 +29,7 @@ export default async function DeckPage({ params }) {
       </div>
     );
   }
-  if(deckId > 10 && deckId < 14) {
+  if(deckId === 9 || deckId === 11 || deckId === 12) {
     const result = await getFeaturedDeck({ deckId, userId });
     return <DeckViewer deck={result.deck} cards={result.cards} userId={userId} permissions={result.deck.creator_id === userId} />;
   }

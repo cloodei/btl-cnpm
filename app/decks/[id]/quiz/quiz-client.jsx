@@ -11,9 +11,9 @@ import { useQuiz } from '@/contexts/QuizContext';
 import { useRouter } from "next/navigation";
 
 function shuffleArray(arr) {
-  const res = [...arr];
+  let res = [...arr];
   for(let i = res.length - 1; i > 0; i--) {
-    const random = Math.floor(Math.random() * (i + 1));
+    let random = Math.floor(Math.random() * (i + 1));
     let temp = res[i];
     res[i] = res[random];
     res[random] = temp;
@@ -21,30 +21,41 @@ function shuffleArray(arr) {
   return res;
 }
 
-// function generateAnswers(correctAnswer, allCards, useFront) {
-//   const otherAnswers = allCards.map(card => useFront ? card.front : card.back).filter(answer => answer !== correctAnswer);
-//   const uniqueAnswers = [...new Set(otherAnswers)];
-//   const shuffledOthers = shuffleArray(uniqueAnswers).slice(0, 3);
-//   return shuffleArray([...shuffledOthers, correctAnswer]);
-// }
 function generateAnswers(correctAnswer, allCards, useFront) {
-  let answerSet = new Set();
-  answerSet.add(correctAnswer);
-  let cardLength = allCards.length;
-  while(answerSet.size < 4 && answerSet.size < cardLength) {
-    const randomIndex = Math.floor(Math.random() * cardLength);
-    const answer = useFront ? allCards[randomIndex].front : allCards[randomIndex].back;
-    answerSet.add(answer);
+  // const otherAnswers = allCards.map(card => useFront ? card.front : card.back).filter(answer => answer !== correctAnswer);
+  // const uniqueAnswers = [...new Set(otherAnswers)];
+  // const shuffledOthers = shuffleArray(uniqueAnswers).slice(0, 3);
+  // return shuffleArray([...shuffledOthers, correctAnswer]);
+  let wrongSet = new Set();
+  for(const card of allCards) {
+    wrongSet.add(useFront ? card.front : card.back);
   }
-  return shuffleArray(Array.from(answerSet));
+  wrongSet.delete(correctAnswer);
+  const random = shuffleArray(shuffleArray(Array.from(wrongSet)));
+  let res = [correctAnswer];
+  while(res.length < 4 && random.length) {
+    res.push(random.pop());
+  }
+  return shuffleArray(res);
 }
+// function generateAnswers(correctAnswer, allCards, useFront) {
+//   let answerSet = new Set();
+//   answerSet.add(correctAnswer);
+//   let cardLength = allCards.length;
+//   while(answerSet.size < 4 && answerSet.size < cardLength) {
+//     const randomIndex = Math.floor(Math.random() * cardLength);
+//     const answer = useFront ? allCards[randomIndex].front : allCards[randomIndex].back;
+//     answerSet.add(answer);
+//   }
+//   return shuffleArray(Array.from(answerSet));
+// }
 
 const TIME_PER_QUESTION = 15;
 
-export default function QuizPageClient({ deck }) {
+export default function QuizPageClient({ deckTitle, cards }) {
   const [stage, setStage] = useState(1);  // 1: form | 2: countdown | 3: start
   const [countdown, setCountdown] = useState(3);
-  const [questionCount, setQuestionCount] = useState(Math.min(10, deck.cards.length));
+  const [questionCount, setQuestionCount] = useState(Math.min(10, cards.length));
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [answers, setAnswers] = useState([]);
@@ -55,9 +66,9 @@ export default function QuizPageClient({ deck }) {
   const { setIsQuizActive } = useQuiz();
   const router = useRouter();
 
-  const handleQuestionCountSubmit = (e) => {
-    e.preventDefault();
-    setQuestionCount((deck.cards.length < questionCount) ? deck.cards.length : questionCount);
+  const handleQuestionCountSubmit = (event) => {
+    event.preventDefault();
+    setQuestionCount(questionCount);
     setIsQuizActive(true);
     setStage(2);
   };
@@ -71,41 +82,54 @@ export default function QuizPageClient({ deck }) {
   
   useEffect(() => {
     if(timeLeft > 0 && !isFinished) {
-      const timer = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
-      return () => clearTimeout(timer);
+      const timer2 = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
+      return () => clearTimeout(timer2);
     }
     else if(timeLeft === 0 && !isFinished) {
-      let remainingResults = [];
-      for(let i = currentQuestionIndex; i < questions.length; i++) {
-        remainingResults.push({ question: questions[i].question, correctAnswer: questions[i].answer, userAnswer: null, isCorrect: false, isUnanswered: true });
+      if(results.length < questions.length) {
+        let endResult = Array(questions.length);
+        // for(let i = currentQuestionIndex; i < questions.length; i++) {
+        //   endResult.push({ question: questions[i].question, correctAnswer: questions[i].answer, userAnswer: null, isCorrect: false, isUnanswered: true });
+        // }
+        for(let i = 0; i < questions.length; i++) {
+          endResult[i] = (i < currentQuestionIndex) ? results[i] : {
+            question: questions[i].question,
+            correctAnswer: questions[i].answer,
+            userAnswer: null,
+            isCorrect: false,
+            isUnanswered: true
+          };
+        }
+        setResults(endResult);
       }
-      if(results.length === questions.length) {
-        remainingResults.pop();
-      }
-      setResults(prev => [...prev, ...remainingResults]);
       setIsFinished(true);
     }
   }, [timeLeft, questions, currentQuestionIndex]);
   
   useEffect(() => {
     if(stage === 2 && countdown) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
+      const timer1 = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer1);
     }
     else if(stage === 2 && !countdown) {
       setStage(3);
-      const shuffledQuestions = shuffleArray(deck.cards);
-      const formattedQuestions = [];
+      const random = shuffleArray(cards);
+      const pickAllQuestions = Array(questionCount);
       for(let i = 0; i < questionCount; i++) {
         const useFront = (Math.random() < 0.5);
-        formattedQuestions.push({ ...shuffledQuestions[i], question: (useFront ? shuffledQuestions[i].back : shuffledQuestions[i].front), answer: (useFront ? shuffledQuestions[i].front : shuffledQuestions[i].back), useFront });
+        pickAllQuestions[i] = {
+          ...random[i],
+          question: (useFront ? random[i].back : random[i].front),
+          answer: (useFront ? random[i].front : random[i].back),
+          useFront
+        };
       }
-      setQuestions(formattedQuestions);
-      const firstQuestion = formattedQuestions[0];
-      setAnswers(generateAnswers(firstQuestion.answer, deck.cards, firstQuestion.useFront));
+      setQuestions(pickAllQuestions);
+      const q1 = pickAllQuestions[0];
+      setAnswers(generateAnswers(q1.answer, cards, q1.useFront));
       setTimeLeft(questionCount * TIME_PER_QUESTION);
     }
-  }, [countdown, stage, questionCount, deck.cards]);
+  }, [countdown, stage, questionCount]);
 
   const handleAnswer = (answer) => {
     setSelectedAnswer(answer);
@@ -116,7 +140,7 @@ export default function QuizPageClient({ deck }) {
         const nextQuestion = questions[currentQuestionIndex + 1];
         setCurrentQuestionIndex(prev => prev + 1);
         setSelectedAnswer(null);
-        setAnswers(generateAnswers(nextQuestion.answer, deck.cards, nextQuestion.useFront));
+        setAnswers(generateAnswers(nextQuestion.answer, cards, nextQuestion.useFront));
       }
       else {
         setIsFinished(true);
@@ -125,53 +149,59 @@ export default function QuizPageClient({ deck }) {
   };
 
   const handleTerminate = () => {
-    let remainingResults = [];
-    for(let i = currentQuestionIndex; i < questions.length; i++) {
-      remainingResults.push({ question: questions[i].question, correctAnswer: questions[i].answer, userAnswer: null, isCorrect: false, isUnanswered: true });
-    }
     if(results.length === questions.length) {
-      remainingResults.pop();
+      setIsFinished(true);
+      return;
     }
-    setResults(prev => [...prev, ...remainingResults]);
+    const n = questions.length;
+    let lastRes = new Array(n);
+    for(let i = 0; i < n; i++) {
+      lastRes[i] = (i < currentQuestionIndex) ? results[i] : {
+        question: questions[i].question,
+        correctAnswer: questions[i].answer,
+        userAnswer: null,
+        isCorrect: false,
+        isUnanswered: true
+      };
+    }
+    setResults(lastRes);
     setIsFinished(true);
   };
 
   if(stage === 1) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20 pt-12 px-5">
-        <div className="max-w-md mx-auto">
-          <Card className="p-9 pt-[22px] relative">
-            <div className="mb-6 pr-1" title={deck.deck.name}>
-              <h1 className="text-3xl font-bold truncate">{deck.deck.name}</h1>
-              <p className="text-sm text-muted-foreground">Test your knowledge</p>
+      <div className="min-h-[calc(100vh-48px)] bg-gradient-to-t from-background to-secondary/30 pt-[52px] px-5">
+        <Card className="max-w-md mx-auto p-9 pt-[22px] relative shadow-[0_4px_16px_rgba(0,0,0,0.26)] dark:border-[#2c303f]">
+          <div className="mb-6 pr-1" title={deckTitle}>
+            <h1 className="text-3xl font-bold truncate">{deckTitle}</h1>
+            <p className="text-sm text-muted-foreground">Test your knowledge</p>
+          </div>
+          <form onSubmit={handleQuestionCountSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Number of Questions (3 - {cards.length})
+              </label>
+              <Input 
+                type="number"
+                min="3"
+                max={cards.length}
+                value={questionCount}
+                onChange={(e) => setQuestionCount(Number(e.target.value))}
+              />
             </div>
-            <form onSubmit={handleQuestionCountSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">
-                  Number of Questions (3 - {deck.cards.length})
-                </label>
-                <Input 
-                  type="number"
-                  min="3"
-                  max={deck.cards.length}
-                  value={questionCount}
-                  onChange={(e) => setQuestionCount(Number(e.target.value))}
-                />
-              </div>
-              <Button type="submit" className="w-full">Start Quiz</Button>
-            </form>
-            <Button variant="link" className="absolute -bottom-10 -left-2 transition duration-300 hover:underline" onClick={() => router.back()}>
-              <ArrowLeftFromLine className="h-[22px] w-[22px]" />
-              Return
-            </Button>
-          </Card>
-        </div>
+            <Button type="submit" className="w-full">Start Quiz</Button>
+          </form>
+          <Button variant="link" className="absolute -bottom-10 -left-2 transition duration-300 hover:underline" onClick={() => router.back()}>
+            <ArrowLeftFromLine className="h-[22px] w-[22px]" />
+            Return
+          </Button>
+        </Card>
       </div>
     );
   }
   if(stage === 2) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-t from-background to-secondary/30 flex items-center justify-center">
         <motion.div
           key={countdown}
           initial={{ scale: 0.5, opacity: 0 }}
@@ -185,64 +215,64 @@ export default function QuizPageClient({ deck }) {
     );
   }
   if(isFinished) {
-    return <QuizSummary results={results} deck={deck} totalTime={questionCount * TIME_PER_QUESTION - timeLeft} totalQuestions={questions.length} />;
+    return <QuizSummary results={results} deckTitle={deckTitle} cards={cards} totalTime={questionCount * TIME_PER_QUESTION - timeLeft} totalQuestions={questions.length} />;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20 pb-6 pt-10 px-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="relative flex justify-between items-center mb-8">
-          <div className="relative md:pr-12 pr-40 w-full">
-            <h1 className="text-3xl font-bold mb-2 truncate" title={deck.deck.name}>{deck.deck.name} Quiz</h1>
-            <p className="text-muted-foreground">Test your knowledge</p>
-            <div className="absolute -bottom-3 right-2 flex items-center">
-              <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-lg">
-                <Timer className="h-5 w-5 text-primary" />
-                <span className="font-mono text-lg">{timeLeft}s</span>
-              </div>
-              <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-lg">
-                <BarChart3 className="h-5 w-5 text-primary" />
-                <span className="font-mono text-lg">{currentQuestionIndex + 1}/{questions.length}</span>
-              </div>
+  <div className="min-h-screen bg-gradient-to-t from-background to-secondary/30 pb-6 pt-10 px-4">
+    <div className="max-w-4xl mx-auto">
+      <div className="relative flex justify-between items-center mb-8">
+        <div className="relative md:pr-12 pr-40 w-full">
+          <h1 className="text-3xl font-bold mb-2 truncate" title={deckTitle}>{deckTitle} Quiz</h1>
+          <p className="text-muted-foreground">Test your knowledge</p>
+          <div className="absolute -bottom-3 right-2 flex md:gap-2 gap-1 items-center">
+            <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-800">
+              <Timer className="h-5 w-5 text-primary" />
+              <span className="font-mono text-lg">{timeLeft}s</span>
+            </div>
+            <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-800">
+              <BarChart3 className="h-5 w-5 text-primary" />
+              <span className="font-mono text-lg">{currentQuestionIndex + 1}/{questions.length}</span>
             </div>
           </div>
-          <Button variant="destructive" onClick={handleTerminate} className="absolute xl:-right-48 right-1 -top-1">
-            <CircleX className="h-9 w-9 mr-1 text-4xl" size={40} />
-            Exit Quiz
-          </Button>
         </div>
-        <Progress value={(currentQuestionIndex + 1) / questions.length * 100} className="mb-8" />
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentQuestionIndex}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="mb-8"
-          >
-            <Card className="p-8 shadow-[0_2px_12px_rgba(0,0,0,0.3)]">
-              <h2 className="text-2xl font-semibold text-center mb-8 whitespace-pre-line break-words">
-                {questions[currentQuestionIndex]?.question}
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {answers.map((answer, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    className={`h-auto border-[#c6cbd1] dark:border-gray-700 py-4 px-6 text-lg whitespace-pre-line break-words text-center
-                      ${selectedAnswer !== null ? 'cursor-not-allowed' : 'hover:bg-accent'}
-                    `}
-                    onClick={() => handleAnswer(answer)}
-                    disabled={selectedAnswer !== null}
-                  >
-                    {answer}
-                  </Button>
-                ))}
-              </div>
-            </Card>
-          </motion.div>
-        </AnimatePresence>
+        <Button variant="destructive" onClick={handleTerminate} className="absolute xl:-right-48 right-1 -top-1">
+          <CircleX className="h-9 w-9 mr-1 text-4xl" size={40} />
+          Exit Quiz
+        </Button>
       </div>
+      <Progress value={(currentQuestionIndex + 1) / questions.length * 100} className="mb-8" />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentQuestionIndex}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="mb-8"
+        >
+          <Card className="p-8 shadow-[0_2px_12px_rgba(0,0,0,0.3)]">
+            <h2 className="text-2xl font-semibold text-center mb-8 whitespace-pre-line break-words">
+              {questions[currentQuestionIndex]?.question}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {answers.map((answer, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  className={`h-auto border-[#c6cbd1] dark:border-gray-700 py-4 px-6 text-lg whitespace-pre-line break-words text-center
+                    ${selectedAnswer !== null ? 'cursor-not-allowed' : 'hover:bg-accent'}
+                  `}
+                  onClick={() => handleAnswer(answer)}
+                  disabled={selectedAnswer !== null}
+                >
+                  {answer}
+                </Button>
+              ))}
+            </div>
+          </Card>
+        </motion.div>
+      </AnimatePresence>
     </div>
+  </div>
   );
 }

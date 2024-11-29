@@ -9,7 +9,7 @@ import RecentTab from "@/components/explore-content/recent-tab";
 const featured = [
   { id: 11, name: "Everyday Words: From English to French", description: "Quickstart Guide to speaking French", totalcards: 25 },
   { id: 12, name: "Vocabulary Expansion", description: "Highly Educative Expressions", totalcards: 20 },
-  { id: 13, name: "Official Test", description: "Learn from the best", totalcards: 5 },
+  { id: 9, name: "French Foundations: Expanding Your Vocabulary", description: "Take your French to Exceeding Heights", totalcards: 40 },
 ];
 
 export default async function ExplorePage() {
@@ -17,7 +17,7 @@ export default async function ExplorePage() {
     <div className="container mx-auto px-4 py-8">
       <Tabs defaultValue="recommended" className="space-y-8">
         <div className="flex items-center justify-between">
-          <TabsList className="grid w-full max-w-[400px] grid-cols-3">
+          <TabsList className="grid grid-cols-3">
             <TabsTrigger value="recommended">Recommended</TabsTrigger>
             <TabsTrigger value="recent">Recent</TabsTrigger>
             <TabsTrigger value="popular">Popular</TabsTrigger>
@@ -27,7 +27,7 @@ export default async function ExplorePage() {
         <TabsContent value="recommended" className="lg:space-y-[56px] space-y-8">
           <section className="pb-6">
             <h2 className="text-2xl font-bold mb-4">Featured Decks</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featured.map((deck, index) => (
                 <Card key={index} title={deck.name} className="p-6 hover:shadow-xl hover:scale-[1.02] transition-all">
                   <div className="flex items-center space-x-2 mb-4">

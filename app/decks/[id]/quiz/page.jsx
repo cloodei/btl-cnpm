@@ -4,7 +4,7 @@ import { getCachedDeck, getFeaturedDeck } from "@/app/actions/deck";
 import { auth } from "@clerk/nextjs/server";
 import { Button } from "@/components/ui/button";
 
-function IneligibleDeck(message = "This deck is unavailable for tests", cardCount = 0) {
+function IneligibleDeck(message, cardCount = null) {
   return (
     <div className="m-auto pt-12 pb-8">
       <p className="text-center text-4xl font-medium text-red-500 mb-2 tracking-tighter">
@@ -31,16 +31,16 @@ export default async function QuizPage({ params }) {
   const { id } = await params;
   const deckId = parseInt(id);
   const { userId } = auth();
-  if(deckId > 10 && deckId < 14) {
-    const result = await getFeaturedDeck({ deckId, userId });
-    return <QuizPageClient deck={result} />
+  if(deckId === 9 || deckId === 11 || deckId === 12) {
+    const { deck, cards } = await getFeaturedDeck({ deckId, userId });
+    return <QuizPageClient deckTitle={deck.title} cards={cards} />
   }
-  const result = await getCachedDeck({ deckId, userId });
-  if(!result.success || !result?.deck) {
-    return IneligibleDeck();
+  const { success, deck, cards, error } = await getCachedDeck({ deckId, userId });
+  if(!success || !deck) {
+    return IneligibleDeck(error?.message || error || "Failed to load deck");
   }
-  if(result.cards.length < 3) {
-    return IneligibleDeck("This deck has too few cards to be tested", result.cards.length);
+  if(cards.length < 3) {
+    return IneligibleDeck("This deck has too few cards to be tested", cards.length);
   }
-  return <QuizPageClient deck={result} />
+  return <QuizPageClient deckTitle={deck.title} cards={cards} />;
 }

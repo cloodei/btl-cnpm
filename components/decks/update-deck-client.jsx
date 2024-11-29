@@ -14,43 +14,43 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function UpdateDeckComponent({ deck, cards: initialCards }) {
   const [cards, setCards] = useState(initialCards);
-  const [deckTitle, setDeckTitle] = useState(deck.name);
+  const [isWaiting, setIsWaiting] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [dialogAction, setDialogAction] = useState(0); // save or delete
   const [isPublic, setIsPublic] = useState(deck.public);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [saveDialog, setSaveDialog] = useState(false);
-  const [deleteDialog, setDeleteDialog] = useState(false);
+  const [deckTitle, setDeckTitle] = useState(deck.name);
   const bottomRef = useRef(null);
   const router = useRouter();
   const { toast } = useToast();
 
   const handleSave = async () => {
-    if(!deckTitle.trim()) {
+    const title = deckTitle.trim();
+    if(!title) {
       toast({
         title: "Error",
         description: "Please enter a deck title",
         variant: "destructive",
         duration: 2400,
       });
-      setSaveDialog(false);
+      setOpenDialog(false);
       return;
     }
-    if(deckTitle.length > 64) {
+    if(title.length > 64) {
       toast({
         title: "Error",
         description: "Deck title must be 64 characters or less",
         variant: "destructive",
         duration: 2400,
       });
-      setSaveDialog(false);
+      setOpenDialog(false);
       return;
     }
-    const validCards = [];
-    for(const card of cards) {
-      const fr = card.front.trim();
-      const bk = card.back.trim();
-      if(fr && bk) {
-        validCards.push({ deck_id: deck.id, front: fr, back: bk });
+    let validCards = [];
+    for(let i = 0; i < cards.length; i++) {
+      const front = cards[i].front.trim();
+      const back = cards[i].back.trim();
+      if(front && back) {
+        validCards.push({ deck_id: deck.id, front, back });
       }
     }
     if(!validCards.length) {
@@ -60,81 +60,61 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
         variant: "destructive",
         duration: 2400,
       });
-      setSaveDialog(false);
+      setOpenDialog(false);
       return;
     }
-    setIsSaving(true);
-    try {
-      const result = await updateDeck({ deckId: deck.id, title: deckTitle, cards: validCards, isPublic });
-      if(result.success) {
-        toast({
-          title: "Success!",
-          description: "Deck updated successfully",
-          duration: 2400,
-        });
-        router.push('/my-decks');
-      }
-      else {
-        toast({
-          title: "Error",
-          description: (result.error.message ? result.error.message : (result.error ? result.error : "Failed to update deck")),
-          variant: "destructive",
-          duration: 2400,
-        });
-      }
+    setIsWaiting(true);
+    const { success, error } = await updateDeck({ deckId: deck.id, title, cards: validCards, isPublic });
+    if(success) {
+      toast({
+        title: "Success!",
+        description: "Deck updated successfully",
+        duration: 2400,
+      });
+      router.push('/my-decks');
     }
-    catch(error) {
+    else {
       toast({
         title: "Error",
-        description: (error.message ? error.message : (error ? error : "An error occurred")),
+        description: error?.message || error || "Failed to update deck",
         variant: "destructive",
+        duration: 2400,
       });
     }
-    finally {
-      setIsSaving(false);
-      setSaveDialog(false);
-    }
+    setIsWaiting(false);
+    setOpenDialog(false);
   };
 
   const handleDeleteDeck = async () => {
-    setIsDeleting(true);
-    try {
-      const result = await handleDelete(deck.id);
-      if(result.success) {
-        toast({ title: "Success", description: "Deck deleted successfully" });
-        router.push('/my-decks');
-      }
-      else {
-        toast({
-          title: "Error",
-          description: "Failed to delete deck",
-          variant: "destructive",
-        });
-      }
+    setIsWaiting(true);
+    const { success } = await handleDelete(deck.id);
+    if(success) {
+      toast({
+        title: "Success",
+        description: "Deck deleted successfully",
+        duration: 2400
+      });
+      router.push('/my-decks');
     }
-    catch(error) {
+    else {
       toast({
         title: "Error",
-        description: "An error occurred",
+        description: "Failed to delete deck",
         variant: "destructive",
+        duration: 2400,
       });
     }
-    finally {
-      setIsDeleting(false);
-      setDeleteDialog(false);
-    }
+    setIsWaiting(false);
+    setOpenDialog(false);
   };
 
   const addCard = () => {
     setCards([...cards, { front: "", back: "" }]);
-    setTimeout(() => {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-    }, 25);
+    setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" }), 25);
   };
 
   const deleteCard = (index) => {
-    const newCards = cards.filter((_, idx) => idx !== index);
-    setCards(newCards);
+    setCards(cards.filter((_, i) => i !== index));
   };
 
   const updateCard = (index, side, value) => {
@@ -143,38 +123,33 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
     setCards(newCards);
   };
 
+  const handleOpenDialog = (type) => {
+    setDialogAction(type);
+    setOpenDialog(true);
+  };
+
   return (
     <>
-      <div className="container mx-auto px-4 pt-8 pb-6">
+      <div className="container mx-auto px-6 pt-8 pb-6">
         <div className="max-w-4xl mx-auto">
           <div className="md:flex justify-between items-center mb-8">
             <h1 className="md:text-3xl text-2xl md:mb-0 mb-2 font-bold">Edit Deck</h1>
             <div className="flex gap-2">
-              <Button variant="destructive" onClick={() => setDeleteDialog(true)}>
+              <Button variant="destructive" onClick={() => handleOpenDialog(0)} disabled={isWaiting}>
                 <Trash2 className="mr-2 h-4 w-4" />
                 Delete Deck
               </Button>
-              <Button onClick={() => setSaveDialog(true)}>
+              <Button onClick={() => handleOpenDialog(1)} disabled={isWaiting}>
                 <Save className="mr-2 h-4 w-4" />
                 Save Changes
               </Button>
             </div>
           </div>
-
-          <div className="mb-8">
-            <FloatInput
-              label="Deck Title"
-              value={deckTitle}
-              onChange={(e) => setDeckTitle(e.target.value)}
-            />
+          <div className="mb-5">
+            <FloatInput label="Deck Title" value={deckTitle} onChange={(e) => setDeckTitle(e.target.value)} />
           </div>
-
-          <div className="flex items-center space-x-2 mb-8">
-            <Switch
-              id="public"
-              checked={isPublic}
-              onCheckedChange={setIsPublic}
-            />
+          <div className="flex items-center space-x-2 mb-5 pl-2">
+            <Switch id="public" checked={isPublic} onCheckedChange={setIsPublic} />
             <Label htmlFor="public">Make deck public</Label>
           </div>
           
@@ -212,7 +187,7 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
               </Card>
             ))}
           </div>
-          <div ref={bottomRef} className="border-gray-300 dark:border-[#282e41] lg:mt-11 mt-8 shadow-sm" style={{ scrollMarginBottom: "32px" }}>
+          <div ref={bottomRef} className="border-gray-300 dark:border-[#282e41] lg:mt-11 mt-8 shadow-sm scroll-mb-8">
             <Button onClick={addCard} className="border-gray-400 dark:border-[#3c4152] w-full hover:bg-[#ced4e0] dark:hover:bg-gray-800 duration-200" variant="outline">
               <Plus className="border-gray-300 dark:border-[#282e41] mr-2 h-4 w-4" />
               Add Card
@@ -221,51 +196,40 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
         </div>
       </div>
 
-      <Dialog open={saveDialog} onOpenChange={(open) => { if(!isSaving) setSaveDialog(open) }} modal={true}>
-        <DialogContent closebutton={!isSaving}>
+      <Dialog open={openDialog} onOpenChange={(open) => { if(!isWaiting) setOpenDialog(open)}} modal={true}>
+        <DialogContent closebutton={(!isWaiting).toString()}>
           <DialogTitle>
-            <p className="md:text-3xl text-2xl font-medium md:mb-4 mb-[10px]">Save Changes</p>
-            <p className="md:text-base text-sm font-normal text-muted-foreground">
-              Are you sure you want to save these changes?
-            </p>
+            {dialogAction ? (
+              <>
+                <p className="md:text-3xl text-2xl font-medium md:mb-4 mb-[10px]">Save Changes</p>
+                <p className="md:text-base text-sm font-normal text-muted-foreground">
+                  Are you sure you want to save these changes?
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="md:text-3xl text-2xl font-medium text-destructive md:mb-4 mb-[10px]">Delete Deck</p>
+                <p className="md:text-base text-sm font-normal text-muted-foreground">
+                  Are you sure you want to delete this deck? This action cannot be undone.
+                </p>
+              </>
+            )}
           </DialogTitle>
           <DialogFooter className="mt-4 gap-2">
-            <Button variant="outline" onClick={() => setSaveDialog(false)} disabled={isSaving}>
+            <Button variant="outline" onClick={() => setOpenDialog(false)} disabled={isWaiting}>
               Cancel
             </Button>
-            <Button 
-              onClick={handleSave} 
-              disabled={isSaving}
-              className="gap-2"
-            >
-              {isSaving && <Loader2 className="h-4 w-4 animate-spin" />}
-              {isSaving ? "Saving..." : "Save Changes"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={deleteDialog} onOpenChange={(open) => { if(!isDeleting) setDeleteDialog(open) }} modal={true}>
-        <DialogContent closebutton={(!isDeleting).toString()}>
-          <DialogTitle>
-            <p className="md:text-3xl text-2xl font-medium text-destructive md:mb-4 mb-[10px]">Delete Deck</p>
-            <p className="md:text-base text-sm font-normal text-muted-foreground">
-              Are you sure you want to delete this deck? This action cannot be undone.
-            </p>
-          </DialogTitle>
-          <DialogFooter className="mt-4 gap-2">
-            <Button variant="outline" onClick={() => setDeleteDialog(false)} disabled={isDeleting}>
-              Cancel
-            </Button>
-            <Button 
-              variant="destructive"
-              onClick={handleDeleteDeck}
-              disabled={isDeleting}
-              className="gap-2"
-            >
-              {isDeleting && <Loader2 className="h-4 w-4 animate-spin" />}
-              {isDeleting ? "Deleting..." : "Delete Deck"}
-            </Button>
+            {dialogAction ? (
+              <Button onClick={handleSave} disabled={isWaiting} className="gap-2">
+                {isWaiting && <Loader2 className="h-4 w-4 animate-spin" />}
+                {isWaiting ? "Saving..." : "Save Changes"}
+              </Button>
+            ) : (
+              <Button variant="destructive" onClick={handleDeleteDeck} disabled={isWaiting} className="gap-2">
+                {isWaiting && <Loader2 className="h-4 w-4 animate-spin" />}
+                {isWaiting ? "Deleting..." : "Delete Deck"}
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
