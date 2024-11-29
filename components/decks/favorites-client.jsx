@@ -23,7 +23,9 @@ export default function FavoritesClient({ decks }) {
     <div className="min-h-[calc(100vh-48px)] bg-gradient-to-b from-background to-muted/20 px-6 py-8">
       <div className="max-w-7xl mx-auto">
         <header className="mb-8 md:px-8 px-5">
-          <h1 className="text-4xl font-bold mb-2">My Favorites</h1>
+          <h1 className="text-4xl font-bold mb-2 [text-shadow:_0_3px_6px_rgb(18,18,24,0.25)] dark:[text-shadow:_0_1px_8px_rgb(145_164_203_/_0.6)]">
+            My Favorites
+          </h1>
           <p className="text-muted-foreground">
             {decks.length} deck{decks.length !== 1 ? 's' : ''} in your collection
           </p>

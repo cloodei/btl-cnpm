@@ -124,9 +124,9 @@ export default function QuizPageClient({ deckTitle, cards }) {
           useFront
         };
       }
-      setQuestions(pickAllQuestions);
-      const q1 = pickAllQuestions[0];
-      setAnswers(generateAnswers(q1.answer, cards, q1.useFront));
+      const reShuffle = shuffleArray(shuffleArray(pickAllQuestions));
+      setQuestions(reShuffle);
+      setAnswers(generateAnswers(reShuffle[0].answer, cards, reShuffle[0].useFront));
       setTimeLeft(questionCount * TIME_PER_QUESTION);
     }
   }, [countdown, stage, questionCount]);

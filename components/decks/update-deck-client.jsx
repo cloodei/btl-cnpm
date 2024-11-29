@@ -3,9 +3,8 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from "@/components/ui/dialog";
-import { FloatInput } from "@/components/ui/float-input";
+import { FloatInput, FloatTextarea } from "@/components/ui/float-input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Plus, Save, Trash2, X, Loader2 } from "lucide-react";
@@ -133,7 +132,9 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
       <div className="container mx-auto px-6 pt-8 pb-6">
         <div className="max-w-4xl mx-auto">
           <div className="md:flex justify-between items-center mb-8">
-            <h1 className="md:text-3xl text-2xl md:mb-0 mb-2 font-bold">Edit Deck</h1>
+            <h1 className="md:text-3xl text-2xl md:mb-0 mb-2 font-bold [text-shadow:_0_3px_6px_rgb(18,18,24,0.25)] dark:[text-shadow:_0_1px_8px_rgb(145_164_203_/_0.6)]">
+              Edit Deck
+            </h1>
             <div className="flex gap-2">
               <Button variant="destructive" onClick={() => handleOpenDialog(0)} disabled={isWaiting}>
                 <Trash2 className="mr-2 h-4 w-4" />
@@ -153,36 +154,30 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
             <Label htmlFor="public">Make deck public</Label>
           </div>
           
-          <div className="lg:space-y-[36px] space-y-6 shadow-sm border-none">
+          <div className="lg:space-y-[36px] space-y-6 shadow-sm">
             {cards.map((card, index) => (
-              <Card key={index} className="border-none shadow-[0_1px_16px_rgba(64,86,109,0.29)]">
+              <Card key={index} className="dark:border-[#232a33] shadow-[0_1px_12px_rgba(0,0,0,0.24)] dark:shadow-none">
                 <div className="font-medium pt-3 pl-5 pr-4 text-[22px] flex items-center justify-between">
-                  <span>
-                    Card {index + 1}
-                  </span>
+                  <span>Card {index + 1}</span>
                   <Button variant="ghost" size="icon" className="hover:bg-destructive hover:text-destructive-foreground" onClick={() => deleteCard(index)}>
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
-                <div className="border-gray-300 dark:border-[#282e41] grid md:grid-cols-2 gap-4 p-6 pt-5">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Front</label>
-                    <Textarea
-                      placeholder="Enter front side content"
-                      value={card.front}
-                      onChange={(e) => updateCard(index, "front", e.target.value)}
-                      className="border-gray-300 dark:border-[#282e41] h-32 px-[18px] py-[14px]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Back</label>
-                    <Textarea
-                      placeholder="Enter back side content"
-                      value={card.back}
-                      onChange={(e) => updateCard(index, "back", e.target.value)}
-                      className="border-gray-300 dark:border-[#282e41] h-32 px-[18px] py-[14px]"
-                    />
-                  </div>
+                <div className="grid md:grid-cols-2 gap-4 p-6 pt-5">
+                  <FloatTextarea
+                    label="Enter front side content"
+                    value={card.front}
+                    onChange={(e) => updateCard(index, "front", e.target.value)}
+                    className="border-gray-300 dark:border-[#212533bb] px-[18px] text-lg md:h-[140px] h-[120px]"
+                    maxLength={128}
+                  />
+                  <FloatTextarea
+                    label="Enter back side content"
+                    value={card.back}
+                    onChange={(e) => updateCard(index, "back", e.target.value)}
+                    className="border-gray-300 dark:border-[#212533bb] px-[18px] text-lg md:h-[140px] h-[120px]"
+                    maxLength={128}
+                  />
                 </div>
               </Card>
             ))}

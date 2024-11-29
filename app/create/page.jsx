@@ -4,8 +4,7 @@ export const dynamic = "force-static";
 import { useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { FloatInput } from "@/components/ui/float-input";
+import { FloatTextarea, FloatInput } from "@/components/ui/float-input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -123,10 +122,12 @@ export default function CreateComponent() {
     <div className="container mx-auto px-6 pt-8 pb-6">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8 border-none">
-          <h1 className="md:text-3xl text-2xl font-bold">Create New Flashcard Deck</h1>
+          <h1 className="md:text-3xl text-2xl font-bold [text-shadow:_0_3px_6px_rgb(18,18,24,0.25)] dark:[text-shadow:_0_1px_8px_rgb(145_164_203_/_0.6)]">
+            Create New Flashcard Deck
+          </h1>
           <Button onClick={() => setIsOpen(true)}>
             <Save className="mr-2 h-4 w-4" />
-            Save Deck
+            Create
           </Button>
         </div>
         <div className="mb-5 shadow-md">
@@ -137,13 +138,11 @@ export default function CreateComponent() {
           <Label htmlFor="public">Make deck public</Label>
         </div>
         
-        <div className="lg:space-y-[36px] space-y-6 shadow-sm border-none">
+        <div className="lg:space-y-[36px] space-y-6 shadow-sm">
           {cards.map((card, index) => (
-            <Card key={index} className="border-none shadow-[0_1px_16px_rgba(64,86,109,0.29)]">
+            <Card key={index} className="dark:border-[#232a33] shadow-[0_1px_12px_rgba(0,0,0,0.24)] dark:shadow-none">
               <div className="font-medium pt-3 pl-5 pr-4 text-[22px] flex items-center justify-between">
-                <span>
-                  Card {index + 1}
-                </span>
+                <span>Card {index + 1}</span>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -153,27 +152,21 @@ export default function CreateComponent() {
                   <X className="h-4 w-4" />
                 </Button>
               </div>
-              <div className="border-gray-300 dark:border-[#282e41] grid md:grid-cols-2 gap-4 p-6 pt-5">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Front</label>
-                  <Textarea
-                    placeholder="Enter front side content"
-                    value={card.front}
-                    onChange={(e) => updateCard(index, "front", e.target.value)}
-                    className="border-gray-300 dark:border-[#282e41] h-32 px-[18px] py-[14px]"
-                    maxLength={128}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Back</label>
-                  <Textarea
-                    placeholder="Enter back side content"
-                    value={card.back}
-                    onChange={(e) => updateCard(index, "back", e.target.value)}
-                    className="border-gray-300 dark:border-[#282e41] h-32 px-[18px] py-[14px]"
-                    maxLength={128}
-                  />
-                </div>
+              <div className="grid md:grid-cols-2 gap-4 p-6 pt-5">
+                <FloatTextarea
+                  label="Enter front side content"
+                  value={card.front}
+                  onChange={(e) => updateCard(index, "front", e.target.value)}
+                  className="border-gray-300 dark:border-[#212533bb] px-[18px] text-lg md:h-[140px] h-[120px]"
+                  maxLength={128}
+                />
+                <FloatTextarea
+                  label="Enter back side content"
+                  value={card.back}
+                  onChange={(e) => updateCard(index, "back", e.target.value)}
+                  className="border-gray-300 dark:border-[#212533bb] px-[18px] text-lg md:h-[140px] h-[120px]"
+                  maxLength={128}
+                />
               </div>
             </Card>
           ))}
