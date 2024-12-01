@@ -9,7 +9,7 @@ import EditProfileModal from "@/components/edit-profile";
 import Link from "next/link";
 import LogoutButton from "@/components/logout-button";
 
-function ProfileException(error = "An error occurred") {
+function ProfileException({ error = "An error occurred" }) {
   return (
     <div className="m-auto pt-12 pb-8">
       <p className="text-center text-4xl font-medium text-red-500">
@@ -30,12 +30,12 @@ function ProfileException(error = "An error occurred") {
 async function PageWrapper() {
   const { userId } = await auth();
   if(!userId) {
-    return ProfileException("User not found!");
+    return <ProfileException error="Please sign in to view your profile!" />;
   }
 
   const { success, user, decks, countFav } = await getCachedUserInfoWithDecks(userId);
   if(!success) {
-    return ProfileException("An error occurred while fetching user information!");
+    return <ProfileException error="Failed to load profile information" />;
   }
 
   return (

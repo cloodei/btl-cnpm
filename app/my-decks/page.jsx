@@ -5,7 +5,7 @@ import { getCachedDecksWithCardsCount } from "../actions/deck";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
-function DecksException(message) {
+function DecksException({ err = "An error occurred" }) {
   return (
     <div className="pt-8 px-4 lg:pb-8 md:pb-7 pb-6 max-w-6xl mx-auto">
       <div className="lg:flex lg:justify-between lg:items-center md:flex md:justify-between md:items-center lg:mb-8 md:mb-6 mb-4">
@@ -22,7 +22,7 @@ function DecksException(message) {
           <h2 className="text-2xl font-medium mb-4 text-red-500">
             An error occurred!
           </h2>
-          <p className="text-muted-foreground mb-3">{message}</p>
+          <p className="text-muted-foreground mb-3">{err}</p>
           <Link href="/create" className="w-full">
             <Button className="border-gray-400 dark:border-[#3c4152] w-full hover:bg-[#ced4e0] dark:hover:bg-gray-800 duration-200" variant="outline">
               <Plus className="border-gray-300 dark:border-[#282e41] mr-2 h-4 w-4" />
@@ -38,14 +38,14 @@ function DecksException(message) {
 export default async function MyDecksPage() {
   const { userId } = await auth();
   if(!userId) {
-    return <DecksException message="Please sign in to view your decks" />;
+    return <DecksException err="Please sign in to view your decks" />;
   }
   const { success, decks } = await getCachedDecksWithCardsCount(userId);
   if(!success) {
-    return <DecksException message="Failed to fetch your decks" />;
+    return <DecksException err="Failed to fetch your decks" />;
   }
   if(!decks?.length) {
-    return <DecksException message="No decks found" />;
+    return <DecksException err="No decks found" />;
   }
   return <MyDecksClient decks={decks} />
 }
