@@ -134,7 +134,12 @@ export default function QuizPageClient({ deckTitle, cards }) {
   const handleAnswer = (answer) => {
     setSelectedAnswer(answer);
     const currentQuestion = questions[currentQuestionIndex];
-    setResults(prev => [...prev, { question: currentQuestion.question, correctAnswer: currentQuestion.answer, userAnswer: answer, isCorrect: answer === currentQuestion.answer }]);
+    setResults(prev => [...prev, {
+      question: currentQuestion.question,
+      correctAnswer: currentQuestion.answer,
+      userAnswer: answer,
+      isCorrect: answer === currentQuestion.answer
+    }]);
     setTimeout(() => {
       if(currentQuestionIndex < questions.length - 1) {
         const nextQuestion = questions[currentQuestionIndex + 1];

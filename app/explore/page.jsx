@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, Users, BookOpen, Crown } from "lucide-react";
 import { Suspense } from "react";
 import Link from "next/link";
-import RecentTab from "@/components/explore-content/recent-tab";
+import CommunityTab from "@/components/explore-content/community-tab";
 
 const featured = [
   { id: 11, name: "Everyday Words: From English to French", description: "Quickstart Guide to speaking French", totalcards: 25 },
@@ -17,10 +17,9 @@ export default async function ExplorePage() {
     <div className="container mx-auto px-4 py-8">
       <Tabs defaultValue="recommended" className="space-y-8">
         <div className="flex items-center justify-between">
-          <TabsList className="grid grid-cols-3">
+          <TabsList className="grid grid-cols-2">
             <TabsTrigger value="recommended">Recommended</TabsTrigger>
-            <TabsTrigger value="recent">Recent</TabsTrigger>
-            <TabsTrigger value="popular">Popular</TabsTrigger>
+            <TabsTrigger value="community">Community</TabsTrigger>
           </TabsList>
         </div>
 
@@ -87,15 +86,10 @@ export default async function ExplorePage() {
             </div>
           </section>
         </TabsContent>
-        <TabsContent value="recent">
-          <Suspense fallback={<div className="text-center text-2xl py-8 text-muted-foreground">Loading Recent Decks...</div>}>
-            <RecentTab />
+        <TabsContent value="community">
+          <Suspense fallback={<div className="text-center text-2xl py-8 text-muted-foreground">Loading Community Decks...</div>}>
+            <CommunityTab />
           </Suspense>
-        </TabsContent>
-        <TabsContent value="popular">
-          <div className="text-center py-8 text-muted-foreground">
-            Chưa có data Popular
-          </div>
         </TabsContent>
       </Tabs>
     </div>

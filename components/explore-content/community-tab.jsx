@@ -1,6 +1,6 @@
 import { getRecentDecksWithCardsCount } from '@/app/actions/deck';
 import { auth } from '@clerk/nextjs/server';
-import RecentTabClient from './recent-tab-client';
+import CommunityClient from './community-tab-client';
 
 function TabException(message, isCritical = false) {
   return (
@@ -10,14 +10,14 @@ function TabException(message, isCritical = false) {
   );
 }
 
-export default async function RecentTab() {
+export default async function CommunityTab() {
   const { userId } = await auth();
   const { success, decks } = await getRecentDecksWithCardsCount(userId);
   if(!success) {
-    return TabException('Lỗi khi lấy data recent', true);
+    return TabException('Lỗi khi lấy data community', true);
   }
   if(!decks?.length) {
-    return TabException('Chưa có data recent');
+    return TabException('Chưa có data community');
   }
-  return <RecentTabClient decks={decks} userId={userId} />;
+  return <CommunityClient decks={decks} userId={userId} />;
 }

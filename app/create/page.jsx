@@ -106,14 +106,14 @@ export default function CreateComponent() {
   const generateDescription = () => {
     const complete = []
     const incomplete = []
-    cards.forEach((card) => {
+    for(const card of cards) {
       if(card.front.trim() && card.back.trim()) {
         complete.push(1);
       }
       else {
         incomplete.push(1);
       }
-    });
+    }
     return `Saving will create a new flashcard deck with ${complete.length} cards.\n${incomplete.length ? `${incomplete.length > 1 ? `${incomplete.length} cards are` : "One card is"} incomplete and will not be saved.` : ""}`;
   }
 

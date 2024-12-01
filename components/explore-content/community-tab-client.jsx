@@ -1,9 +1,9 @@
 "use client";
 import Link from 'next/link';
+import FavoritesButton from '../favorites-button';
 import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { BookOpen, Settings2, Sparkle, Loader, CircleUser } from 'lucide-react';
-import FavoritesButton from '../favorites-button';
 
 const container = {
   hidden: { opacity: 0 },
@@ -14,7 +14,7 @@ const item = {
   show: { y: 0, opacity: 1 }
 };
 
-export default function RecentTabClient({ decks, userId }) {
+export default function CommunityTabClient({ decks, userId }) {
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
     {decks.map((deck) => (

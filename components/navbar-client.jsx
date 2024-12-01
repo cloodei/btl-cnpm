@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import LogoutButton from "@/components/logout-button";
 import { Brain, Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -22,7 +21,7 @@ export default function Navbar() {
 
   const NavLink = ({ href, children }) => (
     <Link href={href}>
-      <Button variant={pathname === href ? "default" : "link"}
+      <Button variant={pathname === href ? "default" : "linkHover2"}
         className= {`${pathname === href && "pointer-events-none"} transition-all duration-300 hover:scale-[1.09] active:scale-95`}>
         {children}
       </Button>
@@ -59,7 +58,6 @@ export default function Navbar() {
                 <User className="h-4 w-4" />
               </div>
             </Link>
-            <LogoutButton className="hidden md:flex" />
           </SignedIn>
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setOpenMobile(true)}>
             <Menu className="h-6 w-6" />

@@ -66,7 +66,6 @@ export async function withTransaction<T>(callback: (client: PoolClient) => Promi
 //   creator_id VARCHAR REFERENCES users(id) ON DELETE CASCADE,
 //   name VARCHAR NOT NULL,
 //   public BOOLEAN DEFAULT FALSE,
-//   imageUrl VARCHAR,
 //   total_rating INT DEFAULT 0,
 //   count_ratings INT DEFAULT 0,
 //   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -83,12 +82,12 @@ export async function withTransaction<T>(callback: (client: PoolClient) => Promi
 // );
 
 // CREATE TABLE comments (
+//   id SERIAL PRIMARY KEY,
 //   commenter_id VARCHAR REFERENCES users(id) ON DELETE CASCADE,
 //   deck_id SERIAL REFERENCES decks(id) ON DELETE CASCADE,
 //   comment TEXT NOT NULL,
 //   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-//   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-//   PRIMARY KEY (commenter_id, deck_id)
+//   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 // );
 
 // CREATE TABLE favorite_decks (

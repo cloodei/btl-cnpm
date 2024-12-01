@@ -168,14 +168,14 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
                     label="Enter front side content"
                     value={card.front}
                     onChange={(e) => updateCard(index, "front", e.target.value)}
-                    className="border-gray-300 dark:border-[#212533bb] px-[18px] text-lg md:h-[140px] h-[120px]"
+                    className="border-gray-300 dark:border-[#212533bb] pl-[15px] pt-[14px] text-lg md:h-[140px] h-[120px]"
                     maxLength={128}
                   />
                   <FloatTextarea
                     label="Enter back side content"
                     value={card.back}
                     onChange={(e) => updateCard(index, "back", e.target.value)}
-                    className="border-gray-300 dark:border-[#212533bb] px-[18px] text-lg md:h-[140px] h-[120px]"
+                    className="border-gray-300 dark:border-[#212533bb] pl-[15px] pt-[14px] text-lg md:h-[140px] h-[120px]"
                     maxLength={128}
                   />
                 </div>
@@ -191,8 +191,8 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
         </div>
       </div>
 
-      <Dialog open={openDialog} onOpenChange={(open) => { if(!isWaiting) setOpenDialog(open)}} modal={true}>
-        <DialogContent closebutton={(!isWaiting).toString()}>
+      <Dialog open={openDialog} onOpenChange={(open) => { if(!isWaiting) setOpenDialog(open) }} modal={true}>
+        <DialogContent>
           <DialogTitle>
             {dialogAction ? (
               <>

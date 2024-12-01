@@ -5,11 +5,16 @@ import { Button } from './ui/button';
 import { useState } from 'react';
 import { revalidateUser } from '@/app/actions/user';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
-import { LogOut, Loader2 } from 'lucide-react';
+import { ArrowLeftFromLine, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function LogoutButton({ className = "", variant = "outline", size = "default", children = "Log out" }) {
+export default function LogoutButton({
+  className = "transition-all hover:gap-3",
+  variant = "expandIconDestructive",
+  size = "default",
+  children = "Log out"
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { signOut } = useClerk();
@@ -35,11 +40,8 @@ export default function LogoutButton({ className = "", variant = "outline", size
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)} variant={variant} size={size} className={`group ${className}`}>
-        <LogOut className="w-4 h-4 md:mr-2 transition-transform group-hover:rotate-12" />
-        <span className='md:inline-block hidden'>
-          {children}
-        </span>
+      <Button variant={variant} Icon={ArrowLeftFromLine} iconPlacement="left" size={size} onClick={() => setIsOpen(true)} className={className}>
+        {children}
       </Button>
 
       <AnimatePresence>
