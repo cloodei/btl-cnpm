@@ -48,7 +48,7 @@ async function PageWrapper() {
               {user.username.split(' ').map(n => n[0]).join('').toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <EditProfileModal currentUsername={user.username} currentImageUrl={user.imageurl} userId={userId} className="absolute -bottom-1 -right-1" />
+          <EditProfileModal currentUsername={user.username} currentImageUrl={user.imageurl} userId={userId} className="absolute -bottom-2 -right-2" />
         </div>
         <div className="text-center pr-4">
           <h1 className="text-3xl font-bold mb-1 truncate">

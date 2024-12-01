@@ -11,7 +11,7 @@ import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const DEFAULT_AVATARS = [
-  "/astronaut (1).png",
+  "/astronaut2.png",
   "/astronaut.png",
   "/bear.png",
   "/cat.png",
