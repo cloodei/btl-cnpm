@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Calendar, Loader } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import EditProfileModal from "@/components/edit-profile";
 import Link from "next/link";
 import LogoutButton from "@/components/logout-button";
@@ -30,12 +31,12 @@ function ProfileException({ error = "An error occurred" }) {
 async function PageWrapper() {
   const { userId } = await auth();
   if(!userId) {
-    return <ProfileException error="Please sign in to view your profile!" />;
+    return <ProfileException error={"Please sign in to view your profile"} />;
   }
 
   const { success, user, decks, countFav } = await getCachedUserInfoWithDecks(userId);
   if(!success) {
-    return <ProfileException error="Failed to load profile information" />;
+    return <ProfileException error={"Failed to load profile"} />;
   }
 
   return (

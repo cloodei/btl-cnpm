@@ -41,7 +41,7 @@ export default async function QuizPage({ params }) {
     return <IneligibleDeck message={err} />;
   }
   if(cards.length < 3) {
-    return <IneligibleDeck message="Not enough cards for a test" cardCount={cards.length} />;
+    return <IneligibleDeck message={"Not enough cards for a test"} cardCount={cards.length} />;
   }
   return <QuizPageClient deckTitle={deck.title} cards={cards} />;
 }

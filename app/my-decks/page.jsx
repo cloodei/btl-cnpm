@@ -38,14 +38,14 @@ function DecksException({ err = "An error occurred" }) {
 export default async function MyDecksPage() {
   const { userId } = await auth();
   if(!userId) {
-    return <DecksException err="Please sign in to view your decks" />;
+    return <DecksException err={"Please sign in to view your decks"} />;
   }
   const { success, decks } = await getCachedDecksWithCardsCount(userId);
   if(!success) {
-    return <DecksException err="Failed to fetch your decks" />;
+    return <DecksException err={"Failed to fetch your decks"} />;
   }
   if(!decks?.length) {
-    return <DecksException err="No decks found" />;
+    return <DecksException err={"No decks found"} />;
   }
   return <MyDecksClient decks={decks} />
 }

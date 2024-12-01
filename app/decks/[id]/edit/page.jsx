@@ -24,14 +24,14 @@ export default async function EditDeckPage({ params }) {
   const { id } = await params;
   const { userId } = await auth();
   if(!userId) {
-    return <DeckException message="Please sign in to edit your decks!" />;
+    return <DeckException message={"Please sign in to edit your decks!"} />;
   }
   const { success, deck, cards } = await getCachedDeck({ deckId: parseInt(id), userId });
   if(!success || !deck) {
-    return <DeckException message="Failed to load deck" />;
+    return <DeckException message={"Failed to load deck"} />;
   }
   if(deck.creator_id !== userId) {
-    return <DeckException message="You are not authorized to edit this deck" />;
+    return <DeckException message={"You are not authorized to edit this deck"} />;
   }
   return <UpdateDeckComponent deck={deck} cards={cards} userId={userId} />;
 }
