@@ -86,7 +86,8 @@ export default async function ExplorePage() {
             </div>
           </section>
         </TabsContent>
-        <TabsContent value="community">
+        
+        <TabsContent value="community" style={{ marginTop: 0 }}>
           <Suspense fallback={<div className="text-center text-2xl py-8 text-muted-foreground">Loading Community Decks...</div>}>
             <CommunityTab />
           </Suspense>

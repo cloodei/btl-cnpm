@@ -46,7 +46,7 @@ export default function LogoutButton({
 
       <AnimatePresence>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[425px]" hideClose={isLoading}>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} transition={{ duration: 0.2 }}>
               <DialogHeader>
                 <DialogTitle className="text-2xl font-semibold leading-none tracking-tight">
@@ -58,7 +58,7 @@ export default function LogoutButton({
               </DialogHeader>
 
               <DialogFooter className="mt-6 gap-2">
-                <Button variant="outline" onClick={() => setIsOpen(false)} className="hover:bg-secondary/80">
+                <Button variant="outline" onClick={() => setIsOpen(false)} className="hover:bg-secondary/80" disabled={isLoading}>
                   Stay
                 </Button>
                 <Button variant="destructive" onClick={handleSignOut} disabled={isLoading} className="gap-2">

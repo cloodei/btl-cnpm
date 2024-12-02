@@ -7,7 +7,7 @@ import { getTimeIndicator } from "@/lib/utils";
 import { Pencil, Trash2, X, Check } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export default function Comment({ comment, currentUserId }) {
+export default function Comment({ comment, permission }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(comment.comment);
   const queryClient = useQueryClient();
@@ -24,8 +24,6 @@ export default function Comment({ comment, currentUserId }) {
     mutationFn: deleteComment,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['comments', comment.deck_id] })
   });
-
-  const permission = (currentUserId === comment.commenter_id);
 
   return (
     <div className="flex gap-4 p-4 border-b">

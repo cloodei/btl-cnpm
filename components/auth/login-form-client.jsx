@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -29,10 +28,12 @@ export default function LoginFormClient() {
     const newErrors = {};
     const usernameError = !(formData.username = formData.username.trim());
     const passwordError = !(formData.password = formData.password.trim());
-    if(usernameError)
+    if(usernameError) {
       newErrors.username = usernameError.message;
-    if(passwordError)
+    }
+    if(passwordError) {
       newErrors.password = passwordError.message;
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length;
   };

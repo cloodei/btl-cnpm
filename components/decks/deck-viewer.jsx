@@ -3,16 +3,16 @@ import Link from "next/link";
 import ReactCardFlip from "react-card-flip";
 import CommentList from "../comments/comment-list";
 import FavoritesButton from "../favorites-button";
+import RatingButton from "../ratings-button";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Settings, Heart, CirclePlay } from "lucide-react";
+import { ChevronLeft, ChevronRight, Settings, CirclePlay } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "../ui/input";
 
-export default function DeckViewer({ deck, cards, permissions, userId }) {
+export default function DeckViewer({ deck, cards, permissions, userId, avgRating }) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
   const [inputValue, setInputValue] = useState(1);
 
   const handleFlip = () => setIsFlipped(!isFlipped);
@@ -70,9 +70,7 @@ export default function DeckViewer({ deck, cards, permissions, userId }) {
             : (
               <>
                 <FavoritesButton deckId={deck.id} is_favorite={deck.is_favorite} size="5" userId={userId} />
-                <Button variant="outline" size="icon" onClick={() => setIsLiked(!isLiked)} className={isLiked ? "text-red-500" : ""}>
-                  <Heart className={`h-5 w-5 ${isLiked ? "fill-current" : ""}`} />
-                </Button>
+                <RatingButton deckId={deck.id} userId={userId} avgRating={avgRating} />
               </>
             )}
           </div>
@@ -130,12 +128,10 @@ export default function DeckViewer({ deck, cards, permissions, userId }) {
             value={inputValue}
             onChange={handleInputChange}
             onBlur={handleInputBlur}
-            className="w-20 text-center text-lg"
+            className="w-20 text-center text-lg text-primary"
           />
-          <span className="text-base tracking-tight text-muted-foreground">
-            /
-          </span>
-          <span className="text-base tracking-tighter text-muted-foreground">
+          / 
+          <span className="text-[17px] ml-1 text-muted-foreground tracking-tighter">
             {cards.length}
           </span>
         </div>
@@ -145,7 +141,7 @@ export default function DeckViewer({ deck, cards, permissions, userId }) {
         </Button>
       </div>
 
-      <CommentList deckId={deck.id} userId={userId} />
+      {deck.public && <CommentList deckId={deck.id} userId={userId} />}
     </div>
   );
 }

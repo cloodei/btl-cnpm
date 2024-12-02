@@ -5,7 +5,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { FloatInput } from "@/components/ui/float-input";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { updateProfile } from "@/app/actions/user";
-import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -23,7 +22,7 @@ const DEFAULT_AVATARS = [
   "/tiger.png",
 ];
 
-export default function EditProfileModal({ currentUsername, currentImageUrl, userId, className = "", ...props }) {
+export default function EditProfileModal({ currentUsername, currentImageUrl, userId, allNames, className = "", ...props }) {
   const [username, setUsername] = useState(currentUsername);
   const [selectedImage, setSelectedImage] = useState(currentImageUrl);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,6 +33,20 @@ export default function EditProfileModal({ currentUsername, currentImageUrl, use
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    for(const name of allNames) {
+      if(name.username.toLowerCase() === username.toLowerCase()) {
+        toast({
+          title: "Error",
+          description: "Username already exists!",
+          variant: "destructive",
+          duration: 2500
+        });
+        setIsLoading(false);
+        setIsEditing(false);
+        setUsername(currentUsername);
+        return;
+      }
+    }
     const { success, error } = await updateProfile({ userId, username, imageUrl: selectedImage });
     if(success) {
       toast({
@@ -62,7 +75,7 @@ export default function EditProfileModal({ currentUsername, currentImageUrl, use
     </Button>
 
     <Dialog open={isEditing} onOpenChange={setIsEditing}>
-      <DialogContent className="sm:max-w-md" aria-label="Edit Profile">
+      <DialogContent className="sm:max-w-md" aria-label="Edit Profile" hideClose={isLoading}>
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
         </DialogHeader>
@@ -84,7 +97,7 @@ export default function EditProfileModal({ currentUsername, currentImageUrl, use
                   key={url}
                   type="button"
                   onClick={() => setSelectedImage(url)}
-                  className={cn("p-[2px] rounded-md transition-all w-fit h-fit", selectedImage === url && "bg-primary/10 ring-2 ring-primary")}
+                  className={`p-[2px] rounded-md transition-all w-fit h-fit ${(selectedImage === url) && "bg-primary/10 ring-2 ring-primary"}`}
                 >
                   <Avatar className="h-12 w-12 p-[2px]">
                     <AvatarImage src={url} />
@@ -95,7 +108,7 @@ export default function EditProfileModal({ currentUsername, currentImageUrl, use
           </div>
 
           <div className="flex justify-end gap-3">
-            <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
+            <Button type="button" variant="outline" onClick={() => setIsEditing(false)} disabled={isLoading}>
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>

@@ -1,26 +1,27 @@
 "use server";
 import sql from "@/lib/db";
 
-export async function getComments(deckId: number, page: number = 1, limit: number = 10) {
+export async function getComments(deckId: number, page: number = 1) {
   try {
-    const offset = (page - 1) * limit;
+    const offset = (page - 1) * 10;
     const comments = await sql`
       SELECT c.*, u.username, u.imageurl
       FROM comments c
       JOIN users u ON c.commenter_id = u.id
       WHERE c.deck_id = ${deckId}
       ORDER BY c.created_at DESC
-      LIMIT ${limit} OFFSET ${offset}
+      LIMIT 10 OFFSET ${offset}
     `;
     const totalCount = await sql`
       SELECT COUNT(*) 
       FROM comments 
       WHERE deck_id = ${deckId}
     `;
+    const total = parseInt(totalCount[0].count);
     return {
       comments,
-      totalCount: parseInt(totalCount[0].count),
-      hasMore: offset + comments.length < parseInt(totalCount[0].count)
+      totalCount: total,
+      hasMore: (offset + comments.length) < total
     };
   }
   catch(error) {

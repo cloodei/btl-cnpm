@@ -3,12 +3,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
-import { Loader2, Edit, Trash2, MoreVertical, Plus, BookOpen, Sparkle, Loader } from "lucide-react";
+import { Loader2, Edit, Trash2, MoreVertical, Plus, BookOpen, Send, MessageCircleOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { handleDelete } from "@/app/actions/deck";
+import { deleteDeck } from "@/app/actions/deck";
 import { useRouter } from "next/navigation";
 import { getTimeIndicator } from "@/lib/utils";
 
@@ -20,7 +20,7 @@ export default function MyDecksClient({ decks }) {
 
   const handleDeleteDeck = async () => {
     setIsDeleting(true);
-    const result = await handleDelete(deleteDialog.deckId);
+    const result = await deleteDeck(deleteDialog.deckId);
     if(!result.success) {
       toast({
         title: "Error",
@@ -84,14 +84,16 @@ export default function MyDecksClient({ decks }) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem onClick={() => router.push(`/decks/${deck.id}/edit`)}>
-                      <div className="flex items-center">
-                        <Edit className="mr-2 h-4 w-4" />
+                      <div className="flex items-center gap-2">
+                        <Edit className="h-4 w-4" />
                         Edit Deck
                       </div>
                     </DropdownMenuItem>
                     <DropdownMenuItem className="text-destructive" onClick={() => setDeleteDialog({ isOpen: true, deckId: deck.id, deckName: deck.name })}>
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Delete Deck
+                      <div className="flex items-center gap-2">
+                        <Trash2 className="h-4 w-4" />
+                        Delete Deck
+                      </div>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -108,24 +110,26 @@ export default function MyDecksClient({ decks }) {
                         {deck.totalcards}
                       </div>
                     </div>
+
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Ratings</span>
-                      <div className="flex items-center gap-[6px]">
-                        {deck.count_ratings > 0 ? (
+                      <span className="text-muted-foreground">
+                        Public
+                      </span>
+                      <span className="flex items-center">
+                        {deck.public ? (
                           <>
-                            <span>{(1.0 * deck.total_rating / deck.count_ratings).toFixed(1)}</span>
-                            <Sparkle />
+                            <Send className="h-5 w-5 mr-1 text-sky-900 dark:text-sky-300/85" />
                           </>
                         ) : (
                           <>
-                            <Loader />
-                            <span className="text-muted-foreground">None</span>
+                            <MessageCircleOff className="h-5 w-5 mr-1 text-rose-900 dark:text-rose-300" />
                           </>
                         )}
-                      </div>
+                      </span>
                     </div>
+
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Created </span>
+                      <span className="text-muted-foreground">Last updated </span>
                       <span>{getTimeIndicator(deck.updated_at)}</span>
                     </div>
                   </div>
@@ -138,7 +142,7 @@ export default function MyDecksClient({ decks }) {
     </div>
       
     <Dialog open={deleteDialog.isOpen} onOpenChange={(open) => setDeleteDialog({ isOpen: open, deckId: null, deckName: "" })}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]" hideClose={isDeleting}>
         <DialogHeader className="truncate">
           <DialogTitle className="text-xl font-semibold">Delete Deck</DialogTitle>
           <DialogDescription className="pt-3" title={deleteDialog.deckName}>

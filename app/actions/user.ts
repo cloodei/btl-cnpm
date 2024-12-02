@@ -1,6 +1,7 @@
 'use server';
 import { unstable_cache, revalidateTag } from 'next/cache';
-import { query } from '@/lib/db';
+import { query, multiQuery } from '@/lib/db';
+import { clerkClient } from '@clerk/nextjs/server';
 
 export async function revalidateUser() {
   'use server';
@@ -21,23 +22,20 @@ export const getCachedUserInfo = unstable_cache(async (userId: string) => {
 
 export const getCachedUserInfoWithDecks = unstable_cache(async (userId: string) => {
   try {
-    const [users, stats, countFav] = await Promise.all([
-      query(`
-        SELECT * FROM users WHERE id = $1
-      `, [userId]),
-      query(`
-        SELECT COUNT(DISTINCT d.id) as totaldecks, COUNT(c.id) as totalcards
-        FROM decks AS d
-        LEFT JOIN cards AS c ON d.id = c.deck_id
-        WHERE d.creator_id = $1
-      `, [userId]),
-      query(`
-        SELECT COUNT(*) as total
-        FROM favorite_decks
-        WHERE viewer_id = $1
-      `, [userId])
-    ]);
-    return { success: true, user: users[0], decks: stats[0], countFav: countFav[0].total };
+    const [users, stats, countFav, allNames] = await multiQuery([
+      `SELECT * FROM users WHERE id = $1`,
+      `SELECT COUNT(DISTINCT d.id) as totaldecks, COUNT(c.id) as totalcards
+       FROM decks AS d
+       LEFT JOIN cards AS c ON d.id = c.deck_id
+       WHERE d.creator_id = $1
+      `,
+      `SELECT COUNT(*) as total
+       FROM favorite_decks
+       WHERE viewer_id = $1
+      `,
+      `SELECT u.username FROM users AS u`
+    ], [[userId], [userId], [userId], []]);
+    return { success: true, user: users[0], decks: stats[0], countFav: countFav[0].total, allNames };
   }
   catch(error) {
     return { success: false, error };
@@ -58,9 +56,24 @@ export async function getUserInfo(userId: string) {
 export async function updateProfile({ userId, username, imageUrl }: { userId: string, username: string, imageUrl: string }) {
   'use server';
   try {
-    await query('UPDATE users SET username = $1, imageurl = $2 WHERE id = $3', [username, imageUrl, userId]);
+    await query(`
+      UPDATE users
+      SET username = $1, imageurl = $2, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $3
+    `, [username, imageUrl, userId]);
+
+    const client = await clerkClient();
+    await client.users.updateUser(userId, { username });
+
+    const userDecks = await query(`SELECT id FROM decks WHERE creator_id = $1`, [userId]);
+
     revalidateTag('user-info');
     revalidateTag('user-info-decks');
+    revalidateTag('recent-decks');
+    revalidateTag('favorites');
+    for(const deck of userDecks) {
+      revalidateTag(`deck-${deck.id}`);
+    }
     return { success: true };
   }
   catch(error) {

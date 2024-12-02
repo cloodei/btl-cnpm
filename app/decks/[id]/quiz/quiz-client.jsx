@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Timer, BarChart3, CircleX, ArrowLeftFromLine } from "lucide-react";
+import { Timer, BarChart3, ArrowLeftFromLine, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card } from "@/components/ui/card";
@@ -31,8 +31,8 @@ function generateAnswers(correctAnswer, allCards, useFront) {
     wrongSet.add(useFront ? card.front : card.back);
   }
   wrongSet.delete(correctAnswer);
-  const random = shuffleArray(shuffleArray(Array.from(wrongSet)));
   let res = [correctAnswer];
+  const random = shuffleArray(shuffleArray(Array.from(wrongSet)));
   while(res.length < 4 && random.length) {
     res.push(random.pop());
   }
@@ -197,7 +197,7 @@ export default function QuizPageClient({ deckTitle, cards }) {
             <Button type="submit" className="w-full">Start Quiz</Button>
           </form>
           <Button variant="link" className="absolute -bottom-10 -left-2 transition duration-300 hover:underline" onClick={() => router.back()}>
-            <ArrowLeftFromLine className="h-[22px] w-[22px]" />
+            <ArrowLeftFromLine className="h-[22px] w-[22px] mr-2" />
             Return
           </Button>
         </Card>
@@ -242,7 +242,7 @@ export default function QuizPageClient({ deckTitle, cards }) {
           </div>
         </div>
         <Button variant="destructive" onClick={handleTerminate} className="absolute xl:-right-48 right-1 -top-1">
-          <CircleX className="h-9 w-9 mr-1 text-4xl" size={40} />
+          <X className="h-9 w-9 mr-1 text-4xl" size={40} />
           Exit Quiz
         </Button>
       </div>

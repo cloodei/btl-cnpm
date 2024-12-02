@@ -20,15 +20,18 @@ export default function RegisterFormClient() {
     const passwordError = !(formData.password = formData.password.trim())
     const confirmPasswordError = !(formData.confirmPassword = formData.confirmPassword.trim())
     const newErrors = {};
-    if(usernameError)
+    if(usernameError) {
       newErrors.username = (!(!formData.username) ? null : "Username is required")
-    if(passwordError)
+    }
+    if(passwordError) {
       newErrors.password = (!(!formData.password) ? null : "Password is required")
-    if(confirmPasswordError)
+    }
+    if(confirmPasswordError) {
       newErrors.confirmPassword = (!(!formData.confirmPassword) ? null : "Confirm Password is required")
-    else if(formData.password !== formData.confirmPassword)
+    }
+    else if(formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match"
-
+    }
     setError((usernameError || passwordError || confirmPasswordError) ? "Please fill in all fields" : "")
     setErrors(newErrors)
     return Object.keys(newErrors).length;
@@ -52,7 +55,7 @@ export default function RegisterFormClient() {
         body: JSON.stringify({ clerkId: result.createdUserId, username: formData.username })
       });
       if(!response.ok) {
-        throw new Error(response.json().error || "Something went wrong");
+        throw new Error("Something went wrong");
       }
       const res = response.json();
       if(res.error) {
@@ -72,8 +75,9 @@ export default function RegisterFormClient() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    if(error)
+    if(error) {
       setError("");
+    }
     if(errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -81,7 +85,7 @@ export default function RegisterFormClient() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="flex flex-col items-center space-y-2">
+      <div className="flex flex-col items-center gap-2">
         <UserPlus className="h-12 w-12" />
         <h1 className="text-3xl font-bold">Create Account</h1>
         <p className="text-gray-500">Join to start creating flashcards</p>

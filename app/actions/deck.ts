@@ -67,13 +67,12 @@ export async function getDecks(userId: string) {
 export const getCachedDecksWithCardsCount = unstable_cache(async (userId: string) => {
     try {
       const decks = await sql`
-        SELECT d.id, d.name, d.public, d.total_rating, d.count_ratings, d.created_at, d.updated_at, COUNT(c.id) AS totalcards
+        SELECT d.id, d.name, d.public, d.created_at, d.updated_at, COUNT(c.id) AS totalcards
         FROM decks AS d
         LEFT JOIN cards AS c
         ON d.id = c.deck_id
         WHERE d.creator_id = ${userId}
         GROUP BY d.id
-        ORDER BY d.created_at DESC
       `;
       return { success: true, decks };
     }
@@ -109,16 +108,15 @@ export const getFavoriteDecksWithCardsCount = unstable_cache(async (userId: stri
 export const getRecentDecksWithCardsCount = unstable_cache(async (userId: string) => {
     try {
       const decks = await sql`
-        SELECT d.*, COUNT(c.id) AS totalcards, u.username,
+        SELECT d.*, COUNT(DISTINCT c.id) AS totalcards, u.username, COALESCE(AVG(r.rating), 0) AS avg_rating,
         EXISTS(SELECT 1 FROM favorite_decks WHERE deck_id = d.id AND viewer_id = ${userId}) AS is_favorite
         FROM decks AS d
-        INNER JOIN users AS u
-        ON d.creator_id = u.id
-        LEFT JOIN cards AS c
-        ON d.id = c.deck_id
+        INNER JOIN users AS u ON d.creator_id = u.id
+        LEFT JOIN cards AS c ON d.id = c.deck_id
+        LEFT JOIN ratings AS r ON d.id = r.deck_id
         WHERE d.public = true
         AND u.id != 'user_2pARGljiy1lvZFgeFNCWGeN5JWG'
-        GROUP BY d.id, u.username, u.id
+        GROUP BY d.id, u.id
         ORDER BY d.created_at DESC
       `;
       return { success: true, decks };
@@ -160,8 +158,8 @@ export async function getCachedDeck({ deckId, userId }: { deckId: number, userId
   return unstable_cache(
     async () => {
       try {
-        const deck = await sql`
-          SELECT d.id, d.creator_id, d.name, d.total_rating, d.count_ratings, d.public, d.created_at, d.updated_at, u.username,
+        const [deck] = await sql`
+          SELECT d.id, d.creator_id, d.name, d.public, d.created_at, d.updated_at, u.username,
           EXISTS(SELECT 1 FROM favorite_decks WHERE deck_id = d.id AND viewer_id = ${userId}) AS is_favorite
           FROM decks AS d
           INNER JOIN users AS u
@@ -176,7 +174,14 @@ export async function getCachedDeck({ deckId, userId }: { deckId: number, userId
           FROM cards
           WHERE deck_id = ${deckId}
         `;
-        return { success: true, deck: deck[0], cards };
+        const [avg_rating] = await sql`
+          SELECT AVG(rating) AS avg_rating
+          FROM ratings
+          WHERE deck_id = ${deckId}
+          GROUP BY deck_id
+        `;
+        const avgRating = avg_rating?.avg_rating ? parseFloat(avg_rating.avg_rating) : 0;
+        return { success: true, deck, cards, avgRating };
       }
       catch(error) {
         return { success: false, error };
@@ -188,9 +193,9 @@ export async function getCachedDeck({ deckId, userId }: { deckId: number, userId
 export async function getFeaturedDeck({ deckId, userId }: { deckId: number, userId: string }) {
   return unstable_cache(
     async () => {
-      const [deck, cards] = await Promise.all([
+      const [deck, cards, avg_rating] = await Promise.all([
         sql`
-          SELECT d.id, d.creator_id, d.name, d.total_rating, d.count_ratings, d.public, d.created_at, d.updated_at, u.username,
+          SELECT d.id, d.creator_id, d.name, d.public, d.created_at, d.updated_at, u.username,
           EXISTS(SELECT 1 FROM favorite_decks WHERE deck_id = d.id AND viewer_id = ${userId}) AS is_favorite
           FROM decks AS d
           INNER JOIN users AS u
@@ -201,9 +206,16 @@ export async function getFeaturedDeck({ deckId, userId }: { deckId: number, user
           SELECT front, back
           FROM cards
           WHERE deck_id = ${deckId}
+        `,
+        sql`
+          SELECT AVG(rating) AS avg_rating
+          FROM ratings
+          WHERE deck_id = ${deckId}
+          GROUP BY deck_id
         `
       ]);
-      return { success: true, deck: deck[0], cards };
+      const avgRating = avg_rating[0]?.avg_rating ? parseFloat(avg_rating[0].avg_rating) : 0;
+      return { success: true, deck: deck[0], cards, avgRating };
     }, [`get-featured-deck-${deckId}`], { tags: [`featured-deck-${deckId}`], revalidate: 300 }
   )();
 }
@@ -217,7 +229,7 @@ export async function updateDeck({ deckId, title, cards, isPublic }: { deckId: n
     await Promise.all([
       sql`
         UPDATE decks
-        SET name = ${title}, public = ${isPublic}, updated_at = ${new Date().toISOString()}
+        SET name = ${title}, public = ${isPublic}, updated_at = CURRENT_TIMESTAMP
         WHERE id = ${deckId}
       `,
       sql`
@@ -237,6 +249,27 @@ export async function updateDeck({ deckId, title, cards, isPublic }: { deckId: n
     if(deckId === 9 || deckId === 11 || deckId === 12) {
       revalidateTag(`featured-deck-${deckId}`)
     }
+    return { success: true };
+  }
+  catch(error) {
+    return { success: false, error };
+  }
+}
+
+export async function deleteDeck(deckId: number) {
+  "use server";
+  try {
+    await sql`
+      DELETE FROM decks
+      WHERE id = ${deckId}
+    `;
+    revalidateTag('decks');
+    revalidateTag(`deck-${deckId}`);
+    if(deckId === 9 || deckId === 11 || deckId === 12) {
+      revalidateTag(`featured-deck-${deckId}`)
+    }
+    revalidateTag('recent-decks');
+    revalidateTag('favorites');
     return { success: true };
   }
   catch(error) {
@@ -270,27 +303,6 @@ export async function removeFromFavorites({ deckId, userId }: { deckId: number, 
     `;
     revalidateTag('favorites');
     revalidateTag(`deck-${deckId}`);
-    return { success: true };
-  }
-  catch(error) {
-    return { success: false, error };
-  }
-}
-
-export async function handleDelete(deckId: number) {
-  "use server";
-  try {
-    await sql`
-      DELETE FROM decks
-      WHERE id = ${deckId}
-    `;
-    revalidateTag('decks');
-    revalidateTag(`deck-${deckId}`);
-    if(deckId === 9 || deckId === 11 || deckId === 12) {
-      revalidateTag(`featured-deck-${deckId}`)
-    }
-    revalidateTag('recent-decks');
-    revalidateTag('favorites');
     return { success: true };
   }
   catch(error) {

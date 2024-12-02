@@ -8,7 +8,7 @@ import { FloatInput, FloatTextarea } from "@/components/ui/float-input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Plus, Save, Trash2, X, Loader2 } from "lucide-react";
-import { updateDeck, handleDelete } from "@/app/actions/deck";
+import { updateDeck, deleteDeck } from "@/app/actions/deck";
 import { useToast } from "@/hooks/use-toast";
 
 export default function UpdateDeckComponent({ deck, cards: initialCards }) {
@@ -86,7 +86,7 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
 
   const handleDeleteDeck = async () => {
     setIsWaiting(true);
-    const { success } = await handleDelete(deck.id);
+    const { success } = await deleteDeck(deck.id);
     if(success) {
       toast({
         title: "Success",
@@ -192,7 +192,7 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
       </div>
 
       <Dialog open={openDialog} onOpenChange={(open) => { if(!isWaiting) setOpenDialog(open) }} modal={true}>
-        <DialogContent>
+        <DialogContent hideClose={isWaiting}>
           <DialogTitle>
             {dialogAction ? (
               <>

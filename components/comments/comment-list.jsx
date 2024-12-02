@@ -18,7 +18,7 @@ export default function CommentList({ deckId, userId }) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery({
     queryKey: ['comments', deckId],
     queryFn: ({ pageParam = 1 }) => getComments(deckId, pageParam),
-    getNextPageParam: (lastPage, pages) => lastPage.hasMore ? pages.length + 1 : undefined,
+    getNextPageParam: (lastPage, pages) => (lastPage.hasMore ? pages.length + 1 : undefined),
     initialPageParam: 1,
     staleTime: 30000
   });
@@ -31,7 +31,10 @@ export default function CommentList({ deckId, userId }) {
     }
   });
 
-  const allComments = data?.pages.reduce((acc, page) => [...acc, ...(page.comments || [])], []) || [];
+  const allComments = [];
+  for(const page of data?.pages || []) {
+    allComments.push(...page.comments);
+  }
   
   if(isLoading) {
     return (
@@ -76,7 +79,7 @@ export default function CommentList({ deckId, userId }) {
         <>
           <div className="divide-y">
             {allComments.map((comment) => (
-              <Comment key={comment.id} comment={comment} currentUserId={userId} />
+              <Comment key={comment.id} comment={comment} permission={userId === comment.commenter_id} />
             ))}
           </div>
           
@@ -85,7 +88,7 @@ export default function CommentList({ deckId, userId }) {
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => fetchNextPage()}
+                onClick={fetchNextPage}
                 disabled={isFetchingNextPage}
               >
                 {isFetchingNextPage ? (

@@ -24,10 +24,10 @@ export async function query<T = any>(text: string, params: any[] = []): Promise<
 
 export async function multiQuery(queries: string[], params: any[][] = []) {
   return withConnection(async (client) => {
-    const results = [];
+    const results = new Array(queries.length);
     for(let i = 0; i < queries.length; i++) {
       const result = await client.query(queries[i], params[i] || []);
-      results.push(result.rows);
+      results[i] = result.rows;
     }
     return results;
   });
@@ -66,8 +66,6 @@ export async function withTransaction<T>(callback: (client: PoolClient) => Promi
 //   creator_id VARCHAR REFERENCES users(id) ON DELETE CASCADE,
 //   name VARCHAR NOT NULL,
 //   public BOOLEAN DEFAULT FALSE,
-//   total_rating INT DEFAULT 0,
-//   count_ratings INT DEFAULT 0,
 //   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 //   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 // );
@@ -88,6 +86,15 @@ export async function withTransaction<T>(callback: (client: PoolClient) => Promi
 //   comment TEXT NOT NULL,
 //   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 //   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+// );
+
+// CREATE TABLE ratings (
+//   id SERIAL PRIMARY KEY,
+//   reviewer_id VARCHAR REFERENCES users(id) ON DELETE CASCADE,
+//   deck_id SERIAL REFERENCES decks(id) ON DELETE CASCADE,
+//   rating INT,
+//   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//   UNIQUE (reviewer_id, deck_id)
 // );
 
 // CREATE TABLE favorite_decks (

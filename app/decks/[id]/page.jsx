@@ -31,11 +31,11 @@ export default async function DeckPage({ params }) {
   }
   if(deckId === 9 || deckId === 11 || deckId === 12) {
     const result = await getFeaturedDeck({ deckId, userId });
-    return <DeckViewer deck={result.deck} cards={result.cards} userId={userId} permissions={result.deck.creator_id === userId} />;
+    return <DeckViewer deck={result.deck} cards={result.cards} userId={userId} permissions={result.deck.creator_id === userId} avgRating={result.avgRating} />;
   }
-  const { success, deck, cards } = await getCachedDeck({ deckId, userId });
+  const { success, deck, cards, avgRating } = await getCachedDeck({ deckId, userId });
   if(!success || !deck) {
     notFound();
   }
-  return <DeckViewer deck={deck} userId={userId} cards={cards} permissions={deck.creator_id === userId} />;
+  return <DeckViewer deck={deck} userId={userId} cards={cards} permissions={deck.creator_id === userId} avgRating={avgRating} />;
 }
