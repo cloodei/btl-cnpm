@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background dark:from-[#0f131b] to-secondary">
+    <div className="min-h-[calc(100vh-48px)] bg-gradient-to-b from-background dark:from-[#0f131b] to-secondary">
       <div className="container mx-auto px-4 pt-20 pb-16">
         <div className="text-center max-w-3xl mx-auto">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">
@@ -31,7 +31,7 @@ export default function Home() {
 
       <div className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div className="bg-card p-6 rounded-lg shadow-lg border border-gray-300 dark:border-gray-700">
+          <div className="bg-card p-6 rounded-lg shadow-[0_2px_6px_rgba(0,0,0,0.2)] border border-gray-300 dark:border-gray-700">
             <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
               <Brain className="h-6 w-6 text-primary" />
             </div>
@@ -41,7 +41,7 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="bg-card p-6 rounded-lg shadow-lg border border-gray-300 dark:border-gray-700">
+          <div className="bg-card p-6 rounded-lg shadow-[0_2px_6px_rgba(0,0,0,0.2)] border border-gray-300 dark:border-gray-700">
             <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
               <GraduationCap className="h-6 w-6 text-primary" />
             </div>
@@ -51,7 +51,7 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="bg-card p-6 rounded-lg shadow-lg border border-gray-300 dark:border-gray-700">
+          <div className="bg-card p-6 rounded-lg shadow-[0_2px_6px_rgba(0,0,0,0.2)] border border-gray-300 dark:border-gray-700">
             <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
               <Users className="h-6 w-6 text-primary" />
             </div>
@@ -61,7 +61,7 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="bg-card p-6 rounded-lg shadow-lg border border-gray-300 dark:border-gray-700">
+          <div className="bg-card p-6 rounded-lg shadow-[0_2px_6px_rgba(0,0,0,0.2)] border border-gray-300 dark:border-gray-700">
             <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
               <Sparkles className="h-6 w-6 text-primary" />
             </div>

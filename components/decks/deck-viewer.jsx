@@ -5,7 +5,7 @@ import CommentList from "../comments/comment-list";
 import FavoritesButton from "../favorites-button";
 import RatingButton from "../ratings-button";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Settings, CirclePlay } from "lucide-react";
+import { ChevronLeft, ChevronRight, CirclePlay, Pencil, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "../ui/input";
@@ -46,7 +46,7 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
     }
     updateCardIndex(newIndex);
   };
-
+  
   return (
     <div className="max-w-4xl mx-auto py-8 px-6 min-h-[calc(100vh-48px)]">
       <div className="mb-8">
@@ -55,17 +55,25 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
             {deck.name}
           </h1>
           <div className="flex gap-2 ml-2">
-            <Link href={`/decks/${deck.id}/quiz`}>
-              <Button variant="expandIconOutline" Icon={CirclePlay} iconPlacement="left" className="transition-all ease-out hover:gap-3">
+            <Link href={`/decks/${deck.id}/quiz`} className="sm:block hidden">
+              <Button variant="expandIconOutline" Icon={CirclePlay} iconPlacement="left" className="transition-all ease-out hover:gap-2">
                 Start Test
               </Button>
             </Link>
+            <Link href={`/decks/${deck.id}/quiz`} className="sm:hidden block border border-gray-200 dark:border-secondary rounded-md py-[7px] px-[15px] transition duration-200 hover:bg-secondary hover:bg-opacity-10">
+              <Play className="h-5 w-5 text-primary" />
+            </Link>
             {permissions ? (
-              <Link href={`/decks/${deck.id}/edit`}>
-                <Button variant="outline" size="icon">
-                  <Settings className="h-5 w-5" />
-                </Button>
-              </Link>
+              <>
+                <Link href={`/decks/${deck.id}/edit`} className="sm:block hidden">
+                  <Button variant="expandIconOutline" Icon={Pencil} iconPlacement="left" className="transition-all ease-out hover:gap-2">
+                    Edit Deck
+                  </Button>
+                </Link>
+                <Link href={`/decks/${deck.id}/edit`} className="sm:hidden block border border-gray-200 dark:border-secondary rounded-md py-[7px] px-[15px] transition duration-200 hover:bg-secondary hover:bg-opacity-10">
+                  <Pencil className="h-5 w-5 text-primary" />
+                </Link>
+              </>
             )
             : (
               <>
@@ -75,7 +83,7 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
             )}
           </div>
         </div>
-        <div className="text-primary text-sm truncate mb-4 pl-1 pr-7" title={deck.name + ` from ${deck.username}`}>
+        <div className="text-primary text-[12px] truncate mb-4 pl-1 pr-7" title={deck.name + ` from ${deck.username}`}>
           Going through  
           <span className="font-medium mx-[6px] truncate"> "{deck.name}" </span>
           <span className="text-gray-400 dark:text-gray-500">
@@ -90,9 +98,9 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
         </div>
       </div>
 
-      <div className="relative md:h-[252px] h-[212px] mb-8">
+      <div className="relative md:h-[264px] h-[228px] mb-8">
         <ReactCardFlip isFlipped={isFlipped} flipDirection="horizontal" containerClassName="h-full">
-          <div className="h-full cursor-pointer rounded-xl p-8 bg-card border dark:border-[#303242] shadow-[0_8px_36px_rgba(0,0,0,0.28)]" onClick={handleFlip}>
+          <div className="h-full cursor-pointer rounded-xl p-8 bg-card border dark:border-[#303242] shadow-[0_2px_9px_rgba(0,0,0,0.26)]" onClick={handleFlip}>
             <div className="flex flex-col justify-center items-center h-full">
               <p className="md:text-3xl text-2xl font-semibold text-center">
                 {cards[currentCardIndex].front}
@@ -102,7 +110,7 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
               </p>
             </div>
           </div>
-          <div className="h-full cursor-pointer rounded-xl p-8 bg-card border dark:border-[#303242] shadow-[0_8px_36px_rgba(0,0,0,0.28)]" onClick={handleFlip}>
+          <div className="h-full cursor-pointer rounded-xl p-8 bg-card border dark:border-[#303242] shadow-[0_2px_9px_rgba(0,0,0,0.26)]" onClick={handleFlip}>
             <div className="flex flex-col justify-center items-center h-full">
               <p className="md:text-3xl text-2xl font-semibold text-center">
                 {cards[currentCardIndex].back}
@@ -120,22 +128,17 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
           <ChevronLeft className="h-4 w-4 mr-2" />
           Previous
         </Button>
-        <div className="flex items-center gap-2">
-          <Input
-            type="number"
-            min={1}
-            max={cards.length}
-            value={inputValue}
-            onChange={handleInputChange}
-            onBlur={handleInputBlur}
-            className="w-20 text-center text-lg text-primary"
-          />
-          / 
-          <span className="text-[17px] ml-1 text-muted-foreground tracking-tighter">
-            {cards.length}
-          </span>
-        </div>
-        <Button variant="default" size="lg" onClick={handleNextCard} disabled={currentCardIndex === cards.length - 1}>
+        <Input
+          type="number"
+          min={1}
+          max={cards.length}
+          value={inputValue}
+          onChange={handleInputChange}
+          onBlur={handleInputBlur}
+          onKeyDown={(e) => e.key === "Enter" && handleInputBlur()}
+          className="md:w-[68px] w-16 text-center text-sm md:text-base text-primary pr-1 pl-5 py-[10px]"
+        />
+        <Button variant="outline" size="lg" onClick={handleNextCard} disabled={currentCardIndex === cards.length - 1}>
           Next
           <ChevronRight className="h-4 w-4 ml-2" />
         </Button>

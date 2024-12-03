@@ -74,7 +74,7 @@ export default function MyDecksClient({ decks }) {
       <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {decks.map((deck) => (
           <motion.div key={deck.id} variants={item}>
-            <Card className="relative group transition-all duration-200 shadow-lg hover:shadow-[0_8px_36px_rgba(0,0,0,0.24)] hover:scale-[1.02] dark:hover:shadow-[0_6px_20px_rgba(255,255,255,0.19)]">
+            <Card className="relative group transition-all duration-200 shadow-[0_2px_10px_rgba(0,0,0,0.22)] hover:shadow-[0_6px_24px_rgba(0,0,0,0.25)] hover:scale-[1.02] dark:hover:shadow-[0_4px_16px_rgba(255,255,255,0.24)]">
               <div className="absolute top-4 right-4">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

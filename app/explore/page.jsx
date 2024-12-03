@@ -1,8 +1,10 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Users, BookOpen, Crown } from "lucide-react";
+import { Sparkles, BookOpen, Crown } from "lucide-react";
 import { Suspense } from "react";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import Image from "next/image";
 import Link from "next/link";
 import CommunityTab from "@/components/explore-content/community-tab";
 
@@ -12,20 +14,77 @@ const featured = [
   { id: 9, name: "French Foundations: Expanding Your Vocabulary", description: "Take your French to Exceeding Heights", totalcards: 40 },
 ];
 
+const sponsored = [
+  {
+    id: 1,
+    name: "Introduction to C++",
+    description: "Learn more about the basics of C++",
+    image: '/into_to_c-27411.png',
+    link: "https://drive.google.com/file/d/1NOLcOhvxT87NQOStH-aFCWdZJrz7S3um/view?fbclid=IwY2xjawG7mxhleHRuA2FlbQIxMAABHcXaC7QYkU773dPfRD4rz8t1F15ZHyD4QJnJ4LKYR64ZGPn9r_Jrupp6_A_aem_L_c2FG-u_PvLBFxG0nHbuQ",
+  },
+  {
+    id: 2,
+    name: "Python Programming",
+    description: "Get to know about the basics of Python",
+    image: '/3720230404141603.webp',
+    link: "https://drive.google.com/drive/folders/1LkRwAiwcIFL9ZFjJFn0aJ2LzBKTD5uzt?fbclid=IwY2xjawG7mxpleHRuA2FlbQIxMAABHQkfTHK5yPCIoRfv7ObICpQo8Ogb6SSKUErEjbVXaxnftUE6uLWvGvkv8A_aem_Pn3JZ-j3ebIhBWfbKWQpJQ",
+  },
+  {
+    id: 3,
+    name: "Curso Prático de Hipnóse",
+    description: "Aprenda a hipnotizar pessoas em 3 dias",
+    image: '/hypnosisCover.png',
+    link: "https://drive.google.com/file/d/0BzuUnGoH_Od9eUlfbWwzTUhuVTg/view?fbclid=IwY2xjawG7mxpleHRuA2FlbQIxMAABHVB6JwSNEqJZbMDjtObE9T4m2x8sSphJjcVQULZTCK07FiPhxEdh0ooTVg_aem_te58q3NvXSCrNU9X-pXbMA&resourcekey=0-ayDMD_z46M76vxenGbPpCQ",
+  },
+  {
+    id: 4,
+    name: "C# and .NET Basics",
+    description: "Learn the basics of C# and .NET programming",
+    image: "https://media.geeksforgeeks.org/wp-content/cdn-uploads/20230305130205/Csharp1.png",
+    link: "https://drive.google.com/file/d/0BzuUnGoH_Od9alBUZ3g0ZkQ1Z0k/view?fbclid=IwY2xjawG7mxtleHRuA2FlbQIxMAABHWKQ4ZnPkrYvdOmDyxSLNxYQ-hXKSjm0lPx9eZfzHb1QV51EmhOA_wbyfw_aem_JbLZkO7ozXyVSI0DZmW7ww&resourcekey=0-ICg5M7Elp2eQIt43joXaJA",
+  },
+  {
+    id: 5,
+    name: "Sách ngữ pháp Tiếng Anh",
+    description: "Học ngữ pháp Tiếng Anh cùng cô Mai Lan Hương",
+    image: "https://salt.tikicdn.com/cache/w300/media/catalog/product/g/i/giai-thich-ngu-phap-tieng-anh.jpg",
+    link: "https://drive.google.com/file/d/0B1saKAllAzg3NVp3NmdjYjBOcnc/view?fbclid=IwY2xjawG7mx1leHRuA2FlbQIxMAABHVB6JwSNEqJZbMDjtObE9T4m2x8sSphJjcVQULZTCK07FiPhxEdh0ooTVg_aem_te58q3NvXSCrNU9X-pXbMA&resourcekey=0-S-NqD5GNKhhBqlr85P9Acg",
+  },
+  {
+    id: 6,
+    name: "Python for Data Analysis",
+    description: "Understand more about Data Analysis with Python",
+    image: '/pyDataAnalysisCover.png',
+    link: "https://drive.google.com/file/d/1JeeJ1jWkCe9cdcyC8H0AJBHKOX_62p1K/view?fbclid=IwY2xjawG7mxxleHRuA2FlbQIxMAABHZbOsKaFL0GnXAyMGViEsrFrnHc5CxkSjjMUt0F8Hzx3pVXTbywjGHO1pA_aem_YhdyAGc0iwUs05-kHLPVmg",
+  },
+  {
+    id: 7,
+    name: "25 Chuyên đề Ngữ pháp Tiếng Anh",
+    description: "Những chuyên đề ngữ pháp Tiếng Anh phổ biến",
+    image: '/chuyenDeNguPhapTACover.png',
+    link: "https://drive.google.com/file/d/16rjnZDmh-_Kzl0eXGiN1ojGbRxXjFzpa/view?fbclid=IwY2xjawG7og1leHRuA2FlbQIxMAABHcajRIeWWeSo7qz4hBLCRyMN1cmTL6zE2IEdh9WuoYKPLrsbWvV05dIx7g_aem_NH8_2xHZYi6poNdk8__gLQ",
+  },
+  {
+    id: 8,
+    name: "Thinking Like a Data Scientist",
+    description: "Find out more about the lifecycle of a Data Scientist",
+    image: '/dataScientistCover.png',
+    link: "https://drive.google.com/file/d/1kso0VI-jNjp0_K--NR_9pyilu4OATELe/view?fbclid=IwY2xjawG7oBhleHRuA2FlbQIxMAABHTFvp_crWT4nkEkjvEmpY7EUukBCVTf3Wrkk0cSHkrP2vJ-kic218VziyQ_aem_5tm-l8bAL788X_nrf2WrPA",
+  }
+];
+
 export default async function ExplorePage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <Tabs defaultValue="recommended" className="space-y-8">
-        <div className="flex items-center justify-between">
-          <TabsList className="grid grid-cols-2">
-            <TabsTrigger value="recommended">Recommended</TabsTrigger>
-            <TabsTrigger value="community">Community</TabsTrigger>
-          </TabsList>
-        </div>
+        <TabsList className="grid grid-cols-2 md:w-[300px] w-[240px]">
+          <TabsTrigger value="recommended">Recommended</TabsTrigger>
+          <TabsTrigger value="community">Community</TabsTrigger>
+        </TabsList>
 
         <TabsContent value="recommended" className="lg:space-y-[56px] space-y-8">
           <section className="pb-6">
-            <h2 className="text-2xl font-bold mb-4">Featured Decks</h2>
+            <h2 className="text-2xl font-bold mb-4 [text-shadow:_0_3px_6px_rgb(18,18,24,0.25)] dark:[text-shadow:_0_1px_8px_rgb(145_164_203_/_0.6)]">Featured Decks</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featured.map((deck, index) => (
                 <Card key={index} title={deck.name} className="p-6 hover:shadow-xl hover:scale-[1.02] transition-all">
@@ -54,36 +113,47 @@ export default async function ExplorePage() {
             </div>
           </section>
 
-          <section>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold">Community Decks</h2>
-              <Button variant="outline">Browse All</Button>
-            </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <Card key={i} className="p-6 hover:shadow-xl hover:scale-[1.02] transition-all">
-                  <h3 className="text-xl font-bold mb-2">Python Data Structures</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Complete guide to Python's built-in data structures
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-2">
-                        <Users className="h-4 w-4" />
-                        <span>2.4k</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <BookOpen className="h-4 w-4" />
-                        <span>75 cards</span>
-                      </div>
+          <h2 className="text-2xl font-bold [text-shadow:_0_3px_6px_rgb(18,18,24,0.25)] dark:[text-shadow:_0_1px_8px_rgb(145_164_203_/_0.6)]">See Documentations</h2>
+          <section className="px-7" style={{ marginTop: '24px' }}>
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+            >
+              <CarouselContent>
+                {sponsored.map((card, index) => (
+                  <CarouselItem key={index} className="md:basis-1/3 lg:basis-1/5 pl-[14px]">
+                    <div className="p-1 grid">
+                      <Card className="overflow-hidden dark:border-[#2d3a4e] shadow-[0_2px_4px_rgba(0,0,0,0.25)] transition-all hover:shadow-[0_8px_16px_rgba(0,0,0,0.32)] hover:scale-[1.02]">
+                        <CardContent className="p-0">
+                          <div className="relative h-48 sm:h-64">
+                            <Image
+                              src={card.image}
+                              alt={card.name}
+                              layout="fill"
+                              objectFit="cover"
+                              objectPosition="center"
+                            />
+                          </div>
+                          <div className="p-4 pt-3 border-t border-t-gray-900/15 dark:border-none">
+                            <h3 className="text-xl font-semibold mb-[10px]">{card.name}</h3>
+                            <p className="text-sm text-gray-600 mb-4">{card.description}</p>
+                            <Link href={card.link} passHref target="_blank">
+                              <Button className="w-full">
+                                Learn More
+                              </Button>
+                            </Link>
+                          </div>
+                        </CardContent>
+                      </Card>
                     </div>
-                    <Link href="https://www.geeksforgeeks.org/python-data-structures/" target="_blank" passHref>
-                      <Button variant="secondary" className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-800">Preview</Button>
-                    </Link>
-                  </div>
-                </Card>
-              ))}
-            </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="hidden md:inline-flex" />
+              <CarouselNext className="hidden md:inline-flex" />
+            </Carousel>
           </section>
         </TabsContent>
         

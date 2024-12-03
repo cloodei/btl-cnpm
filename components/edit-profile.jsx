@@ -6,7 +6,7 @@ import { FloatInput } from "@/components/ui/float-input";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { updateProfile } from "@/app/actions/user";
 import { useToast } from "@/hooks/use-toast";
-import { Pencil } from "lucide-react";
+import { Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const DEFAULT_AVATARS = [
@@ -71,7 +71,7 @@ export default function EditProfileModal({ currentUsername, currentImageUrl, use
   return (
   <>
     <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)} {...props} className={className}>
-      <Pencil className="w-6 h-6" />
+      <Settings className="md:w-8 md:h-8 w-[26px] h-[26px]" />
     </Button>
 
     <Dialog open={isEditing} onOpenChange={setIsEditing}>

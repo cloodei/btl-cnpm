@@ -140,7 +140,7 @@ export default function CreateComponent() {
         
         <div className="lg:space-y-[36px] space-y-6 shadow-sm">
           {cards.map((card, index) => (
-            <Card key={index} className="dark:border-[#232a33] shadow-[0_1px_12px_rgba(0,0,0,0.24)] dark:shadow-none">
+            <Card key={index} className="dark:border-[#232a33] shadow-[0_2px_7px_rgba(0,0,0,0.25)]">
               <div className="font-medium pt-3 pl-5 pr-4 text-[22px] flex items-center justify-between">
                 <span>Card {index + 1}</span>
                 <Button
@@ -171,9 +171,9 @@ export default function CreateComponent() {
             </Card>
           ))}
         </div>
-        <div ref={bottomRef} className="border-gray-300 dark:border-[#282e41] lg:mt-11 mt-8 shadow-sm" style={{ scrollMarginBottom: "32px" }}>
-          <Button onClick={addCard} className="border-gray-400 dark:border-[#3c4152] w-full hover:bg-[#ced4e0] dark:hover:bg-gray-800 duration-200" variant="outline">
-            <Plus className="border-gray-300 dark:border-[#282e41] mr-2 h-4 w-4" />
+        <div ref={bottomRef} style={{ scrollMarginBottom: "32px" }}>
+          <Button onClick={addCard} className="border-[#c5cbd6] dark:border-[#2a2e3b] lg:mt-11 mt-8 w-full duration-200" variant="outline">
+            <Plus className="mr-2 h-4 w-4" />
             Add Card
           </Button>
         </div>

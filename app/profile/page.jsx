@@ -52,13 +52,13 @@ async function PageWrapper() {
     <div className="container mx-auto max-w-6xl py-8 px-4 grid gap-6">
       <div className="flex flex-col items-center justify-center gap-4">
         <div className="relative">
-          <Avatar className="md:h-32 md:w-32 w-24 h-24 drop-shadow-[0_2px_10px_rgba(0,0,0,0.75)]">
+          <Avatar className="md:h-32 md:w-32 w-24 h-24 drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]">
             <AvatarImage src={user.imageurl} alt={user.username} />
             <AvatarFallback className="text-3xl font-medium bg-[#d6dae2] dark:bg-gray-700">
               {generateNameInitials(user.username)}
             </AvatarFallback>
           </Avatar>
-          <EditProfileModal currentUsername={user.username} currentImageUrl={user.imageurl} userId={userId} allNames={allNames} className="absolute -bottom-[6.5px] -right-[6.5px]" />
+          <EditProfileModal currentUsername={user.username} currentImageUrl={user.imageurl} userId={userId} allNames={allNames} className="absolute md:-bottom-[13px] -bottom-[14px] md:-right-[13px] -right-[14px]" />
         </div>
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-0 truncate">
@@ -147,7 +147,7 @@ async function PageWrapper() {
           <Link href={'/my-decks'} className="px-[18px] pt-2 pb-2 text-base text-primary bg-primary-foreground rounded-lg transition hover:bg-slate-300 dark:hover:bg-gray-800 border border-gray-300 dark:border-gray-800">
             View your Decks
           </Link>
-          <LogoutButton size="lg" className="text-base px-5 transition-all ease-out hover:gap-3" />
+          <LogoutButton size="lg" className="text-base px-5 transition-all ease-out hover:gap-2" />
         </div>
       </Card>
     </div>

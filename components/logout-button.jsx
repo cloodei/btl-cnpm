@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LogoutButton({
-  className = "transition-all hover:gap-3",
+  className = "transition-all hover:gap-2",
   variant = "expandIconDestructive",
   size = "default",
   children = "Log out"

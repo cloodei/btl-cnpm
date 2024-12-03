@@ -13,7 +13,7 @@ export default function RatingButton({ deckId, userId, avgRating = 0 }) {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-
+  
   const { data: userRatingData, isFetching } = useQuery({
     queryKey: ['rating', deckId, userId],
     queryFn: () => getUserRating({ deckId, userId }),
@@ -50,7 +50,7 @@ export default function RatingButton({ deckId, userId, avgRating = 0 }) {
   }
 
   const userRating = (userRatingData?.success ? userRatingData.rating : 0);
-
+  
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>

@@ -39,12 +39,14 @@ export default function FavoritesClient({ decks }) {
           {decks.map((deck) => (
             <motion.div key={deck.id} variants={animations.item}>
               <Link href={`/decks/${deck.id}`}>
-                <div className="group relative rounded-lg border bg-card p-6 transition-all duration-200 shadow-[0_3px_12px_rgba(0,0,0,0.23)] hover:shadow-[0_8px_36px_rgba(0,0,0,0.28)] hover:scale-[1.02] dark:hover:shadow-[0_6px_20px_rgba(255,255,255,0.19)]">
-                  <div className="absolute md:right-6 right-4 md:top-6 top-4">
-                    <Heart className="h-5 w-5 text-red-500" fill="currentColor" />
+                <div className="group relative rounded-lg border bg-card p-6 transition-all duration-200 shadow-[0_2px_6px_rgba(0,0,0,0.3)] hover:shadow-[0_6px_24px_rgba(0,0,0,0.28)] hover:scale-[1.02] dark:hover:shadow-[0_4px_16px_rgba(255,255,255,0.24)]">
+                  <div className="absolute right-6 top-7">
+                    <Heart className="h-[28px] w-[28px] text-red-500 dark:text-red-400/90 animate-bounce [animation-duration:_1.5s] ease-linear" />
                   </div>
                   <div className="mb-4 pr-8">
-                    <h3 className="text-xl font-semibold truncate">{deck.name}</h3>
+                    <h3 className="text-xl font-semibold truncate [text-shadow:_0_3px_6px_rgb(18,18,24,0.25)] dark:[text-shadow:_0_1px_8px_rgb(145_164_203_/_0.6)]">
+                      {deck.name}
+                    </h3>
                   </div>
                   <div className="space-y-3">
                     <div className="flex items-center text-sm text-muted-foreground">
