@@ -172,7 +172,7 @@ export default function CreateComponent() {
           ))}
         </div>
         <div ref={bottomRef} style={{ scrollMarginBottom: "32px" }}>
-          <Button onClick={addCard} className="border-[#c5cbd6] dark:border-[#2a2e3b] lg:mt-11 mt-8 w-full duration-200" variant="outline">
+          <Button onClick={addCard} className="border-[#c5cbd6] dark:border-[#222530] lg:mt-11 mt-8 w-full duration-200" variant="outline">
             <Plus className="mr-2 h-4 w-4" />
             Add Card
           </Button>

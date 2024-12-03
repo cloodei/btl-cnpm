@@ -125,15 +125,14 @@ export default async function ExplorePage() {
                 {sponsored.map((card, index) => (
                   <CarouselItem key={index} className="md:basis-1/3 lg:basis-1/5 pl-[14px]">
                     <div className="p-1 grid">
-                      <Card className="overflow-hidden dark:border-[#2d3a4e] shadow-[0_2px_4px_rgba(0,0,0,0.25)] transition-all hover:shadow-[0_8px_16px_rgba(0,0,0,0.32)] hover:scale-[1.02]">
+                      <Card className="overflow-hidden dark:border-[#2f3235] shadow-[0_2px_4px_rgba(0,0,0,0.25)] transition-all hover:scale-[1.02]">
                         <CardContent className="p-0">
                           <div className="relative h-48 sm:h-64">
                             <Image
                               src={card.image}
                               alt={card.name}
-                              layout="fill"
+                              fill={true}
                               objectFit="cover"
-                              objectPosition="center"
                             />
                           </div>
                           <div className="p-4 pt-3 border-t border-t-gray-900/15 dark:border-none">
