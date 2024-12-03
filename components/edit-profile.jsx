@@ -33,8 +33,25 @@ export default function EditProfileModal({ currentUsername, currentImageUrl, use
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    const lowered = username.trim().toLowerCase();
+    if(lowered.length < 4) {
+      toast({
+        title: "Error",
+        description: "Username must be at least 4 characters",
+        variant: "destructive",
+        duration: 2500
+      });
+      setIsLoading(false);
+      setIsEditing(false);
+      return;
+    }
+    if(lowered === currentUsername.toLowerCase() && selectedImage === currentImageUrl) {
+      setIsLoading(false);
+      setIsEditing(false);
+      return;
+    }
     for(const name of allNames) {
-      if(name.username.toLowerCase() === username.toLowerCase()) {
+      if(name.toLowerCase() === lowered) {
         toast({
           title: "Error",
           description: "Username already exists!",

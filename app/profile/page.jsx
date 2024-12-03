@@ -32,12 +32,10 @@ async function PageWrapper() {
   if(!userId) {
     return <ProfileException error="Please sign in to view your profile" />;
   }
-
   const { success, user, decks, countFav, allNames } = await getCachedUserInfoWithDecks(userId);
   if(!success) {
     return <ProfileException error="Failed to load profile" />;
   }
-  
   const generateNameInitials = (name) => {
     let initials = (name[0]).toUpperCase();
     for(let i = 1; i < name.length; i++) {
@@ -47,7 +45,12 @@ async function PageWrapper() {
     }
     return initials;
   }
-  
+  let filterNames = []
+  for(let i = 0; i < allNames.length; i++) {
+    if(allNames[i].username !== user.username) {
+      filterNames.push(allNames[i].username)
+    }
+  }
   return (
     <div className="container mx-auto max-w-6xl py-8 px-4 grid gap-6">
       <div className="flex flex-col items-center justify-center gap-4">
@@ -58,7 +61,7 @@ async function PageWrapper() {
               {generateNameInitials(user.username)}
             </AvatarFallback>
           </Avatar>
-          <EditProfileModal currentUsername={user.username} currentImageUrl={user.imageurl} userId={userId} allNames={allNames} className="absolute md:-bottom-[13px] -bottom-[14px] md:-right-[13px] -right-[14px]" />
+          <EditProfileModal currentUsername={user.username} currentImageUrl={user.imageurl} userId={userId} allNames={filterNames} className="absolute md:-bottom-[13px] -bottom-[14px] md:-right-[13px] -right-[14px]" />
         </div>
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-0 truncate">
