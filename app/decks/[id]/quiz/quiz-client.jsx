@@ -22,10 +22,6 @@ function shuffleArray(arr) {
 }
 
 function generateAnswers(correctAnswer, allCards, useFront) {
-  // const otherAnswers = allCards.map(card => useFront ? card.front : card.back).filter(answer => answer !== correctAnswer);
-  // const uniqueAnswers = [...new Set(otherAnswers)];
-  // const shuffledOthers = shuffleArray(uniqueAnswers).slice(0, 3);
-  // return shuffleArray([...shuffledOthers, correctAnswer]);
   let wrongSet = new Set();
   for(const card of allCards) {
     wrongSet.add(useFront ? card.front : card.back);
@@ -38,23 +34,12 @@ function generateAnswers(correctAnswer, allCards, useFront) {
   }
   return shuffleArray(res);
 }
-// function generateAnswers(correctAnswer, allCards, useFront) {
-//   let answerSet = new Set();
-//   answerSet.add(correctAnswer);
-//   let cardLength = allCards.length;
-//   while(answerSet.size < 4 && answerSet.size < cardLength) {
-//     const randomIndex = Math.floor(Math.random() * cardLength);
-//     const answer = useFront ? allCards[randomIndex].front : allCards[randomIndex].back;
-//     answerSet.add(answer);
-//   }
-//   return shuffleArray(Array.from(answerSet));
-// }
 
 const TIME_PER_QUESTION = 15;
 
 export default function QuizPageClient({ deckTitle, cards }) {
   const [stage, setStage] = useState(1);  // 1: form | 2: countdown | 3: start
-  const [countdown, setCountdown] = useState(3);
+  const [countdown, setCountdown] = useState(-1);
   const [questionCount, setQuestionCount] = useState(Math.min(10, cards.length));
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -66,11 +51,12 @@ export default function QuizPageClient({ deckTitle, cards }) {
   const { setIsQuizActive } = useQuiz();
   const router = useRouter();
 
-  const handleQuestionCountSubmit = (event) => {
-    event.preventDefault();
+  const handleQuestionCountSubmit = (e) => {
+    e.preventDefault();
     setQuestionCount(questionCount);
     setIsQuizActive(true);
     setStage(2);
+    setCountdown(3);
   };
 
   useEffect(() => {
@@ -81,16 +67,13 @@ export default function QuizPageClient({ deckTitle, cards }) {
   }, [isFinished]);
   
   useEffect(() => {
+    let timer1;
     if(timeLeft > 0 && !isFinished) {
-      const timer2 = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
-      return () => clearTimeout(timer2);
+      timer1 = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
     }
     else if(timeLeft === 0 && !isFinished) {
       if(results.length < questions.length) {
         let endResult = Array(questions.length);
-        // for(let i = currentQuestionIndex; i < questions.length; i++) {
-        //   endResult.push({ question: questions[i].question, correctAnswer: questions[i].answer, userAnswer: null, isCorrect: false, isUnanswered: true });
-        // }
         for(let i = 0; i < questions.length; i++) {
           endResult[i] = (i < currentQuestionIndex) ? results[i] : {
             question: questions[i].question,
@@ -104,14 +87,15 @@ export default function QuizPageClient({ deckTitle, cards }) {
       }
       setIsFinished(true);
     }
-  }, [timeLeft, questions, currentQuestionIndex]);
+    return () => clearInterval(timer1);
+  }, [timeLeft]);
   
   useEffect(() => {
-    if(stage === 2 && countdown) {
-      const timer1 = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer1);
+    let timer2;
+    if(stage === 2 && countdown > 0) {
+      timer2 = setInterval(() => setCountdown(prev => prev - 1), 1000);
     }
-    else if(stage === 2 && !countdown) {
+    else if(stage === 2 && countdown === 0) {
       setStage(3);
       const random = shuffleArray(cards);
       const pickAllQuestions = Array(questionCount);
@@ -129,7 +113,8 @@ export default function QuizPageClient({ deckTitle, cards }) {
       setAnswers(generateAnswers(reShuffle[0].answer, cards, reShuffle[0].useFront));
       setTimeLeft(questionCount * TIME_PER_QUESTION);
     }
-  }, [countdown, stage, questionCount]);
+    return () => clearInterval(timer2);
+  }, [countdown]);
 
   const handleAnswer = (answer) => {
     setSelectedAnswer(answer);
@@ -140,24 +125,19 @@ export default function QuizPageClient({ deckTitle, cards }) {
       userAnswer: answer,
       isCorrect: answer === currentQuestion.answer
     }]);
+    if(currentQuestionIndex === questions.length - 1) {
+      setIsFinished(true);
+      return;
+    }
     setTimeout(() => {
-      if(currentQuestionIndex < questions.length - 1) {
-        const nextQuestion = questions[currentQuestionIndex + 1];
-        setCurrentQuestionIndex(prev => prev + 1);
-        setSelectedAnswer(null);
-        setAnswers(generateAnswers(nextQuestion.answer, cards, nextQuestion.useFront));
-      }
-      else {
-        setIsFinished(true);
-      }
+      const nextQuestion = questions[currentQuestionIndex + 1];
+      setCurrentQuestionIndex(prev => prev + 1);
+      setSelectedAnswer(null);
+      setAnswers(generateAnswers(nextQuestion.answer, cards, nextQuestion.useFront));
     }, 500)
   };
 
   const handleTerminate = () => {
-    if(results.length === questions.length) {
-      setIsFinished(true);
-      return;
-    }
     const n = questions.length;
     let lastRes = new Array(n);
     for(let i = 0; i < n; i++) {
@@ -184,11 +164,11 @@ export default function QuizPageClient({ deckTitle, cards }) {
           <form onSubmit={handleQuestionCountSubmit} className="space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">
-                Number of Questions (3 - {cards.length})
+                Number of Questions (4 - {cards.length})
               </label>
               <Input 
                 type="number"
-                min="3"
+                min="4"
                 max={cards.length}
                 value={questionCount}
                 onChange={(e) => setQuestionCount(Number(e.target.value))}
@@ -242,7 +222,7 @@ export default function QuizPageClient({ deckTitle, cards }) {
           </div>
         </div>
         <Button variant="destructive" onClick={handleTerminate} className="absolute xl:-right-48 right-1 -top-1">
-          <X className="h-9 w-9 mr-1 text-4xl" size={40} />
+          <X className="mr-1 text-4xl" size={22} />
           Exit Quiz
         </Button>
       </div>

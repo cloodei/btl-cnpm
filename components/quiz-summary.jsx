@@ -10,14 +10,23 @@ import QuizPageClient from "@/app/decks/[id]/quiz/quiz-client";
 
 export function QuizSummary({ results, totalTime, totalQuestions, deckTitle, cards }) {
   const [retake, setRetake] = useState(false);
-  const [visibleResults, setVisibleResults] = useState(Math.min(5, results.length));
+  const [pageLen, setPageLen] = useState(Math.min(5, results.length));
   if(retake) {
     return <QuizPageClient deckTitle={deckTitle} cards={cards} />;
   }
   const router = useRouter();
-  const correctAnswers = results.filter(r => r.isCorrect).length
-  const accuracy = (correctAnswers / totalQuestions) * 100
-  const averageTime = totalTime / totalQuestions
+  let correctAnswers = 0;
+  let answered = 0;
+  for(const result of results) {
+    if(!result.isUnanswered) {
+      answered++;
+      if(result.isCorrect) {
+        correctAnswers++;
+      }
+    }
+  }
+  const averageTime = answered ? (totalTime / answered).toFixed(1) + "s" : "N/A";
+  const accuracy = ((correctAnswers / totalQuestions) * 100).toFixed(1);
   const stats = [
     {
       icon: Trophy,
@@ -28,7 +37,7 @@ export function QuizSummary({ results, totalTime, totalQuestions, deckTitle, car
     {
       icon: Goal,
       label: "Accuracy",
-      value: `${accuracy.toFixed(1)}%`,
+      value: `${accuracy}%`,
       color: "text-rose-500",
     },
     {
@@ -40,7 +49,7 @@ export function QuizSummary({ results, totalTime, totalQuestions, deckTitle, car
     {
       icon: Zap,
       label: "Avg. Time per Question",
-      value: `${averageTime.toFixed(2)}s`,
+      value: `${averageTime}`,
       color: "text-purple-500",
     },
   ]
@@ -74,16 +83,15 @@ export function QuizSummary({ results, totalTime, totalQuestions, deckTitle, car
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.25, staggerChildren: 0.1 }}
           className="space-y-4"
         >
           <h2 className="text-2xl font-semibold mb-6">Question Review</h2>
-          {results.slice(0, visibleResults).map((result, index) => (
+          {results.slice(0, pageLen).map((result, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 * index }}
             >
               <Card className={cn("pl-6 pt-[18px] pb-[22px]", result.isUnanswered ? "border-[#969699d7] dark:border-[#435064] border-dashed" : (result.isCorrect ? "border-green-300 dark:border-green-900" : "border-red-300 dark:border-red-900"))}>
                 <div className="flex items-center gap-5">
@@ -122,17 +130,14 @@ export function QuizSummary({ results, totalTime, totalQuestions, deckTitle, car
             </motion.div>
           ))}
 
-          {(visibleResults < results.length) && (
+          {(pageLen < results.length) && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.25 }}
               className="flex justify-center mt-6"
             >
-              <Button
-                variant="outline"
-                onClick={() => setVisibleResults(prev => Math.min(prev + 5, results.length))}
-              >
+              <Button variant="outline" onClick={() => setPageLen(prev => Math.min(prev + 5, results.length))}>
                 View More
               </Button>
             </motion.div>
@@ -140,7 +145,7 @@ export function QuizSummary({ results, totalTime, totalQuestions, deckTitle, car
         </motion.div>
 
         <div className="flex justify-center gap-4 mt-12">
-          <Button variant="outline" size="lg" onClick={() => router.back()}>
+          <Button variant="outline" size="lg" onClick={router.back}>
             Back to Deck
           </Button>
           <Button size="lg" onClick={() => setRetake(true)}>

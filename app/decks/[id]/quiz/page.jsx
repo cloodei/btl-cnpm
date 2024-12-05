@@ -12,7 +12,7 @@ function IneligibleDeck({ message = "This deck is not eligible for a test", card
       </p>
       {cardCount && (
         <p className="text-center text-base font-medium text-muted-foreground pb-3">
-          Deck has {cardCount} cards, you need 3 or more cards for a test.
+          Deck has {cardCount} cards, you need 4 or more cards for a test.
         </p>
       )}
       <div className="flex items-center justify-center gap-3 mt-4">
@@ -40,7 +40,7 @@ export default async function QuizPage({ params }) {
     const err = error?.message || error || "Failed to load deck";
     return <IneligibleDeck message={err} />;
   }
-  if(cards.length < 3) {
+  if(cards.length < 4) {
     return <IneligibleDeck message="Not enough cards for a test" cardCount={cards.length} />;
   }
   return <QuizPageClient deckTitle={deck.title} cards={cards} />;

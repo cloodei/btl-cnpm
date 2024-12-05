@@ -27,37 +27,19 @@ export async function createDeck({ title, cards, isPublic }: { title: string, ca
       VALUES (${userId}, ${title}, ${isPublic})
       RETURNING id
     `;
-    let cardsObj = Array(cards.length);
+    let values = "";
     for(let i = 0; i < cards.length; i++) {
-      cardsObj[i] = { deck_id: deck.id, front: cards[i].front, back: cards[i].back };
+      values += `($${i * 3 + 1}, $${i * 3 + 2}, $${i * 3 + 3}), `;
     }
-    await sql`
-      INSERT INTO cards(deck_id, front, back)
-      SELECT ${deck.id}, front, back
-      FROM json_to_recordset(${JSON.stringify(cardsObj)})
-      AS cards(deck_id int, front varchar, back varchar)
-    `;
+    const query = `INSERT INTO cards(deck_id, front, back) VALUES ${values.slice(0, -2)}`;
+    const flatParams = cards.flatMap(card => [deck.id, card.front, card.back]);
+    await sql(query, flatParams);
     revalidateTag('decks');
     revalidateTag(`deck-${deck.id}`);
     if(isPublic) {
       revalidateTag('recent-decks');
     }
     return { success: true };
-  }
-  catch(error) {
-    return { success: false, error };
-  }
-}
-
-export async function getDecks(userId: string) {
-  "use server";
-  try {
-    const decks = await sql`
-      SELECT id, name
-      FROM decks
-      WHERE creator_id = ${userId}
-    `;
-    return { success: true, decks };
   }
   catch(error) {
     return { success: false, error };
@@ -127,30 +109,6 @@ export const getRecentDecksWithCardsCount = unstable_cache(async (userId: string
   }, ["get-recent-decks"], { tags: ['recent-decks', 'favorites'], revalidate: 90 }
 );
 
-export async function getDeck(deckId: number) {
-  try {
-    const [deck] = await sql`
-      SELECT d.id, d.creator_id, d.name, d.total_rating, d.count_ratings, d.public, d.created_at, d.updated_at, u.username
-      FROM decks AS d
-      INNER JOIN users AS u
-      ON d.creator_id = u.id
-      WHERE d.id = ${deckId}
-    `;
-    if(!deck) {
-      return { success: false, error: 'Deck not found' };
-    }
-    const cards = await sql`
-      SELECT front, back
-      FROM cards
-      WHERE deck_id = ${deckId}
-    `;
-    return { success: true, deck, cards };
-  }
-  catch(error) {
-    return { success: false, error };
-  }
-}
-
 export async function getCachedDeck({ deckId, userId }: { deckId: number, userId: string }) {
   if(!deckId || isNaN(deckId)) {
     return { success: false, error: 'Invalid deck ID' };
@@ -158,35 +116,37 @@ export async function getCachedDeck({ deckId, userId }: { deckId: number, userId
   return unstable_cache(
     async () => {
       try {
-        const [deck] = await sql`
-          SELECT d.id, d.creator_id, d.name, d.public, d.created_at, d.updated_at, u.username,
-          EXISTS(SELECT 1 FROM favorite_decks WHERE deck_id = d.id AND viewer_id = ${userId}) AS is_favorite
-          FROM decks AS d
-          INNER JOIN users AS u
-          ON d.creator_id = u.id
-          WHERE d.id = ${deckId}
-        `;
-        if(!deck) {
+        const [deck, cards, avg_rating] = await Promise.all([
+          sql`
+            SELECT d.id, d.creator_id, d.name, d.public, d.created_at, d.updated_at, u.username,
+            EXISTS(SELECT 1 FROM favorite_decks WHERE deck_id = d.id AND viewer_id = ${userId}) AS is_favorite
+            FROM decks AS d
+            INNER JOIN users AS u
+            ON d.creator_id = u.id
+            WHERE d.id = ${deckId}
+          `,
+          sql`
+            SELECT front, back
+            FROM cards
+            WHERE deck_id = ${deckId}
+          `,
+          sql`
+            SELECT AVG(rating) AS avg_rating
+            FROM ratings
+            WHERE deck_id = ${deckId}
+            GROUP BY deck_id
+          `
+        ]);
+        if(!deck[0]) {
           return { success: false, error: 'Deck not found' };
         }
-        const cards = await sql`
-          SELECT front, back
-          FROM cards
-          WHERE deck_id = ${deckId}
-        `;
-        const [avg_rating] = await sql`
-          SELECT AVG(rating) AS avg_rating
-          FROM ratings
-          WHERE deck_id = ${deckId}
-          GROUP BY deck_id
-        `;
-        const avgRating = avg_rating?.avg_rating ? parseFloat(avg_rating.avg_rating) : 0;
-        return { success: true, deck, cards, avgRating };
+        const avgRating = avg_rating[0]?.avg_rating ? parseFloat(avg_rating[0].avg_rating) : 0;
+        return { success: true, deck: deck[0], cards, avgRating };
       }
       catch(error) {
         return { success: false, error };
       }
-    }, [`deck-${deckId}`], { tags: [`deck-${deckId}`], revalidate: 105 }
+    }, [`deck-${deckId}`], { tags: [`deck-${deckId}`], revalidate: 90 }
   )();
 }
 
@@ -216,7 +176,7 @@ export async function getFeaturedDeck({ deckId, userId }: { deckId: number, user
       ]);
       const avgRating = avg_rating[0]?.avg_rating ? parseFloat(avg_rating[0].avg_rating) : 0;
       return { success: true, deck: deck[0], cards, avgRating };
-    }, [`get-featured-deck-${deckId}`], { tags: [`featured-deck-${deckId}`], revalidate: 300 }
+    }, [`get-featured-deck-${deckId}`], { tags: [`featured-deck-${deckId}`], revalidate: 600 }
   )();
 }
 
@@ -259,10 +219,7 @@ export async function updateDeck({ deckId, title, cards, isPublic }: { deckId: n
 export async function deleteDeck(deckId: number) {
   "use server";
   try {
-    await sql`
-      DELETE FROM decks
-      WHERE id = ${deckId}
-    `;
+    await sql `DELETE FROM decks WHERE id = ${deckId}`;
     revalidateTag('decks');
     revalidateTag(`deck-${deckId}`);
     if(deckId === 9 || deckId === 11 || deckId === 12) {

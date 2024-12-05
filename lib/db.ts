@@ -24,12 +24,8 @@ export async function query<T = any>(text: string, params: any[] = []): Promise<
 
 export async function multiQuery(queries: string[], params: any[][] = []) {
   return withConnection(async (client) => {
-    const results = new Array(queries.length);
-    for(let i = 0; i < queries.length; i++) {
-      const result = await client.query(queries[i], params[i] || []);
-      results[i] = result.rows;
-    }
-    return results;
+    const result = await Promise.all(queries.map((query, i) => client.query(query, params[i] || [])));
+    return result.map(r => r.rows);
   });
 }
 

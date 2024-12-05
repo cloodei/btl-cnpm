@@ -23,20 +23,10 @@ export default function CreateComponent() {
 
   const handleSave = async () => {
     const title = deckTitle.trim();
-    if(!title) {
+    if(!title || title.length > 64 || title.length < 4) {
       toast({
         title: "Error",
-        description: "Deck title is required!",
-        variant: "destructive",
-        duration: 2400,
-      });
-      setIsOpen(false);
-      return;
-    }
-    if(title > 64) {
-      toast({
-        title: "Error",
-        description: "Deck title must be 64 characters or less",
+        description: "Deck title must have at least 4 characters or 64 characters and less",
         variant: "destructive",
         duration: 2400,
       });
@@ -180,8 +170,8 @@ export default function CreateComponent() {
       </div>
     </div>
 
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[408px]">
+    <Dialog open={isOpen} onOpenChange={(open) => { if(!isSaving) setIsOpen(open) }}>
+      <DialogContent className="sm:max-w-[408px]" hideClose={isSaving}>
         <DialogHeader>
           <DialogTitle className="text-2xl">Save Deck</DialogTitle>
           <DialogDescription className="text-muted-foreground pt-2">
@@ -192,9 +182,13 @@ export default function CreateComponent() {
           <Button variant="outline" onClick={() => setIsOpen(false)} disabled={isSaving}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={isSaving} className="flex gap-2">
-            {isSaving && <Loader2 className="h-4 w-4 animate-spin" />}
-            {isSaving ? "Saving..." : "Save Deck"}
+          <Button onClick={handleSave} disabled={isSaving}>
+            {isSaving ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin mr-[6px]" />
+                Saving...
+              </>
+            ) : "Save Deck"}
           </Button>
         </DialogFooter>
       </DialogContent>

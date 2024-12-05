@@ -15,7 +15,7 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
   const [cards, setCards] = useState(initialCards);
   const [isWaiting, setIsWaiting] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-  const [dialogAction, setDialogAction] = useState(0); // save or delete
+  const [dialogAction, setDialogAction] = useState(0);
   const [isPublic, setIsPublic] = useState(deck.public);
   const [deckTitle, setDeckTitle] = useState(deck.name);
   const bottomRef = useRef(null);
@@ -24,22 +24,12 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
 
   const handleSave = async () => {
     const title = deckTitle.trim();
-    if(!title) {
+    if(!title || title.length > 64 || title.length < 4) {
       toast({
         title: "Error",
-        description: "Please enter a deck title",
+        description: "Deck title must have at least 4 characters or 64 characters and less",
         variant: "destructive",
-        duration: 2400,
-      });
-      setOpenDialog(false);
-      return;
-    }
-    if(title.length > 64) {
-      toast({
-        title: "Error",
-        description: "Deck title must be 64 characters or less",
-        variant: "destructive",
-        duration: 2400,
+        duration: 2400
       });
       setOpenDialog(false);
       return;
@@ -57,7 +47,7 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
         title: "Error",
         description: "Please add at least one complete card",
         variant: "destructive",
-        duration: 2400,
+        duration: 2400
       });
       setOpenDialog(false);
       return;
@@ -68,7 +58,7 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
       toast({
         title: "Success!",
         description: "Deck updated successfully",
-        duration: 2400,
+        duration: 2400
       });
       router.push('/my-decks');
     }
@@ -77,7 +67,7 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
         title: "Error",
         description: error?.message || error || "Failed to update deck",
         variant: "destructive",
-        duration: 2400,
+        duration: 2400
       });
     }
     setIsWaiting(false);
@@ -86,7 +76,7 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
 
   const handleDeleteDeck = async () => {
     setIsWaiting(true);
-    const { success } = await deleteDeck(deck.id);
+    const { success, error } = await deleteDeck(deck.id);
     if(success) {
       toast({
         title: "Success",
@@ -98,7 +88,7 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
     else {
       toast({
         title: "Error",
-        description: "Failed to delete deck",
+        description: error?.message || error || "Failed to delete deck",
         variant: "destructive",
         duration: 2400,
       });
@@ -191,7 +181,7 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
         </div>
       </div>
 
-      <Dialog open={openDialog} onOpenChange={(open) => { if(!isWaiting) setOpenDialog(open) }} modal={true}>
+      <Dialog open={openDialog} onOpenChange={(open) => { if(!isWaiting) setOpenDialog(open) }}>
         <DialogContent hideClose={isWaiting}>
           <DialogTitle>
             {dialogAction ? (
@@ -215,14 +205,22 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
               Cancel
             </Button>
             {dialogAction ? (
-              <Button onClick={handleSave} disabled={isWaiting} className="gap-2">
-                {isWaiting && <Loader2 className="h-4 w-4 animate-spin" />}
-                {isWaiting ? "Saving..." : "Save Changes"}
+              <Button onClick={handleSave} disabled={isWaiting}>
+                {isWaiting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-[6px]" />
+                    Saving...
+                  </>
+                ) : "Save Changes"}
               </Button>
             ) : (
-              <Button variant="destructive" onClick={handleDeleteDeck} disabled={isWaiting} className="gap-2">
-                {isWaiting && <Loader2 className="h-4 w-4 animate-spin" />}
-                {isWaiting ? "Deleting..." : "Delete Deck"}
+              <Button variant="destructive" onClick={handleDeleteDeck} disabled={isWaiting}>
+                {isWaiting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-[6px]" />
+                    Deleting...
+                  </>
+                ) : "Delete Deck"}
               </Button>
             )}
           </DialogFooter>

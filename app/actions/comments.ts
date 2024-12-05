@@ -4,19 +4,34 @@ import sql from "@/lib/db";
 export async function getComments(deckId: number, page: number = 1) {
   try {
     const offset = (page - 1) * 10;
-    const comments = await sql`
-      SELECT c.*, u.username, u.imageurl
-      FROM comments c
-      JOIN users u ON c.commenter_id = u.id
-      WHERE c.deck_id = ${deckId}
-      ORDER BY c.created_at DESC
-      LIMIT 10 OFFSET ${offset}
-    `;
-    const totalCount = await sql`
-      SELECT COUNT(*) 
-      FROM comments 
-      WHERE deck_id = ${deckId}
-    `;
+    // const comments = await sql`
+    //   SELECT c.*, u.username, u.imageurl
+    //   FROM comments c
+    //   JOIN users u ON c.commenter_id = u.id
+    //   WHERE c.deck_id = ${deckId}
+    //   ORDER BY c.created_at DESC
+    //   LIMIT 10 OFFSET ${offset}
+    // `;
+    // const totalCount = await sql`
+    //   SELECT COUNT(*) 
+    //   FROM comments 
+    //   WHERE deck_id = ${deckId}
+    // `;
+    const [comments, totalCount] = await Promise.all([
+      sql`
+        SELECT c.*, u.username, u.imageurl
+        FROM comments c
+        JOIN users u ON c.commenter_id = u.id
+        WHERE c.deck_id = ${deckId}
+        ORDER BY c.created_at DESC
+        LIMIT 10 OFFSET ${offset}
+      `,
+      sql`
+        SELECT COUNT(*) 
+        FROM comments 
+        WHERE deck_id = ${deckId}
+      `
+    ]);
     const total = parseInt(totalCount[0].count);
     return {
       comments,

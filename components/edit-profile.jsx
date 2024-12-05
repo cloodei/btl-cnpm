@@ -91,7 +91,7 @@ export default function EditProfileModal({ currentUsername, currentImageUrl, use
       <Settings className="md:w-8 md:h-8 w-[26px] h-[26px]" />
     </Button>
 
-    <Dialog open={isEditing} onOpenChange={setIsEditing}>
+    <Dialog open={isEditing} onOpenChange={(open) => { if(!isLoading) setIsEditing(open) }}>
       <DialogContent className="sm:max-w-md" aria-label="Edit Profile" hideClose={isLoading}>
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>

@@ -20,11 +20,11 @@ export default function MyDecksClient({ decks }) {
 
   const handleDeleteDeck = async () => {
     setIsDeleting(true);
-    const result = await deleteDeck(deleteDialog.deckId);
-    if(!result.success) {
+    const { success, error } = await deleteDeck(deleteDialog.deckId);
+    if(!success) {
       toast({
         title: "Error",
-        description: result.error?.message || result.error || "Failed to delete deck",
+        description: error?.message || error || "Failed to delete deck",
         variant: "destructive",
         duration: 2400,
       });
@@ -32,7 +32,7 @@ export default function MyDecksClient({ decks }) {
     else {
       toast({
         title: "Success",
-        description: "Deck deleted successfully",
+        description: `Deck '${deleteDialog.deckName}' has been deleted successfully`,
         duration: 2400,
       });
     }
@@ -57,7 +57,7 @@ export default function MyDecksClient({ decks }) {
       <div className="lg:flex lg:justify-between lg:items-center md:flex md:justify-between md:items-center lg:mb-8 md:mb-6 mb-4 md:px-8 px-5">
         <div className="mb-4">
           <h1 className="lg:text-4xl text-[28px] font-bold mb-2 [text-shadow:_0_1px_4px_rgb(18,18,24,0.22)] dark:[text-shadow:_0_1px_8px_rgb(145_164_203_/_0.6)]">
-            My Flashcard Decks
+            My Decks
           </h1>
           <p className="text-muted-foreground text-sm">
             Manage and study your personal collection of flashcard decks
@@ -74,7 +74,7 @@ export default function MyDecksClient({ decks }) {
       <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {decks.map((deck) => (
           <motion.div key={deck.id} variants={item}>
-            <Card className="relative group transition-all duration-200 shadow-[0_2px_10px_rgba(0,0,0,0.22)] hover:shadow-[0_6px_24px_rgba(0,0,0,0.25)] hover:scale-[1.02] dark:hover:shadow-[0_4px_16px_rgba(255,255,255,0.24)]">
+            <Card className="relative transition-all duration-200 shadow-[0_2px_10px_rgba(0,0,0,0.22)] hover:shadow-[0_6px_24px_rgba(0,0,0,0.25)] hover:scale-[1.02] dark:hover:shadow-[0_4px_16px_rgba(255,255,255,0.24)]">
               <div className="absolute top-4 right-4">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -116,15 +116,10 @@ export default function MyDecksClient({ decks }) {
                         Public
                       </span>
                       <span className="flex items-center">
-                        {deck.public ? (
-                          <>
-                            <Send className="h-5 w-5 mr-1 text-sky-900 dark:text-sky-300/85" />
-                          </>
-                        ) : (
-                          <>
-                            <MessageCircleOff className="h-5 w-5 mr-1 text-rose-900 dark:text-rose-300" />
-                          </>
-                        )}
+                        {deck.public
+                        ? <Send className="h-5 w-5 mr-1 text-sky-900 dark:text-sky-300/85" />
+                        : <MessageCircleOff className="h-5 w-5 mr-1 text-rose-900 dark:text-rose-300" />
+                        }
                       </span>
                     </div>
 
@@ -141,7 +136,7 @@ export default function MyDecksClient({ decks }) {
       </motion.div>
     </div>
       
-    <Dialog open={deleteDialog.isOpen} onOpenChange={(open) => setDeleteDialog({ isOpen: open, deckId: null, deckName: "" })}>
+    <Dialog open={deleteDialog.isOpen} onOpenChange={(open) => { if(!isDeleting) setDeleteDialog({ isOpen: open, deckId: deleteDialog.deckId, deckName: deleteDialog.deckName }) }}>
       <DialogContent className="sm:max-w-[425px]" hideClose={isDeleting}>
         <DialogHeader className="truncate">
           <DialogTitle className="text-xl font-semibold">Delete Deck</DialogTitle>
@@ -156,7 +151,7 @@ export default function MyDecksClient({ decks }) {
           <Button variant="outline" onClick={() => setDeleteDialog({ isOpen: false, deckId: null, deckName: "" })} disabled={isDeleting}>
             Cancel
           </Button>
-          <Button variant="destructive" onClick={handleDeleteDeck} disabled={isDeleting} className="gap-2">
+          <Button variant="destructive" onClick={handleDeleteDeck} className="gap-2" disabled={isDeleting}>
             {isDeleting && <Loader2 className="h-4 w-4 animate-spin" />}
             {isDeleting ? "Deleting..." : "Delete Deck"}
           </Button>
