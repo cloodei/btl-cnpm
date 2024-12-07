@@ -5,9 +5,18 @@ import { useClerk, useSignUp } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UserPlus } from "lucide-react";
+import { revalidateUser } from "@/app/actions/user";
+import PasswordInput from "@/components/password-input";
+
+const fields = [
+  { name: 'account', type: 'text', placeholder: 'Account Name' },
+  { name: 'username', type: 'text', placeholder: 'Username' },
+  { name: 'password', type: 'password', placeholder: 'Password' },
+  { name: 'confirmPassword', type: 'password', placeholder: 'Confirm Password' }
+];
 
 export default function RegisterFormClient() {
-  const [formData, setFormData] = useState({ username: '', email: '', password: '', confirmPassword: '' });
+  const [formData, setFormData] = useState({ account: '', username: '', password: '', confirmPassword: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [errors, setErrors] = useState({});
@@ -16,23 +25,28 @@ export default function RegisterFormClient() {
   const router = useRouter();
 
   const validateForm = () => {
-    const usernameError = !(formData.username = formData.username.trim())
+    let newErrors = {};
+    const nameRegex = /^[\p{L}\p{N}_ ]{4,48}$/u;
+    const accountError  = !(nameRegex.test(formData.account.trim().replace(/\s+/g, ' ')));
+    const usernameError = !(nameRegex.test(formData.username.trim().replace(/\s+/g, ' ')));
     const passwordError = !(formData.password = formData.password.trim())
     const confirmPasswordError = !(formData.confirmPassword = formData.confirmPassword.trim())
-    const newErrors = {};
+    if(accountError) {
+      newErrors.account = "Account name is invalid";
+    }
     if(usernameError) {
-      newErrors.username = (!(!formData.username) ? null : "Username is required")
+      newErrors.username = "Username is invalid";
     }
     if(passwordError) {
-      newErrors.password = (!(!formData.password) ? null : "Password is required")
+      newErrors.password = "Password is required";
     }
     if(confirmPasswordError) {
-      newErrors.confirmPassword = (!(!formData.confirmPassword) ? null : "Confirm Password is required")
+      newErrors.confirmPassword = "Confirm password is required";
     }
     else if(formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match"
+      newErrors.confirmPassword = "Passwords do not match";
     }
-    setError((usernameError || passwordError || confirmPasswordError) ? "Please fill in all fields" : "")
+    setError((newErrors?.account || newErrors?.username || newErrors?.password || newErrors?.confirmPassword) ? "Please fill in all fields" : "");
     setErrors(newErrors)
     return Object.keys(newErrors).length;
   };
@@ -45,7 +59,7 @@ export default function RegisterFormClient() {
     }
     setLoading(true);
     try {
-      const result = await signUp.create({ username: formData.username, password: formData.password });
+      const result = await signUp.create({ username: formData.account, password: formData.password });
       if(result.status !== "complete") {
         throw new Error("Failed to create account");
       }
@@ -61,11 +75,12 @@ export default function RegisterFormClient() {
       if(res.error) {
         throw new Error(res.error);
       }
+      await revalidateUser();
       await setActive({ session: result.createdSessionId });
       router.push("/");
     }
     catch(error) {
-      setError(error.message ? error.message : (error ? error : "An error occurred"));
+      setError(error?.message || error || "An error occurred");
     }
     finally {
       setLoading(false);
@@ -92,20 +107,26 @@ export default function RegisterFormClient() {
       </div>
 
       <div className="space-y-4">
-        {[
-          { name: "username", type: "text", placeholder: "Username" },
-          { name: "password", type: "password", placeholder: "Password" },
-          { name: "confirmPassword", type: "password", placeholder: "Confirm Password" }
-        ].map((field) => (
+        {fields.map((field) => (
           <div key={field.name}>
-            <Input
-              name={field.name}
-              type={field.type}
-              placeholder={field.placeholder}
-              value={formData[field.name]}
-              onChange={handleInputChange}
-              disabled={loading}
-            />
+            {field.name === 'password' || field.name === 'confirmPassword' ? (
+              <PasswordInput
+                name={field.name}
+                placeholder={field.placeholder}
+                value={formData[field.name]}
+                onChange={handleInputChange}
+                disabled={loading}
+              />
+            ) : (
+              <Input
+                name={field.name}
+                type={field.type}
+                placeholder={field.placeholder}
+                value={formData[field.name]}
+                onChange={handleInputChange}
+                disabled={loading}
+              />
+            )}
             {errors[field.name] && (
               <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>
             )}

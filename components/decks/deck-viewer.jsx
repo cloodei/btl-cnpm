@@ -4,34 +4,24 @@ import ReactCardFlip from "react-card-flip";
 import CommentList from "../comments/comment-list";
 import FavoritesButton from "../favorites-button";
 import RatingButton from "../ratings-button";
-import { useState } from "react";
-import { ChevronLeft, ChevronRight, CirclePlay, Pencil, Play } from "lucide-react";
+import { useRef, useState } from "react";
+import { BookOpenText, ChevronLeft, ChevronRight, Cog } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "../ui/input";
+import { Card } from "../ui/card";
 
 export default function DeckViewer({ deck, cards, permissions, userId, avgRating }) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [inputValue, setInputValue] = useState(1);
+  const publicRef = useRef(deck.public);
 
   const handleFlip = () => setIsFlipped(!isFlipped);
 
   const updateCardIndex = (newIndex) => {
     setCurrentCardIndex(newIndex);
     setInputValue(newIndex + 1);
-  };
-
-  const handlePrevCard = () => {
-    if(currentCardIndex > 0) {
-      updateCardIndex(currentCardIndex - 1);
-    }
-  };
-
-  const handleNextCard = () => {
-    if(currentCardIndex < cards.length - 1) {
-      updateCardIndex(currentCardIndex + 1);
-    }
   };
 
   const handleInputChange = (e) => setInputValue(e.target.value);
@@ -50,38 +40,10 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
   return (
     <div className="max-w-4xl mx-auto py-8 px-6 min-h-[calc(100vh-48px)]">
       <div className="mb-8">
-        <div className="flex justify-between items-center mb-3">
-          <h1 className="md:text-4xl text-3xl font-bold truncate overflow-hidden [text-shadow:_0_2px_5px_rgb(23_23_36_/_0.45)] dark:[text-shadow:_0_1px_8px_rgb(145_164_203_/_0.6)]" title={deck.name}>
+        <div className="flex justify-between items-center mb-3" title={deck.name}>
+          <h1 className="md:text-4xl text-2xl font-bold truncate overflow-hidden [text-shadow:_0_2px_5px_rgb(23_23_36_/_0.45)] dark:[text-shadow:_0_1px_8px_rgb(145_164_203_/_0.6)]">
             {deck.name}
           </h1>
-          <div className="flex gap-2 ml-2">
-            <Link href={`/decks/${deck.id}/quiz`} className="sm:block hidden">
-              <Button variant="expandIconOutline" Icon={CirclePlay} iconPlacement="left" className="transition-all ease-out hover:gap-2">
-                Start Test
-              </Button>
-            </Link>
-            <Link href={`/decks/${deck.id}/quiz`} className="sm:hidden block border border-gray-200 dark:border-secondary rounded-md py-[7px] px-[15px] transition duration-200 hover:bg-secondary hover:bg-opacity-10">
-              <Play className="h-5 w-5 text-primary" />
-            </Link>
-            {permissions ? (
-              <>
-                <Link href={`/decks/${deck.id}/edit`} className="sm:block hidden">
-                  <Button variant="expandIconOutline" Icon={Pencil} iconPlacement="left" className="transition-all ease-out hover:gap-2">
-                    Edit Deck
-                  </Button>
-                </Link>
-                <Link href={`/decks/${deck.id}/edit`} className="sm:hidden block border border-gray-200 dark:border-secondary rounded-md py-[7px] px-[15px] transition duration-200 hover:bg-secondary hover:bg-opacity-10">
-                  <Pencil className="h-5 w-5 text-primary" />
-                </Link>
-              </>
-            )
-            : (
-              <>
-                <FavoritesButton deckId={deck.id} is_favorite={deck.is_favorite} size="5" userId={userId} />
-                <RatingButton deckId={deck.id} userId={userId} avgRating={avgRating} />
-              </>
-            )}
-          </div>
         </div>
         <div className="text-primary text-[12px] truncate mb-4 pl-1 pr-7" title={deck.name + ` from ${deck.username}`}>
           Going through  
@@ -124,7 +86,7 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
       </div>
 
       <div className="flex justify-center items-center gap-4">
-        <Button variant="outline" size="lg" onClick={handlePrevCard} disabled={currentCardIndex === 0}>
+        <Button variant="outline" size="lg" onClick={() => updateCardIndex(currentCardIndex - 1)} disabled={currentCardIndex === 0}>
           <ChevronLeft className="h-4 w-4 mr-2" />
           Previous
         </Button>
@@ -138,13 +100,43 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
           onKeyDown={(e) => e.key === "Enter" && handleInputBlur()}
           className="md:w-[68px] w-16 text-center text-sm md:text-base text-primary pr-1 pl-5 py-[10px]"
         />
-        <Button variant="outline" size="lg" onClick={handleNextCard} disabled={currentCardIndex === cards.length - 1}>
+        <Button variant="outline" size="lg" onClick={() => updateCardIndex(currentCardIndex + 1)} disabled={currentCardIndex === cards.length - 1}>
           Next
           <ChevronRight className="h-4 w-4 ml-2" />
         </Button>
       </div>
 
-      {deck.public && <CommentList deckId={deck.id} userId={userId} />}
+      <h1 className="text-lg md:text-xl text-center tracking-tight font-semibold mt-7 mb-2">
+        More Actions
+      </h1>
+      <div className="flex items-center gap-[14px] mx-auto w-fit">
+        <Link href={`/decks/${deck.id}/quiz`}>
+          <Card className="flex flex-col items-center gap-2 rounded-[7px] p-[10px] md:p-3 shadow-[0_2px_4px_rgba(0,0,0,0.35)] transition-all duration-200 hover:bg-secondary">
+            <BookOpenText className="h-8 md:h-9 w-8 md:w-9 text-primary" />
+            <p className="text-xs md:text-sm text-primary">
+              Start Testing
+            </p>
+          </Card>
+        </Link>
+        {permissions ? (
+          <Link href={`/decks/${deck.id}/edit`}>
+            <Card className="flex flex-col items-center gap-2 rounded-[7px] p-[10px] md:p-3 shadow-[0_2px_4px_rgba(0,0,0,0.35)] transition-all duration-200 hover:bg-secondary">
+              <Cog className="h-8 md:h-9 w-8 md:w-9 text-primary" />
+              <p className="text-xs md:text-sm text-primary">
+                Modify Deck
+              </p>
+            </Card>
+          </Link>
+        )
+        : (
+          <>
+            <FavoritesButton deckId={deck.id} is_favorite={deck.is_favorite} userId={userId} />
+            <RatingButton deckId={deck.id} userId={userId} avgRating={avgRating} />
+          </>
+        )}
+      </div>
+
+      {publicRef.current ? <CommentList deckId={deck.id} userId={userId} /> : null}
     </div>
   );
 }

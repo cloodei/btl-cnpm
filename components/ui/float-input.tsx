@@ -56,7 +56,7 @@ export function FloatInput({ label, className, ...props }: FloatInputProps) {
           "transform px-2 text-sm duration-200 bg-background",
           "peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100",
           "peer-focus:-translate-y-5 peer-focus:scale-75 pointer-events-none",
-          "text-gray-700 dark:text-zinc-300"
+          "text-gray-700 dark:text-zinc-400"
         )}
       >
         {label}

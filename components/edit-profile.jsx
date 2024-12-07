@@ -22,7 +22,7 @@ const DEFAULT_AVATARS = [
   "/tiger.png",
 ];
 
-export default function EditProfileModal({ currentUsername, currentImageUrl, userId, allNames, className = "", ...props }) {
+export default function EditProfileModal({ currentUsername, currentImageUrl, userId, className = "", ...props }) {
   const [username, setUsername] = useState(currentUsername);
   const [selectedImage, setSelectedImage] = useState(currentImageUrl);
   const [isLoading, setIsLoading] = useState(false);
@@ -33,11 +33,12 @@ export default function EditProfileModal({ currentUsername, currentImageUrl, use
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    const lowered = username.trim().toLowerCase();
-    if(lowered.length < 4) {
+    const rename = username.trim().replace(/\s+/g, " ");
+    const usernameRegex = /^[\p{L}\p{N}_ ]{4,48}$/u;
+    if(!usernameRegex.test(rename)) {
       toast({
         title: "Error",
-        description: "Username must be at least 4 characters",
+        description: "Username is invalid",
         variant: "destructive",
         duration: 2500
       });
@@ -45,26 +46,26 @@ export default function EditProfileModal({ currentUsername, currentImageUrl, use
       setIsEditing(false);
       return;
     }
-    if(lowered === currentUsername.toLowerCase() && selectedImage === currentImageUrl) {
+    if(rename === currentUsername && selectedImage === currentImageUrl) {
       setIsLoading(false);
       setIsEditing(false);
       return;
     }
-    for(const name of allNames) {
-      if(name.toLowerCase() === lowered) {
-        toast({
-          title: "Error",
-          description: "Username already exists!",
-          variant: "destructive",
-          duration: 2500
-        });
-        setIsLoading(false);
-        setIsEditing(false);
-        setUsername(currentUsername);
-        return;
-      }
-    }
-    const { success, error } = await updateProfile({ userId, username, imageUrl: selectedImage });
+    // for(const name of allNames) {
+    //   if(name.toLowerCase() === rename) {
+    //     toast({
+    //       title: "Error",
+    //       description: "Username already exists!",
+    //       variant: "destructive",
+    //       duration: 2500
+    //     });
+    //     setIsLoading(false);
+    //     setIsEditing(false);
+    //     setUsername(currentUsername);
+    //     return;
+    //   }
+    // }
+    const { success, error } = await updateProfile({ userId, rename, imageUrl: selectedImage });
     if(success) {
       toast({
         title: "Profile updated",

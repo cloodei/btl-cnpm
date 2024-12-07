@@ -20,7 +20,7 @@ export default function CommentList({ deckId, userId }) {
     queryFn: ({ pageParam = 1 }) => getComments(deckId, pageParam),
     getNextPageParam: (lastPage, pages) => (lastPage.hasMore ? pages.length + 1 : undefined),
     initialPageParam: 1,
-    staleTime: 30000
+    staleTime: 60000
   });
 
   const addMutation = useMutation({
@@ -31,10 +31,7 @@ export default function CommentList({ deckId, userId }) {
     }
   });
 
-  const allComments = [];
-  for(const page of data?.pages || []) {
-    allComments.push(...page.comments);
-  }
+  const allComments = data?.pages.flatMap((page) => page.comments) || [];
   
   if(isLoading) {
     return (
@@ -57,7 +54,7 @@ export default function CommentList({ deckId, userId }) {
         <Button
           variant="outline"
           className="w-full"
-          onClick={() => addMutation.mutate({ deckId, userId, comment: newComment })}
+          onClick={() => addMutation.mutate({ deckId, userId, comment: newComment.trim() })}
           disabled={!newComment.trim() || addMutation.isPending}
         >
           {addMutation.isPending ? (
@@ -83,7 +80,7 @@ export default function CommentList({ deckId, userId }) {
             ))}
           </div>
           
-          {hasNextPage && (
+          {hasNextPage ? (
             <div className="p-4 flex justify-center">
               <Button
                 size="sm"
@@ -101,7 +98,7 @@ export default function CommentList({ deckId, userId }) {
                 )}
               </Button>
             </div>
-          )}
+          ): null}
         </>
       )}
     </div>

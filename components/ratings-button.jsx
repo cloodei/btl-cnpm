@@ -6,6 +6,7 @@ import { rateDeck, getUserRating } from "@/app/actions/ratings";
 import { useToast } from "@/hooks/use-toast";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { Card } from "./ui/card";
 
 export default function RatingButton({ deckId, userId, avgRating = 0 }) {
   const [hoverRating, setHoverRating] = useState(0);
@@ -14,13 +15,13 @@ export default function RatingButton({ deckId, userId, avgRating = 0 }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  const { data: userRatingData, isFetching } = useQuery({
+  const { data: userRatingData, isLoading } = useQuery({
     queryKey: ['rating', deckId, userId],
     queryFn: () => getUserRating({ deckId, userId }),
-    staleTime: 30000
+    staleTime: 60000
   });
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (rating) => rateDeck({ deckId, userId, rating }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rating', deckId, userId] });
@@ -41,7 +42,7 @@ export default function RatingButton({ deckId, userId, avgRating = 0 }) {
   });
 
   const handleRating = (rating) => {
-    if(isFetching) {
+    if(isLoading) {
       return;
     }
     mutate(rating);
@@ -54,27 +55,31 @@ export default function RatingButton({ deckId, userId, avgRating = 0 }) {
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" disabled={(isFetching || isLoading)} className={`${userRating > 0 ? "text-yellow-400" : ""} relative`}>
-          {(isFetching || isLoading) ? (
-            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+        <Card
+          className={`
+            flex flex-col items-center gap-2 rounded-[7px] p-[10px] md:p-3 shadow-[0_2px_4px_rgba(0,0,0,0.35)] 
+            ${isLoading || isPending ? "opacity-50 cursor-not-allowed pointer-events-none" : "transition-all duration-200 hover:bg-secondary cursor-pointer"}
+          `}
+          onClick={() => { if(!isLoading && !isPending) setIsOpen(!isOpen) }}
+        >
+          {isLoading || isPending ? (
+            <Loader2 className="h-8 md:h-9 w-8 md:w-9 animate-spin text-primary" />
           ) : (
-            <Star className={`h-5 w-5 ${userRating > 0 ? "fill-current" : ""}`} />
+            <Star className={`h-8 md:h-9 w-8 md:w-9 ${userRating > 0 ? "text-amber-400" : "text-primary"}`} />
           )}
-        </Button>
+          <p className="text-xs md:text-sm text-primary">
+            {userRating > 0 ? "Change Rating" : "Rate Deck"}
+          </p>
+        </Card>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[280px] p-2" onMouseLeave={() => setHoverRating(0)}>
         <div className="flex items-center gap-1 mb-1 relative">
-          {(isFetching || isLoading) && (
-            <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-50">
-              <Loader2 className="h-6 w-6 animate-spin" />
-            </div>
-          )}
           {[...Array(10)].map((_, i) => (
             <Button
               key={i}
               variant="ghost"
               size="sm"
-              disabled={isFetching}
+              disabled={isLoading}
               className={`p-0 h-8 w-8 ${(hoverRating >= i + 1 || userRating >= i + 1) ? 'text-yellow-400' : 'text-muted-foreground'}`}
               onMouseEnter={() => setHoverRating(i + 1)}
               onClick={() => handleRating(i + 1)}

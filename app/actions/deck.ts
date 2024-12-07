@@ -27,13 +27,18 @@ export async function createDeck({ title, cards, isPublic }: { title: string, ca
       VALUES (${userId}, ${title}, ${isPublic})
       RETURNING id
     `;
-    let values = "";
+    let query = "INSERT INTO cards(deck_id, front, back) VALUES ";
+    let queryParams = new Array(cards.length * 3);
     for(let i = 0; i < cards.length; i++) {
-      values += `($${i * 3 + 1}, $${i * 3 + 2}, $${i * 3 + 3}), `;
+      const j = i * 3;
+      query += `($${j + 1}, $${j + 2}, $${j + 3}), `;
+      queryParams[j] = deck.id;
+      queryParams[j + 1] = cards[i].front;
+      queryParams[j + 2] = cards[i].back;
     }
-    const query = `INSERT INTO cards(deck_id, front, back) VALUES ${values.slice(0, -2)}`;
-    const flatParams = cards.flatMap(card => [deck.id, card.front, card.back]);
-    await sql(query, flatParams);
+
+    await sql(query.slice(0, -2), queryParams);
+
     revalidateTag('decks');
     revalidateTag(`deck-${deck.id}`);
     if(isPublic) {
@@ -51,8 +56,7 @@ export const getCachedDecksWithCardsCount = unstable_cache(async (userId: string
       const decks = await sql`
         SELECT d.id, d.name, d.public, d.created_at, d.updated_at, COUNT(c.id) AS totalcards
         FROM decks AS d
-        LEFT JOIN cards AS c
-        ON d.id = c.deck_id
+        LEFT JOIN cards AS c ON d.id = c.deck_id
         WHERE d.creator_id = ${userId}
         GROUP BY d.id
       `;
@@ -69,12 +73,9 @@ export const getFavoriteDecksWithCardsCount = unstable_cache(async (userId: stri
       const decks = await sql`
         SELECT d.id, d.name, f.created_at, COUNT(c.id) AS totalcards, u.username
         FROM decks AS d
-        INNER JOIN favorite_decks AS f
-        ON d.id = f.deck_id
-        INNER JOIN users AS u
-        ON d.creator_id = u.id
-        LEFT JOIN cards AS c
-        ON d.id = c.deck_id
+        INNER JOIN favorite_decks AS f ON d.id = f.deck_id
+        INNER JOIN users AS u ON d.creator_id = u.id
+        LEFT JOIN cards AS c ON d.id = c.deck_id
         WHERE f.viewer_id = ${userId}
         GROUP BY d.id, f.created_at, u.username
         ORDER BY f.created_at DESC
@@ -97,9 +98,7 @@ export const getRecentDecksWithCardsCount = unstable_cache(async (userId: string
         LEFT JOIN cards AS c ON d.id = c.deck_id
         LEFT JOIN ratings AS r ON d.id = r.deck_id
         WHERE d.public = true
-        AND u.id != 'user_2pARGljiy1lvZFgeFNCWGeN5JWG'
         GROUP BY d.id, u.id
-        ORDER BY d.created_at DESC
       `;
       return { success: true, decks };
     }
@@ -186,6 +185,15 @@ export async function updateDeck({ deckId, title, cards, isPublic }: { deckId: n
     if(!deckId) {
       return { success: false, error: 'Deck ID is required' };
     }
+    let query = "INSERT INTO cards(deck_id, front, back) VALUES ";
+    let queryParams = new Array(cards.length * 3);
+    for(let i = 0; i < cards.length; i++) {
+      const j = i * 3;
+      query += `($${j + 1}, $${j + 2}, $${j + 3}), `;
+      queryParams[j] = deckId;
+      queryParams[j + 1] = cards[i].front;
+      queryParams[j + 2] = cards[i].back;
+    }
     await Promise.all([
       sql`
         UPDATE decks
@@ -196,12 +204,7 @@ export async function updateDeck({ deckId, title, cards, isPublic }: { deckId: n
         DELETE FROM cards
         WHERE deck_id = ${deckId}
       `,
-      sql`
-        INSERT INTO cards(deck_id, front, back)
-        SELECT ${deckId}, front, back
-        FROM json_to_recordset(${JSON.stringify(cards)})
-        AS cards(deck_id int, front varchar, back varchar)
-      `
+      sql(query.slice(0, -2), queryParams)
     ])
     revalidateTag('decks')
     revalidateTag(`deck-${deckId}`)
@@ -219,7 +222,7 @@ export async function updateDeck({ deckId, title, cards, isPublic }: { deckId: n
 export async function deleteDeck(deckId: number) {
   "use server";
   try {
-    await sql `DELETE FROM decks WHERE id = ${deckId}`;
+    await sql`DELETE FROM decks WHERE id = ${deckId}`;
     revalidateTag('decks');
     revalidateTag(`deck-${deckId}`);
     if(deckId === 9 || deckId === 11 || deckId === 12) {
