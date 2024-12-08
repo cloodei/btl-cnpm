@@ -56,7 +56,7 @@ async function PageWrapper() {
               {generateNameInitials(user.username)}
             </AvatarFallback>
           </Avatar>
-          <EditProfileModal currentUsername={user.username} currentImageUrl={user.imageurl} userId={userId} className="absolute md:-bottom-[13px] -bottom-[14px] md:-right-[13px] -right-[14px]" />
+          <EditProfileModal currentUsername={user.username} currentImageUrl={user.imageurl} userId={userId} className="absolute md:-bottom-[10px] -bottom-[11px] md:-right-[10px] -right-[11px]" />
         </div>
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-0 truncate">

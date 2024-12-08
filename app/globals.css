@@ -124,3 +124,32 @@
   word-break: break-word;
   max-width: 100%;
 }
+
+@keyframes shine-streak {
+  0% {
+    transform: rotate(35deg) translateX(-150%);
+  }
+  100% {
+    transform: rotate(35deg) translateX(150%);
+  }
+}
+
+.star-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.dark .star-container::after {
+  background: linear-gradient(90deg, transparent, rgb(20, 7, 1), transparent);
+}
+
+.star-container::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(90deg, transparent, rgb(255, 255, 255), transparent);
+  animation: shine-streak 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}

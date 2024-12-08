@@ -10,7 +10,7 @@ export default function MobileSidebar() {
   const { openMobile, setOpenMobile } = useSidebar();
   const pathname = usePathname();
 
-  if (pathname === '/login' || pathname === '/register') {
+  if(pathname === '/login' || pathname === '/register') {
     return null;
   }
 

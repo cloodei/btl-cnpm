@@ -47,25 +47,16 @@ export default function EditProfileModal({ currentUsername, currentImageUrl, use
       return;
     }
     if(rename === currentUsername && selectedImage === currentImageUrl) {
+      toast({
+        title: "Profile saved",
+        description: "No changes were detected",
+        duration: 2000
+      });
       setIsLoading(false);
       setIsEditing(false);
       return;
     }
-    // for(const name of allNames) {
-    //   if(name.toLowerCase() === rename) {
-    //     toast({
-    //       title: "Error",
-    //       description: "Username already exists!",
-    //       variant: "destructive",
-    //       duration: 2500
-    //     });
-    //     setIsLoading(false);
-    //     setIsEditing(false);
-    //     setUsername(currentUsername);
-    //     return;
-    //   }
-    // }
-    const { success, error } = await updateProfile({ userId, rename, imageUrl: selectedImage });
+    const { success, error } = await updateProfile({ userId, username: rename, imageUrl: selectedImage });
     if(success) {
       toast({
         title: "Profile updated",
@@ -89,7 +80,7 @@ export default function EditProfileModal({ currentUsername, currentImageUrl, use
   return (
   <>
     <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)} {...props} className={className}>
-      <Settings className="md:w-8 md:h-8 w-[26px] h-[26px]" />
+      <Settings className="md:w-8 md:h-8 w-[23px] h-[23px]" />
     </Button>
 
     <Dialog open={isEditing} onOpenChange={(open) => { if(!isLoading) setIsEditing(open) }}>

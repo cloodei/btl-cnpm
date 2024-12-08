@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { BookX } from 'lucide-react';
 
-export default function DeckNotFound() {
+function DeckNotFound() {
   return (
     <div className="container mx-auto max-w-2xl py-8 px-4">
       <Card className="p-6">

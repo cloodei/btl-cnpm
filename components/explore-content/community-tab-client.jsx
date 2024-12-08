@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import { BookOpen, Settings2, Loader, CircleUser, Sparkles, ArrowLeftFromLine } from 'lucide-react';
+import { BookOpen, Settings2, CircleUser, ArrowLeftFromLine, SearchX, StarOff, Star, StarHalf } from 'lucide-react';
 import { FloatInput } from '../ui/float-input';
 import { Button } from '../ui/button';
 
@@ -26,50 +26,85 @@ const generateRating = (rating) => {
   if(!avg_rating || isNaN(avg_rating)) {
     return (
       <>
-        <Loader />
+        <StarOff className="h-5 w-5" />
         <span className="font-medium">None</span>
       </>
     );
   }
+  let level = (avg_rating <= 5 ? 0 : avg_rating <= 8 ? 1 : 2);
   return (
     <>
-      <Sparkles className='text-[#cec330] dark:text-[rgb(211,201,65)] h-[20px] w-[20px]' />
-      <span className="text-sm font-medium">{avg_rating.toFixed(1)}</span>
+      {level === 0 ? (
+        <StarHalf className="h-5 w-5 text-[#dfc42f] dark:text-[rgb(211,201,65)]" />
+      ) : level === 1 ? (
+        <Star className="h-5 w-5 text-[#dfc42f] dark:text-[rgb(211,201,65)]" />
+      ) : (
+        <div className="star-container">
+          <Star className="h-5 w-5 fill-current text-[rgb(233,236,43)] dark:text-[rgb(211,201,65)]" />
+        </div>
+      )}
+      <span className="text-sm font-medium">
+        {avg_rating.toFixed(1)}
+      </span>
+      <span className="text-muted-foreground">
+        / 10
+      </span>
     </>
   );
 }
 
-const generatePaginatedDeck = ({ decks, page }) => {
-  const start = (page - 1) * 8;
+const generatePaginatedDeck = (decks, page) => {
   const end = page * 8;
-  return decks.slice(start, end);
+  return decks.slice(0, end);
 }
 
 export default function CommunityTabClient({ decks, userId }) {
-  const [paginatedDecks, setPaginatedDecks] = useState(generatePaginatedDeck({ decks, page: 1 }));
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredDecks, setFilteredDecks] = useState(paginatedDecks);
+  const [searchResults, setSearchResults] = useState(decks);
+  const [paginatedDecks, setPaginatedDecks] = useState(generatePaginatedDeck(decks, 1));
 
   const filterDecks = (query) => {
-    const filtered = paginatedDecks.filter((deck) => deck.name.toLowerCase().includes(query.toLowerCase()));
-    setFilteredDecks(filtered);
+    const filtered = decks.filter((deck) => deck.name.toLowerCase().includes(query));
+    setSearchResults(filtered);
+    setCurrentPage(1);
+    setPaginatedDecks(generatePaginatedDeck(filtered, 1));
   };
 
   const handleInputBlur = (e) => {
-    filterDecks(e.target.value.trim());
+    const query = e.target.value.trim();
+    if(query) {
+      filterDecks(query.toLowerCase());
+      return;
+    }
+    setSearchResults(decks);
+    setCurrentPage(1);
+    setPaginatedDecks(generatePaginatedDeck(decks, 1));
   };
 
   const handleKeyDown = (e) => {
     if(e.key === 'Enter') {
-      filterDecks(e.target.value.trim());
+      const query = e.target.value.trim();
+      if(query) {
+        filterDecks(query.toLowerCase());
+        return;
+      }
+      setSearchResults(decks);
+      setCurrentPage(1);
+      setPaginatedDecks(generatePaginatedDeck(decks, 1));
     }
   };
 
   const handleLoadMore = () => {
-    const nextPage = Math.ceil(paginatedDecks.length / 8) + 1;
-    const res = [...paginatedDecks, ...generatePaginatedDeck({ decks, page: nextPage })];
-    setPaginatedDecks(res);
-    setFilteredDecks(res);
+    const nextPage = currentPage + 1;
+    setCurrentPage(nextPage);
+    setPaginatedDecks(generatePaginatedDeck(searchResults, nextPage));
+  }
+
+  const handleShowAll = () => {
+    setSearchResults(decks);
+    setCurrentPage(1);
+    setPaginatedDecks(generatePaginatedDeck(decks, 1));
   }
 
   return (
@@ -86,7 +121,7 @@ export default function CommunityTabClient({ decks, userId }) {
     </motion.div>
 
     <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-5">
-    {filteredDecks.map((deck) => (
+    {paginatedDecks.length ? paginatedDecks.map((deck) => (
       <motion.div key={deck.id} variants={item}>
         <Card className="relative group transition-all [transition-duration:_250ms] [animation-duration:_250ms] dark:border-[#272a31] shadow-[0_2px_4px_rgba(0,0,0,0.3)] hover:scale-[1.03]">
           {(userId === deck.creator_id) && (
@@ -112,9 +147,6 @@ export default function CommunityTabClient({ decks, userId }) {
                 <span className="text-muted-foreground">Ratings</span>
                 <div className="flex items-center gap-2">
                   {generateRating(deck.avg_rating)}
-                  <span className="text-muted-foreground">
-                    / 10
-                  </span>
                 </div>
               </div>
               <div className="flex items-center justify-between">
@@ -137,16 +169,27 @@ export default function CommunityTabClient({ decks, userId }) {
           </div>
         </Card>
       </motion.div>
-    ))}
+    )) : null}
     </motion.div>
 
-    {paginatedDecks.length < decks.length && (
+    {!paginatedDecks.length ? (
+      <div className="w-full mt-3">
+        <p className="flex items-center justify-center gap-[6px] text-lg font-semibold text-muted-foreground text-center">
+          No decks found
+          <SearchX className="h-6 w-6" />
+        </p>
+        <Button variant="outline" size="lg" className="mt-[10px] ml-[calc(50%-66px)]" onClick={handleShowAll}>
+          Show All
+        </Button>
+      </div>
+    ) :
+    (paginatedDecks.length < searchResults.length) ? (
       <div className="flex justify-center mt-8">
-        <Button variant="outline" size="lg" className="w-full md:w-auto" onClick={handleLoadMore}>
+        <Button variant="outline" size="lg" className="w-full md:w-auto shadow-[0_1px_3px_rgba(0,0,0,0.25)] dark:border-[#34393f]" onClick={handleLoadMore}>
           Load More
         </Button>
       </div>
-    )}
+    ) : null}
   </div>
   );
 }

@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function LoadingState() {
+function LoadingState() {
   return (
     <div className="max-w-4xl mx-auto px-4 pt-5 pb-8 space-y-8">
       <div className="bg-muted rounded-lg animate-pulse" />

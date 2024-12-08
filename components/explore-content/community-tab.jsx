@@ -1,4 +1,4 @@
-import { getRecentDecksWithCardsCount } from '@/app/actions/deck';
+import { getCommunityDecksWithCardsCount } from '@/app/actions/deck';
 import { auth } from '@clerk/nextjs/server';
 import CommunityClient from './community-tab-client';
 
@@ -12,9 +12,9 @@ const TabException = ({ message = "Lỗi khi lấy data community", isCritical =
 
 export default async function CommunityTab() {
   const { userId } = await auth();
-  const { success, decks } = await getRecentDecksWithCardsCount(userId);
+  const { success, decks, error } = await getCommunityDecksWithCardsCount(userId);
   if(!success) {
-    return <TabException isCritical={true} />;
+    return <TabException message={error?.message || error} isCritical />;
   }
   if(!decks?.length) {
     return <TabException message="Chưa có data community" />;

@@ -27,8 +27,8 @@ export default function RegisterFormClient() {
   const validateForm = () => {
     let newErrors = {};
     const nameRegex = /^[\p{L}\p{N}_ ]{4,48}$/u;
-    const accountError  = !(nameRegex.test(formData.account.trim().replace(/\s+/g, ' ')));
-    const usernameError = !(nameRegex.test(formData.username.trim().replace(/\s+/g, ' ')));
+    const accountError  = !(nameRegex.test(formData.account  = formData.account.trim().replace(/\s+/g, ' ')));
+    const usernameError = !(nameRegex.test(formData.username = formData.username.trim().replace(/\s+/g, ' ')));
     const passwordError = !(formData.password = formData.password.trim())
     const confirmPasswordError = !(formData.confirmPassword = formData.confirmPassword.trim())
     if(accountError) {

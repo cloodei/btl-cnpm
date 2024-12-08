@@ -88,7 +88,7 @@ export const getFavoriteDecksWithCardsCount = unstable_cache(async (userId: stri
   }, ["get-favorites"], { tags: ['favorites'], revalidate: 75 }
 );
 
-export const getRecentDecksWithCardsCount = unstable_cache(async (userId: string) => {
+export const getCommunityDecksWithCardsCount = unstable_cache(async (userId: string) => {
     try {
       const decks = await sql`
         SELECT d.*, COUNT(DISTINCT c.id) AS totalcards, u.username, COALESCE(AVG(r.rating), 0) AS avg_rating,
@@ -98,6 +98,7 @@ export const getRecentDecksWithCardsCount = unstable_cache(async (userId: string
         LEFT JOIN cards AS c ON d.id = c.deck_id
         LEFT JOIN ratings AS r ON d.id = r.deck_id
         WHERE d.public = true
+        AND u.username != 'localAdmin'
         GROUP BY d.id, u.id
       `;
       return { success: true, decks };

@@ -21,7 +21,7 @@ export const metadata = {
     default: 'CoinCard',
     template: '%s'
   },
-  description: 'Improve your learning capabilities with CoinCard',
+  description: 'Improve your learning capabilities with CoinCard'
 };
 
 export default function RootLayout({ children }) {

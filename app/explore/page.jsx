@@ -87,66 +87,65 @@ export default async function ExplorePage() {
             <h2 className="text-2xl font-bold mb-4 [text-shadow:_0_3px_6px_rgb(18,18,24,0.25)] dark:[text-shadow:_0_1px_8px_rgb(145_164_203_/_0.6)]">Featured Decks</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featured.map((deck, index) => (
-                <Card key={index} title={deck.name} className="p-6 hover:shadow-xl hover:scale-[1.02] transition-all">
-                  <div className="flex items-center space-x-2 mb-4">
-                    <Sparkles className="h-5 w-5 text-primary" />
-                    <span className="font-semibold">Featured</span>
-                  </div>
-                  <div className="pr-4">
-                    <h3 className="text-2xl font-bold md:mb-[7px] truncate mb-1">{deck.name}</h3>
-                  </div>
-                  <div className="text-muted-foreground md:mb-[19px] mb-[13px] flex items-center lg:gap-2 gap-[6px]">
-                    <Crown className="h-4 w-4 text-primary font-semibold" />
-                    <span>{deck.description}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <BookOpen className="h-4 w-4" />
-                      <span>{deck.totalcards} cards</span>
+                <Link href={`/decks/${deck.id}`} passHref key={index}>
+                  <Card title={deck.name} className="p-6 shadow-[0_3px_4px_rgba(0,0,0,0.25)] dark:border-[#34393f] transition-all hover:shadow-[0_4px_20px_rgba(0,0,0,0.35)] hover:scale-[1.02]">
+                    <div className="flex items-center space-x-2 mb-4">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                      <span className="font-semibold">Featured</span>
                     </div>
-                    <Link href={`/decks/${deck.id}`}>
+                    <div className="pr-4">
+                      <h3 className="text-2xl font-bold md:mb-[7px] truncate mb-1">{deck.name}</h3>
+                    </div>
+                    <div className="text-muted-foreground md:mb-[19px] mb-[13px] flex items-center lg:gap-2 gap-[6px]">
+                      <Crown className="h-4 w-4 text-primary font-semibold" />
+                      <span>{deck.description}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <BookOpen className="h-4 w-4" />
+                        <span>{deck.totalcards} cards</span>
+                      </div>
                       <Button size="lg">Study Now</Button>
-                    </Link>
-                  </div>
-                </Card>
+                    </div>
+                  </Card>
+                </Link>
               ))}
             </div>
           </section>
 
           <h2 className="text-2xl font-bold [text-shadow:_0_3px_6px_rgb(18,18,24,0.25)] dark:[text-shadow:_0_1px_8px_rgb(145_164_203_/_0.6)]">See Documentations</h2>
-          <section className="px-7" style={{ marginTop: '24px' }}>
+          <section className="px-7" style={{ marginTop: '16px' }}>
             <Carousel
               opts={{
                 align: "start",
                 loop: true,
               }}
             >
-              <CarouselContent>
+              <CarouselContent className="px-[6px] py-2">
                 {sponsored.map((card, index) => (
-                  <CarouselItem key={index} className="md:basis-1/3 lg:basis-1/5 pl-[14px]">
-                    <div className="p-1 grid">
-                      <Card className="overflow-hidden dark:border-[#2f3235] shadow-[0_2px_4px_rgba(0,0,0,0.25)] transition-all hover:scale-[1.02]">
-                        <CardContent className="p-0">
-                          <div className="relative h-48 sm:h-64">
-                            <Image
-                              src={card.image}
-                              alt={card.name}
-                              fill={true}
-                              objectFit="cover"
-                            />
-                          </div>
-                          <div className="p-4 pt-3 border-t border-t-gray-900/15 dark:border-none">
-                            <h3 className="text-xl font-semibold mb-[10px]">{card.name}</h3>
-                            <p className="text-sm text-gray-600 mb-4">{card.description}</p>
-                            <Link href={card.link} passHref target="_blank">
-                              <Button className="w-full">
-                                Learn More
-                              </Button>
-                            </Link>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
+                  <CarouselItem key={index} className="grid p-1 md:basis-1/3 lg:basis-1/5 pl-[14px]">
+                    <Card className="overflow-hidden dark:border-[#2f3235] shadow-[0_2px_4px_rgba(0,0,0,0.25)] transition-all hover:scale-[1.02]">
+                      <CardContent className="p-0">
+                        <div className="relative h-48 sm:h-64">
+                          <Image
+                            src={card.image}
+                            alt={card.name}
+                            fill
+                            className="object-cover"
+                            sizes="(min-width: 640px) 100vw, 50vw"
+                          />
+                        </div>
+                        <div className="p-4 pt-3 border-t border-t-gray-900/15 dark:border-none">
+                          <h3 className="text-xl font-semibold mb-[10px]">{card.name}</h3>
+                          <p className="text-sm text-gray-600 mb-4">{card.description}</p>
+                          <Link href={card.link} passHref target="_blank">
+                            <Button className="w-full">
+                              Learn More
+                            </Button>
+                          </Link>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </CarouselItem>
                 ))}
               </CarouselContent>
