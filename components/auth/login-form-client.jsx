@@ -7,21 +7,23 @@ import { Input } from "@/components/ui/input";
 import { LogIn } from "lucide-react";
 import { useSignIn } from "@clerk/nextjs";
 import { revalidateUser } from "@/app/actions/user";
-import PasswordInput from "../password-input";
 
 export default function LoginFormClient() {
-  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [formData, setFormData] = useState({ username: "", password: "" });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [finalError, setFinalError] = useState('');
+  const [finalError, setFinalError] = useState("");
   const { signIn, setActive } = useSignIn()
   const router = useRouter();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    if(finalError) {
+      setFinalError("");
+    }
     if(errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors(prev => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -36,12 +38,13 @@ export default function LoginFormClient() {
       newErrors.password = "Password is required";
     }
     setErrors(newErrors);
+    setFinalError((newErrors?.username || newErrors?.password) ? "Please fill in all fields" : "");
     return (Object.keys(newErrors)).length;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFinalError('');
+    setFinalError("");
     if(validateForm()) {
       return;
     }
@@ -66,47 +69,56 @@ export default function LoginFormClient() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="flex flex-col items-center space-y-2">
-        <LogIn className="h-12 w-12 text-gray-900 dark:text-white" />
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Welcome back</h1>
-        <p className="text-gray-500 dark:text-[#a1a1a1]">Login to access your flashcards</p>
-      </div>
+    <div className="flex flex-col items-center sm:gap-2 gap-[5px]">
+      <LogIn className="sm:h-12 h-10 sm:w-12 w-10" />
+      <h1 className="sm:text-3xl text-2xl font-bold">Welcome back</h1>
+      <p className="text-muted-foreground max-sm:text-[13px]">Login to access your flashcards</p>
+    </div>
 
       <div className="space-y-4">
-        <div>
-          <Input
-            type="text"
-            name="username"
-            placeholder="Account Name"
-            value={formData.username}
-            onChange={handleChange}
-            className={`bg-gray-50 dark:bg-[#1a1a1a] border-gray-200 dark:border-[#242424] text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-[#99a3b9] ${errors.username ? 'border-red-500' : ''
-              }`}
-          />
-          {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username}</p>}
-        </div>
-
-        <div>
-          <PasswordInput
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Password"
-            className={`bg-gray-50 dark:bg-[#1a1a1a] border-gray-200 dark:border-[#242424] text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-[#99a3b9] ${errors.password ? 'border-red-500' : ''
-              }`}
-          />
-          {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
-        </div>
+        <Input
+          type="text"
+          name="username"
+          placeholder="Account Name"
+          value={formData.username}
+          onChange={handleChange}
+          className={`
+            ${errors.username ? "border-rose-300/90 dark:border-rose-950" : ""}
+            max-sm:text-sm h-[38px] sm:h-10 max-sm:placeholder:text-sm
+          `}
+        />
+        {errors?.username ? (
+          <p className="text-red-500 dark:text-red-500/90 text-sm pl-2" style={{ marginTop: "3px" }}>
+            {errors.username}
+          </p>
+        ) : null}
+        
+        <Input
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="Password"
+          className={`
+            ${errors.password ? "border-rose-300/90 dark:border-rose-950" : ""}
+            max-sm:text-sm h-[38px] sm:h-10 max-sm:placeholder:text-sm
+          `}
+        />
+        {errors?.password ? (
+          <p className="text-red-500 dark:text-red-500/90 text-sm pl-2" style={{ marginTop: "3px" }}>
+            {errors.password}
+          </p>
+        ) : null}
       </div>
 
       {finalError && (
-        <div className="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-md p-3">
+        <div className="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-md px-5 py-[10px]">
           <p className="text-red-600 dark:text-red-400 text-sm">{finalError}</p>
         </div>
       )}
 
       <Button type="submit" disabled={loading} className="w-full">
-        {loading ? "Loading..." : "Sign in"}
+        {loading ? "Logging in..." : "Sign in"}
       </Button>
 
       <div className="text-center">

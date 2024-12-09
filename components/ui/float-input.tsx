@@ -3,13 +3,15 @@ import { cn } from "@/lib/utils";
 
 interface FloatInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
+  labelClassname?: string;
 }
 
 interface FloatTextareaProps extends InputHTMLAttributes<HTMLTextAreaElement> {
   label: string;
+  labelClassname?: string;
 }
 
-export function FloatTextarea({ label, className, ...props }: FloatTextareaProps) {
+export function FloatTextarea({ label, className, labelClassname, ...props }: FloatTextareaProps) {
   return (
     <div className="relative">
       <textarea
@@ -28,7 +30,8 @@ export function FloatTextarea({ label, className, ...props }: FloatTextareaProps
           "transform px-2 text-sm duration-200 bg-background",
           "peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100",
           "peer-focus:-translate-y-5 peer-focus:scale-75",
-          "text-gray-700 dark:text-zinc-400"
+          "text-gray-700 dark:text-zinc-400",
+          labelClassname
         )}
       >
         {label}
@@ -37,7 +40,7 @@ export function FloatTextarea({ label, className, ...props }: FloatTextareaProps
   );
 }
 
-export function FloatInput({ label, className, ...props }: FloatInputProps) {
+export function FloatInput({ label, className, labelClassname, ...props }: FloatInputProps) {
   return (
     <div className="relative">
       <input
@@ -56,7 +59,8 @@ export function FloatInput({ label, className, ...props }: FloatInputProps) {
           "transform px-2 text-sm duration-200 bg-background",
           "peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100",
           "peer-focus:-translate-y-5 peer-focus:scale-75 pointer-events-none",
-          "text-gray-700 dark:text-zinc-400"
+          "text-gray-700 dark:text-zinc-400",
+          labelClassname
         )}
       >
         {label}

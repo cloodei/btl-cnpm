@@ -108,15 +108,16 @@ export default function CommunityTabClient({ decks, userId }) {
   }
 
   return (
-  <div className="pt-8 relative">
-    <motion.div variants={item} initial="hidden" animate="show" className="absolute -top-9 right-0 z-5">
+  <div className="pt-4 sm:pt-8 sm:relative">
+    <motion.div variants={item} initial="hidden" animate="show" className="sm:absolute sm:-top-9 sm:right-0 sm:z-5 pb-6">
       <FloatInput 
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         onBlur={handleInputBlur}
         onKeyDown={handleKeyDown}
         label="Search Decks"
-        className="w-[152px] md:w-[264px] border-gray-300 dark:border-gray-800"
+        className="max-sm:w-[212px] border-gray-300 dark:border-gray-800 max-sm:pt-[7px] max-sm:pb-[8px] max-sm:text-sm"
+        labelClassname="max-sm:text-xs max-sm:left-[9px] max-sm:top-[9px]"
       />
     </motion.div>
 
