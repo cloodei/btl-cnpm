@@ -1,14 +1,18 @@
 import UpdateDeckComponent from "@/components/decks/update-deck-client";
 import Link from "next/link";
+import DeckViewerSkeleton from "@/components/dv-skeleton";
 import { getCachedDeck } from "@/app/actions/deck";
 import { auth } from "@clerk/nextjs/server";
 import { Button } from "@/components/ui/button";
+import { Suspense } from "react";
 
-function DeckException({ message = "An error occurred" }) {
+const DeckException = ({ message }) => {
   return (
-    <div className="m-auto pt-12 pb-8">
-      <p className="text-center text-4xl font-medium text-red-500">{message}</p>
-      <div className="flex items-center justify-center gap-3 mt-7">
+    <div className="m-auto py-12">
+      <p className="text-center text-2xl md:text-3xl md:tracking-tight text-rose-700 dark:text-red-500 font-semibold">
+        {message}
+      </p>
+      <div className="flex items-center justify-center gap-3 mt-4">
         <Link href="/my-decks">
           <Button>Back to Decks</Button>
         </Link>
@@ -20,18 +24,32 @@ function DeckException({ message = "An error occurred" }) {
   )
 }
 
-export default async function EditDeckPage({ params }) {
-  const { id } = await params;
+const EditWrapper = async ({ id }) => {
+  const deckId = parseInt(id);
   const { userId } = await auth();
-  if(!userId) {
-    return <DeckException message="Please sign in to edit your decks!" />;
+  if(isNaN(deckId) || !userId) {
+    return <DeckException message="Invalid Deck ID" />
   }
-  const { success, deck, cards } = await getCachedDeck({ deckId: parseInt(id), userId });
-  if(!success || !deck) {
-    return <DeckException message="Failed to load deck" />;
+  const { success, deck, cards, error } = await getCachedDeck({ deckId, userId });
+  if(!success) {
+    const err = error?.message || error || "Failed to load deck";
+    return <DeckException message={err} />
+  }
+  if(!deck) {
+    return <DeckException message="Deck Not Found" />
   }
   if(deck.creator_id !== userId) {
-    return <DeckException message="You are not authorized to edit this deck" />;
+    return <DeckException message="You are not authorized to edit this deck" />
   }
-  return <UpdateDeckComponent deck={deck} cards={cards} userId={userId} />;
+  return <UpdateDeckComponent deck={deck} cards={cards} userId={userId} />
+}
+
+export default async function EditDeckPage({ params }) {
+  const { id } = await params;
+
+  return (
+    <Suspense fallback={<DeckViewerSkeleton />}>
+      <EditWrapper id={id} />
+    </Suspense>
+  );
 }

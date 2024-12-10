@@ -1,13 +1,15 @@
 import QuizPageClient from "./quiz-client";
 import Link from "next/link";
+import DeckViewerSkeleton from "@/components/dv-skeleton";
 import { getCachedDeck, getFeaturedDeck } from "@/app/actions/deck";
 import { auth } from "@clerk/nextjs/server";
 import { Button } from "@/components/ui/button";
+import { Suspense } from "react";
 
-function IneligibleDeck({ message = "This deck is not eligible for a test", cardCount = null }) {
+const IneligibleDeck = ({ message = "This deck is not eligible for a test", cardCount = null }) => {
   return (
     <div className="m-auto pt-12 pb-8">
-      <p className="text-center text-4xl font-medium text-red-500 mb-2 tracking-tighter">
+      <p className={`text-center text-4xl font-medium mb-2 tracking-tighter ${cardCount ? "text-primary" : "text-rose-700"}`}>
         {message}
       </p>
       {cardCount && (
@@ -27,10 +29,9 @@ function IneligibleDeck({ message = "This deck is not eligible for a test", card
   );
 }
 
-export default async function QuizPage({ params }) {
-  const { id } = await params;
+const QuizPageWrapper = async ({ id }) => {
   const deckId = parseInt(id);
-  const { userId } = auth();
+  const { userId } = await auth();
   if(deckId === 9 || deckId === 11 || deckId === 12) {
     const { deck, cards } = await getFeaturedDeck({ deckId, userId });
     return <QuizPageClient deckTitle={deck.title} cards={cards} />
@@ -44,4 +45,14 @@ export default async function QuizPage({ params }) {
     return <IneligibleDeck message="Not enough cards for a test" cardCount={cards.length} />;
   }
   return <QuizPageClient deckTitle={deck.title} cards={cards} />;
+}
+
+export default async function QuizPage({ params }) {
+  const { id } = await params;
+
+  return (
+    <Suspense fallback={<DeckViewerSkeleton />}>
+      <QuizPageWrapper id={id} />
+    </Suspense>
+  );
 }

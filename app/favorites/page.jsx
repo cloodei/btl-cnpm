@@ -1,32 +1,53 @@
 import Link from "next/link";
 import FavoritesClient from "@/components/decks/favorites-client";
+import DeckSkeleton from "@/components/deck-skeleton";
 import { auth } from "@clerk/nextjs/server";
 import { getFavoriteDecksWithCardsCount } from "../actions/deck";
+import { Button } from "@/components/ui/button";
+import { Suspense } from "react";
 
-function EmptyState({ err = "An unexpected error has occurred", description = null }) {
+const EmptyState = ({ message, description = null }) => {
   return (
     <div className="flex min-h-[70vh] items-center justify-center p-4">
       <div className="text-center space-y-4">
-        <h2 className="text-3xl text-[28px] md:text-4xl font-semibold">{err}</h2>
-        {description && <p className="text-muted-foreground">{description}</p>}
+        <h2 className="text-3xl text-[28px] md:text-4xl font-semibold">
+          {message}
+        </h2>
+        {description && (
+          <p className="text-muted-foreground">
+            {description}
+          </p>
+        )}
         <Link href="/explore" className="inline-block">
-          <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
+          <Button>
             Explore Decks
-          </button>
+          </Button>
         </Link>
       </div>
     </div>
   );
 }
 
-export default async function FavoritesPage() {
+const FavoritesWrapper = async () => {
   const { userId } = await auth();
   if(!userId) {
-    return <EmptyState err="Please sign in to view favorites" />
+    return <EmptyState message="Please sign in to view favorites" />
   }
-  const { success, decks } = await getFavoriteDecksWithCardsCount(userId);
-  if(!success || !decks?.length) {
-    return <EmptyState err="Your favorites list is empty" description="Start adding decks to your favorites!" />
+  const { success, decks, error } = await getFavoriteDecksWithCardsCount(userId);
+  if(!success) {
+    const err = error?.message || error || "An error occurred";
+    return <EmptyState message={err} description="Please try again later" />
+  }
+  if(!decks?.length) {
+    return <EmptyState message="No favorite decks" description="Start adding decks to your favorites!" />
   }
   return <FavoritesClient decks={decks} />
+}
+
+export default async function FavoritesPage() {
+  return (
+    <Suspense fallback={<DeckSkeleton />}>
+      <FavoritesWrapper />
+    </Suspense>
+  )
 }

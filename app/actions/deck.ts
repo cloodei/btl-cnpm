@@ -1,5 +1,5 @@
 'use server';
-import sql from '@/lib/db';
+import { sql } from '@/lib/db';
 import { auth } from '@clerk/nextjs/server';
 import { unstable_cache, revalidateTag, revalidatePath } from 'next/cache';
 
@@ -137,9 +137,6 @@ export async function getCachedDeck({ deckId, userId }: { deckId: number, userId
             GROUP BY deck_id
           `
         ]);
-        if(!deck[0]) {
-          return { success: false, error: 'Deck not found' };
-        }
         const avgRating = avg_rating[0]?.avg_rating ? parseFloat(avg_rating[0].avg_rating) : 0;
         return { success: true, deck: deck[0], cards, avgRating };
       }

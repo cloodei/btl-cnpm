@@ -1,9 +1,15 @@
 import { neon, Pool, PoolClient } from '@neondatabase/serverless';
 
-const sql = neon(process.env.DATABASE_URL!);
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+export const sql = neon(process.env.DATABASE_URL!);
 
-export default sql;
+export default async function typedSql<T = any>(query: string | TemplateStringsArray, ...valuesOrArray: any[]) {
+  if(typeof query === 'object') {
+    return sql(query, ...valuesOrArray) as Promise<T[]>;
+  }
+  const values = ((valuesOrArray.length === 1 && Array.isArray(valuesOrArray[0])) ? valuesOrArray[0] : valuesOrArray);
+  return sql(query, ...values) as Promise<T[]>;
+}
 
 export async function withConnection<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
   const client = await pool.connect();

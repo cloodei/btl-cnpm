@@ -73,7 +73,7 @@ const sponsored = [
   }
 ];
 
-export default async function ExplorePage() {
+export default function ExplorePage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <Tabs defaultValue="recommended" className="space-y-8">

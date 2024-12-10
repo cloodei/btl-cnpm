@@ -1,38 +1,48 @@
-'use client';
-import { useClerk } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
-import { Button } from './ui/button';
+"use client";
 import { useState } from 'react';
-import { revalidateUser } from '@/app/actions/user';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
-import { ArrowLeftFromLine, Loader2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeftFromLine, Loader2 } from 'lucide-react';
+import { revalidateUserDecks } from '@/app/actions/user';
+import { useClerk } from '@clerk/nextjs';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
 
 export default function LogoutButton({
-  className = "transition-all hover:gap-2",
+  className = "",
   variant = "expandIconDestructive",
   size = "default",
   children = "Log out"
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { signOut } = useClerk();
+  const { signOut, user } = useClerk();
   const { toast } = useToast();
   const router = useRouter();
 
   const handleSignOut = async () => {
     setIsLoading(true);
     try {
+      await revalidateUserDecks(user.id);
       await signOut();
-      await revalidateUser();
+      setIsLoading(false);
+      setIsOpen(false);
+      toast({
+        title: "Successfully logged out",
+        description: "See you next time! 👋",
+        duration: 2500
+      });
       router.push('/');
-      toast({ title: "Successfully logged out", description: "See you next time! 👋", duration: 2500 });
     }
     catch(error) {
-      toast({ title: "Error logging out", description: "Please try again", variant: "destructive", duration: 2500 });
-    }
-    finally {
+      toast({
+        title: "Error logging out",
+        description: error?.message || error || "Something went wrong",
+        variant: "destructive",
+        duration: 2500
+      });
       setIsLoading(false);
       setIsOpen(false);
     }
@@ -40,14 +50,26 @@ export default function LogoutButton({
 
   return (
     <>
-      <Button variant={variant} Icon={ArrowLeftFromLine} iconPlacement="left" size={size} onClick={() => setIsOpen(true)} className={className}>
+      <Button
+        variant={variant}
+        Icon={ArrowLeftFromLine}
+        iconPlacement="left"
+        size={size}
+        onClick={() => setIsOpen(true)}
+        className={cn("transition-all hover:gap-2", className)}
+      >
         {children}
       </Button>
 
       <AnimatePresence>
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <Dialog open={isOpen} onOpenChange={(open) => { if(!isLoading) setIsOpen(open) }}>
           <DialogContent className="sm:max-w-[425px]" hideClose={isLoading}>
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} transition={{ duration: 0.2 }}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.2 }}
+            >
               <DialogHeader>
                 <DialogTitle className="text-2xl font-semibold leading-none tracking-tight">
                   Ready to leave?
@@ -61,11 +83,15 @@ export default function LogoutButton({
                 <Button variant="outline" onClick={() => setIsOpen(false)} className="hover:bg-secondary/80" disabled={isLoading}>
                   Stay
                 </Button>
-                <Button variant="destructive" onClick={handleSignOut} disabled={isLoading} className="gap-2">
-                  {isLoading && (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                <Button variant="destructive" onClick={handleSignOut} disabled={isLoading} className="gap-[6px]">
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Logging out...
+                    </>
+                  ) : (
+                    "Yes, log me out"
                   )}
-                  {isLoading ? "Logging out..." : "Yes, log me out"}
                 </Button>
               </DialogFooter>
             </motion.div>

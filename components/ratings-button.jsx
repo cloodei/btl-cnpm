@@ -58,15 +58,14 @@ export default function RatingButton({ deckId, userId, avgRating = 0 }) {
         <Card
           className={`
             flex flex-col items-center gap-2 rounded-[7px] p-[10px] md:p-3 shadow-[0_2px_4px_rgba(0,0,0,0.35)] 
-            ${isLoading || isPending ? "opacity-50 cursor-not-allowed pointer-events-none" : "transition-all duration-200 hover:bg-secondary cursor-pointer"}
+            ${(isLoading || isPending) ? "opacity-50 cursor-not-allowed pointer-events-none" : "transition-all duration-200 hover:bg-secondary cursor-pointer"}
           `}
           onClick={() => { if(!isLoading && !isPending) setIsOpen(!isOpen) }}
         >
-          {isLoading || isPending ? (
-            <Loader2 className="h-8 md:h-9 w-8 md:w-9 animate-spin text-primary" />
-          ) : (
-            <Star className={`h-8 md:h-9 w-8 md:w-9 ${userRating > 0 ? "text-amber-400" : "text-primary"}`} />
-          )}
+          {(isLoading || isPending)
+            ? <Loader2 className="h-8 md:h-9 w-8 md:w-9 animate-spin text-primary" />
+            : <Star className={`h-8 md:h-9 w-8 md:w-9 ${userRating > 0 ? "text-amber-400" : "text-primary"}`} />
+          }
           <p className="text-xs md:text-sm text-primary">
             {userRating > 0 ? "Change Rating" : "Rate Deck"}
           </p>
