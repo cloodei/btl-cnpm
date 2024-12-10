@@ -41,6 +41,7 @@ export async function createDeck({ title, cards, isPublic }: { title: string, ca
 
     revalidateTag('decks');
     revalidateTag(`deck-${deck.id}`);
+    revalidateTag('user-info-decks');
     if(isPublic) {
       revalidateTag('recent-decks');
     }
@@ -207,9 +208,8 @@ export async function updateDeck({ deckId, title, cards, isPublic }: { deckId: n
     revalidateTag('decks')
     revalidateTag(`deck-${deckId}`)
     revalidateTag('recent-decks')
-    if(deckId === 9 || deckId === 11 || deckId === 12) {
-      revalidateTag(`featured-deck-${deckId}`)
-    }
+    revalidateTag('user-info-decks')
+    revalidateTag('favorites')
     return { success: true };
   }
   catch(error) {
@@ -223,10 +223,8 @@ export async function deleteDeck(deckId: number) {
     await sql`DELETE FROM decks WHERE id = ${deckId}`;
     revalidateTag('decks');
     revalidateTag(`deck-${deckId}`);
-    if(deckId === 9 || deckId === 11 || deckId === 12) {
-      revalidateTag(`featured-deck-${deckId}`)
-    }
     revalidateTag('recent-decks');
+    revalidateTag('user-info-decks');
     revalidateTag('favorites');
     return { success: true };
   }
@@ -243,6 +241,7 @@ export async function addToFavorites({ deckId, userId }: { deckId: number, userI
       VALUES (${deckId}, ${userId})
     `;
     revalidateTag('favorites');
+    revalidateTag('user-info-decks');
     revalidateTag(`deck-${deckId}`);
     return { success: true };
   }
@@ -260,6 +259,7 @@ export async function removeFromFavorites({ deckId, userId }: { deckId: number, 
       AND viewer_id = ${userId}
     `;
     revalidateTag('favorites');
+    revalidateTag('user-info-decks');
     revalidateTag(`deck-${deckId}`);
     return { success: true };
   }

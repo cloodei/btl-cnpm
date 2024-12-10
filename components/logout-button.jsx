@@ -1,12 +1,11 @@
 "use client";
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeftFromLine, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { revalidateUserDecks } from '@/app/actions/user';
 import { useClerk } from '@clerk/nextjs';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
 
@@ -20,21 +19,12 @@ export default function LogoutButton({
   const [isLoading, setIsLoading] = useState(false);
   const { signOut, user } = useClerk();
   const { toast } = useToast();
-  const router = useRouter();
 
   const handleSignOut = async () => {
     setIsLoading(true);
     try {
       await revalidateUserDecks(user.id);
-      await signOut();
-      setIsLoading(false);
-      setIsOpen(false);
-      toast({
-        title: "Successfully logged out",
-        description: "See you next time! 👋",
-        duration: 2500
-      });
-      router.push('/');
+      await signOut({ redirectUrl: "/" });
     }
     catch(error) {
       toast({
