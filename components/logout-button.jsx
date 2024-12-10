@@ -3,11 +3,11 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeftFromLine, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { revalidateUserDecks } from '@/app/actions/user';
 import { useClerk } from '@clerk/nextjs';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
+import { useRouter } from 'next/navigation';
 
 export default function LogoutButton({
   className = "",
@@ -17,16 +17,20 @@ export default function LogoutButton({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { signOut, user } = useClerk();
+  const router = useRouter();
+  const { signOut } = useClerk();
   const { toast } = useToast();
 
   const handleSignOut = async () => {
     setIsLoading(true);
     try {
-      await revalidateUserDecks(user.id);
-      await signOut({ redirectUrl: "/" });
+      await signOut();
+      setIsLoading(false);
+      setIsOpen(false);
+      router.push("/");
     }
     catch(error) {
+      console.log("Error logging out", error);
       toast({
         title: "Error logging out",
         description: error?.message || error || "Something went wrong",

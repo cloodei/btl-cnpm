@@ -1,4 +1,5 @@
 export const dynamic = 'force-static';
+
 import Link from "next/link";
 import { GraduationCap, Brain, Users, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";

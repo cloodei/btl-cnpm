@@ -9,9 +9,9 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeftFromLine } from "lucide-react";
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from "@clerk/nextjs";
 
-function AuthContent({ router }) {
+function AuthContent() {
+  const router = useRouter();
   const tab = useSearchParams().get('tab') || 'login';
 
   const handleTabChange = (value) => {
@@ -39,14 +39,6 @@ function AuthContent({ router }) {
 }
 
 export default function AuthPage() {
-  const router = useRouter();
-  const { isSignedIn } = useAuth();
-
-  if(isSignedIn) {
-    router.push("/");
-    return;
-  }
-
   return (
     <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden dark:bg-[#0a0b0f] bg-gray-50">
       <div className="absolute inset-0 bg-gradient-to-b from-[#f1f9ff] via-[#e6e6e6] to-[#f1f9ff] dark:from-[#000000] dark:via-gray-800 dark:to-[#000000] opacity-85" />
@@ -56,7 +48,7 @@ export default function AuthPage() {
           Back
         </Link>
         <Suspense fallback={<div>Loading...</div>}>
-          <AuthContent router={router} />
+          <AuthContent />
         </Suspense>
       </Card>
     </div>
