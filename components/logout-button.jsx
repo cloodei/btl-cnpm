@@ -13,7 +13,7 @@ export default function LogoutButton({
   className = "",
   variant = "expandIconDestructive",
   size = "default",
-  children = "Log out"
+  text = "Log out"
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,6 +28,7 @@ export default function LogoutButton({
       setIsLoading(false);
       setIsOpen(false);
       router.push("/");
+      router.refresh();
     }
     catch(error) {
       console.log("Error logging out", error);
@@ -52,7 +53,7 @@ export default function LogoutButton({
         onClick={() => setIsOpen(true)}
         className={cn("transition-all hover:gap-2", className)}
       >
-        {children}
+        {text}
       </Button>
 
       <AnimatePresence>
