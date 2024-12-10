@@ -7,7 +7,6 @@ import { useClerk } from '@clerk/nextjs';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
-import { useRouter } from 'next/navigation';
 
 export default function LogoutButton({
   className = "",
@@ -17,18 +16,14 @@ export default function LogoutButton({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
   const { signOut } = useClerk();
   const { toast } = useToast();
 
   const handleSignOut = async () => {
     setIsLoading(true);
     try {
+      window.__unstable__onBeforeSetActive = null;
       await signOut();
-      setIsLoading(false);
-      setIsOpen(false);
-      router.push("/");
-      router.refresh();
     }
     catch(error) {
       console.log("Error logging out", error);
