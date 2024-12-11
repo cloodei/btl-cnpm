@@ -39,7 +39,7 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
       const front = cards[i].front.trim();
       const back = cards[i].back.trim();
       if(front && back) {
-        validCards.push({ deck_id: deck.id, front, back });
+        validCards.push({ front, back });
       }
     }
     if(!validCards.length) {

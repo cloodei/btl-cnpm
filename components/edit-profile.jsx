@@ -30,6 +30,14 @@ export default function EditProfileModal({ currentUsername, currentImageUrl, use
   const { toast } = useToast();
   const router = useRouter();
 
+  const handleSelectAvatar = (url) => {
+    if(selectedImage !== url) {
+      setSelectedImage(url);
+      return;
+    }
+    setSelectedImage("");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -105,8 +113,11 @@ export default function EditProfileModal({ currentUsername, currentImageUrl, use
                 <button
                   key={url}
                   type="button"
-                  onClick={() => setSelectedImage(url)}
-                  className={`p-[2px] rounded-md transition-all w-fit h-fit ${(selectedImage === url) && "bg-primary/10 ring-2 ring-primary"}`}
+                  onClick={() => handleSelectAvatar(url)}
+                  className={`
+                    p-[2px] rounded-md transition-all w-fit h-fit
+                    ${(selectedImage === url) && "bg-primary/10 ring-2 ring-primary"}
+                  `}
                 >
                   <Avatar className="h-12 w-12 p-[2px]">
                     <AvatarImage src={url} />

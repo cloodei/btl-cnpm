@@ -117,8 +117,8 @@ export default function MyDecksClient({ decks }) {
                       </span>
                       <span className="flex items-center">
                         {deck.public
-                        ? <Send className="h-5 w-5 mr-1 text-sky-900 dark:text-sky-300/85" />
-                        : <MessageCircleOff className="h-5 w-5 mr-1 text-rose-900 dark:text-rose-300" />
+                          ? <Send className="h-5 w-5 mr-1 text-sky-900 dark:text-sky-300/85" />
+                          : <MessageCircleOff className="h-5 w-5 mr-1 text-rose-900 dark:text-rose-300" />
                         }
                       </span>
                     </div>
@@ -151,9 +151,13 @@ export default function MyDecksClient({ decks }) {
           <Button variant="outline" onClick={() => setDeleteDialog({ isOpen: false, deckId: null, deckName: "" })} disabled={isDeleting}>
             Cancel
           </Button>
-          <Button variant="destructive" onClick={handleDeleteDeck} className="gap-2" disabled={isDeleting}>
-            {isDeleting && <Loader2 className="h-4 w-4 animate-spin" />}
-            {isDeleting ? "Deleting..." : "Delete Deck"}
+          <Button variant="destructive" onClick={handleDeleteDeck} disabled={isDeleting}>
+            {isDeleting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin mr-[6px]" />
+                Deleting...
+              </>
+            ) : "Delete Deck"}
           </Button>
         </DialogFooter>
       </DialogContent>

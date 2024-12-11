@@ -15,7 +15,6 @@ export async function revalidateUser() {
   revalidateTag('user-info');
   revalidateTag('user-info-decks');
   revalidateTag('recent-decks');
-  revalidateTag('favorites');
   revalidateTag('decks');
 }
 
@@ -29,7 +28,6 @@ export async function revalidateUserDecks(userId: string) {
   }
   revalidateTag('user-info-decks');
   revalidateTag('recent-decks');
-  revalidateTag('favorites');
   revalidateTag('decks');
 }
 
@@ -46,7 +44,7 @@ export const getCachedUserInfo = unstable_cache(async (userId: string) => {
 
 export const getCachedUserInfoWithDecks = unstable_cache(async (userId: string) => {
     try {
-      const [user, stats, countFav] = await Promise.all([
+      const [user, stats] = await Promise.all([
         typedSql<DBUser>`
           SELECT * FROM users WHERE id = ${userId}
         `,
@@ -55,14 +53,9 @@ export const getCachedUserInfoWithDecks = unstable_cache(async (userId: string) 
           FROM decks AS d
           LEFT JOIN cards AS c ON d.id = c.deck_id
           WHERE d.creator_id = ${userId}
-        `,
-        typedSql<{ total: number }>`
-          SELECT COUNT(*) as total
-          FROM favorite_decks
-          WHERE viewer_id = ${userId}
         `
       ]);
-      return { success: true, user: user[0], decks: stats[0], countFav: countFav[0].total };
+      return { success: true, user: user[0], decks: stats[0] };
     }
     catch(error) {
       return { success: false, error };
@@ -73,20 +66,22 @@ export const getCachedUserInfoWithDecks = unstable_cache(async (userId: string) 
 export async function updateProfile({ userId, username, imageUrl }: { userId: string, username: string, imageUrl: string }) {
   'use server';
   try {
+    if(!username) {
+      return { success: false, error: 'Username is required' };
+    }
     const [userDecks] = await Promise.all([
       typedSql<{ id: number }>`
         SELECT id FROM decks WHERE creator_id = ${userId}
       `,
       typedSql`
         UPDATE users
-        SET username = ${username}, imageurl = ${imageUrl}, updated_at = CURRENT_TIMESTAMP
+        SET username = ${username}, imageurl = ${(!imageUrl) ? null : imageUrl}, updated_at = CURRENT_TIMESTAMP
         WHERE id = ${userId}
       `
     ]);
     revalidateTag('user-info');
     revalidateTag('user-info-decks');
     revalidateTag('recent-decks');
-    revalidateTag('favorites');
     for(const deck of userDecks) {
       revalidateTag(`deck-${deck.id}`);
     }

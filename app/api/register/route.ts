@@ -8,6 +8,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ status: 'success' });
   }
   catch(error) {
-    return NextResponse.json({ error: 'Failed to register user!' }, { status: 500 });
+    return NextResponse.json({ error }, { status: 500 });
   }
 }

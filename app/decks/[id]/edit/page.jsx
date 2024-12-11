@@ -30,7 +30,7 @@ const EditWrapper = async ({ id }) => {
   if(isNaN(deckId) || !userId) {
     return <DeckException message="Invalid Deck ID" />
   }
-  const { success, deck, cards, error } = await getCachedDeck({ deckId, userId });
+  const { success, deck, cards, error } = await getCachedDeck({ deckId });
   if(!success) {
     const err = error?.message || error || "Failed to load deck";
     return <DeckException message={err} />

@@ -33,14 +33,14 @@ const NFBoundary = ({ message, description = "The deck you're looking for doesn'
 const DeckWrapper = async ({ id }) => {
   const deckId = parseInt(id);
   const { userId } = await auth();
-  if(isNaN(deckId) || !userId) {
+  if(isNaN(deckId) || !userId || deckId < 1) {
     return <NFBoundary message="Invalid Deck ID" description="Please check the URL and try again." />
   }
   if(deckId === 9 || deckId === 11 || deckId === 12) {
-    const result = await getFeaturedDeck({ deckId, userId });
-    return <DeckViewer deck={result.deck} cards={result.cards} userId={userId} permissions={result.deck.creator_id === userId} avgRating={result.avgRating} />
+    const result = await getFeaturedDeck({ deckId });
+    return <DeckViewer deck={result.deck} cards={result.cards} userId={userId} permissions={result.deck.creator_id === userId} />
   }
-  const { success, deck, cards, avgRating, error } = await getCachedDeck({ deckId, userId });
+  const { success, deck, cards, error } = await getCachedDeck({ deckId });
   if(!success) {
     const err = error?.message || error || "Failed to load deck";
     return <NFBoundary message={err} />
@@ -48,7 +48,7 @@ const DeckWrapper = async ({ id }) => {
   if(!deck) {
     return <NFBoundary message="Deck Not Found" />
   }
-  return <DeckViewer deck={deck} cards={cards} userId={userId} permissions={deck.creator_id === userId} avgRating={avgRating} />
+  return <DeckViewer deck={deck} cards={cards} userId={userId} permissions={deck.creator_id === userId} />
 }
 
 export default async function DeckPage({ params }) {

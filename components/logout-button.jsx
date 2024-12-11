@@ -22,7 +22,7 @@ export default function LogoutButton({
   const handleSignOut = async () => {
     setIsLoading(true);
     try {
-      window?.__unstable__onBeforeSetActive = null;
+      window.__unstable__onBeforeSetActive = null;
       await signOut();
     }
     catch(error) {
