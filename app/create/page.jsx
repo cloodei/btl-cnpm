@@ -28,7 +28,7 @@ export default function CreateComponent() {
         title: "Error",
         description: "Deck title must have at least 4 characters or 64 characters and less",
         variant: "destructive",
-        duration: 2400,
+        duration: 2400
       });
       setIsOpen(false);
       return;
@@ -46,7 +46,7 @@ export default function CreateComponent() {
         title: "Error",
         description: "Deck must have at least one complete card!",
         variant: "destructive",
-        duration: 2400,
+        duration: 2400
       });
       setIsOpen(false);
       return;
@@ -57,7 +57,7 @@ export default function CreateComponent() {
       toast({
         title: "Success!",
         description: "Your deck has been created successfully.",
-        duration: 2400,
+        duration: 2400
       });
       setCards([{ front: "", back: "" }]);
       setDeckTitle("");
@@ -68,7 +68,7 @@ export default function CreateComponent() {
         title: "Error",
         description: error?.message || error || "An error occurred",
         variant: "destructive",
-        duration: 2400,
+        duration: 2400
       });
     }
     setIsSaving(false);
@@ -76,16 +76,11 @@ export default function CreateComponent() {
   };
 
   const addCard = () => {
+    setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" }), 25);
     setCards([...cards, { front: "", back: "" }]);
-    setTimeout(() => {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-    }, 25);
   };
 
-  const deleteCard = (index) => {
-    const newCards = cards.filter((_, idx) => idx !== index);
-    setCards(newCards);
-  };
+  const deleteCard = (del) => setCards(cards.filter((_, i) => i !== del));
 
   const updateCard = (index, side, value) => {
     const newCards = [...cards];
@@ -94,17 +89,22 @@ export default function CreateComponent() {
   };
 
   const generateDescription = () => {
-    const complete = []
-    const incomplete = []
+    let complete = 0
+    let incomplete = 0
     for(const card of cards) {
       if(card.front.trim() && card.back.trim()) {
-        complete.push(1);
+        complete++;
       }
       else {
-        incomplete.push(1);
+        incomplete++;
       }
     }
-    return `Saving will create a new flashcard deck with ${complete.length} cards.\n${incomplete.length ? `${incomplete.length > 1 ? `${incomplete.length} cards are` : "One card is"} incomplete and will not be saved.` : ""}`;
+    let incompleteWarn = "";
+    if(incomplete) {
+      incompleteWarn = (incomplete > 1) ? `\n${incomplete} cards are incomplete and will not be saved.` : "\nOne card is incomplete and will not be saved.";
+    }
+    
+    return `Saving will create a new flashcard deck with ${complete} cards.${incompleteWarn}`;
   }
 
   return (

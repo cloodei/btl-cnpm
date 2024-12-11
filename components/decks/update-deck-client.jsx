@@ -98,13 +98,11 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
   };
 
   const addCard = () => {
-    setCards([...cards, { front: "", back: "" }]);
     setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" }), 25);
+    setCards([...cards, { front: "", back: "" }]);
   };
 
-  const deleteCard = (index) => {
-    setCards(cards.filter((_, i) => i !== index));
-  };
+  const deleteCard = (del) => setCards(cards.filter((_, i) => i !== del))
 
   const updateCard = (index, side, value) => {
     const newCards = [...cards];

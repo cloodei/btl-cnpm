@@ -21,9 +21,9 @@ export async function withConnection<T>(callback: (client: PoolClient) => Promis
   }
 }
 
-export async function query<T = any>(text: string, params: any[] = []): Promise<T[]> {
+export async function query<T = any>(query: string, params: any[] = []): Promise<T[]> {
   return withConnection(async (client) => {
-    const result = await client.query(text, params);
+    const result = await client.query(query, params);
     return result.rows;
   });
 }

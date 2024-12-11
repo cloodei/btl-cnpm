@@ -18,25 +18,25 @@ export default function FavoritesButton({ deckId, is_favorite, userId }) {
         toast({
           title: "Success!",
           description: isFavorite ? "Removed from favorites" : "Added to favorites",
-          duration: 2000,
+          duration: 2500,
         });
         setFavorite(!isFavorite);
       }
       else {
         toast({
           title: "Error",
-          description: "Failed to update favorites",
+          description: result.error?.message || result.error || "An error occurred",
           variant: "destructive",
-          duration: 2000,
+          duration: 2500,
         });
       }
     }
     catch(error) {
       toast({
         title: "Error",
-        description: "An unexpected error occurred",
+        description: error?.message || error || "An error occurred",
         variant: "destructive",
-        duration: 2000,
+        duration: 2500,
       });
     }
     finally {

@@ -22,11 +22,10 @@ export default function LogoutButton({
   const handleSignOut = async () => {
     setIsLoading(true);
     try {
-      window.__unstable__onBeforeSetActive = null;
+      window?.__unstable__onBeforeSetActive = null;
       await signOut();
     }
     catch(error) {
-      console.log("Error logging out", error);
       toast({
         title: "Error logging out",
         description: error?.message || error || "Something went wrong",
