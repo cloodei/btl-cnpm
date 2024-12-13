@@ -31,11 +31,11 @@ export default function EditProfileModal({ currentUsername, currentImageUrl, use
   const router = useRouter();
 
   const handleSelectAvatar = (url) => {
-    if(selectedImage !== url) {
+    if(url !== selectedImage) {
       setSelectedImage(url);
       return;
     }
-    setSelectedImage("");
+    setSelectedImage(null);
   };
 
   const handleSubmit = async (e) => {
@@ -58,7 +58,7 @@ export default function EditProfileModal({ currentUsername, currentImageUrl, use
       toast({
         title: "Profile saved",
         description: "No changes were detected",
-        duration: 2000
+        duration: 2500
       });
       setIsLoading(false);
       setIsEditing(false);

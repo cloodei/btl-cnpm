@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export default function Profile({ user, decks, userId }) {
+export default function Profile({ user, decks, userId, countFav }) {
   const generateNameInitials = (name) => {
     let initials = (name[0]).toUpperCase();
     for(let i = 1; i < name.length; i++) {
@@ -61,10 +61,15 @@ export default function Profile({ user, decks, userId }) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl mb-2 font-bold">
-              0 decks
+              {countFav}
+              {countFav === '1' ? (
+                <span className="ml-[4px]"> deck</span>
+              ) : (
+                <span className="ml-[4px]"> decks</span>
+              )}
             </div>
             <p className="text-xs text-muted-foreground">
-              There's always time to start!
+              {countFav > 0 ? "Keep it going!" : "There's always time to start!"}
             </p>
           </CardContent>
         </Card>
@@ -94,7 +99,7 @@ export default function Profile({ user, decks, userId }) {
           <h2 className="text-xl font-semibold">Account Information</h2>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center space-x-4 text-sm">
+          <div className="flex items-center space-x-[12px] text-[15px]">
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">Joined </span>
             <span>{new Date(user.created_at).toLocaleDateString()}</span>

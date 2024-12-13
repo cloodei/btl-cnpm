@@ -6,24 +6,24 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "./ui/sidebar";
 import { useEffect } from "react";
+import { useQuiz } from '@/contexts/QuizContext';
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 
 export default function Navbar() {
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
+  const { isQuizActive } = useQuiz();
   
   useEffect(() => document.querySelector('.flex.min-h-svh.w-full')?.classList.add('hidden'), []);
 
-  if(pathname === '/login' || pathname === '/register') {
+  if(isQuizActive || pathname === '/login' || pathname === '/register') {
     return null;
   }
 
   const NavLink = ({ href, children }) => (
     <Link href={href}>
-      <Button
-        variant={pathname === href ? "default" : "linkHover2"}
-        className= {`${pathname === href && "pointer-events-none"} transition-all duration-300 hover:scale-[1.12] active:scale-95`}
-      >
+      <Button variant={pathname === href ? "default" : "linkHover2"}
+        className= {`${pathname === href && "pointer-events-none"} transition-all duration-300 hover:scale-[1.12] active:scale-95`}>
         {children}
       </Button>
     </Link>
@@ -42,6 +42,7 @@ export default function Navbar() {
           <NavLink href="/explore">Explore</NavLink>
           <NavLink href="/create">Create</NavLink>
           <NavLink href="/my-decks">My Decks</NavLink>
+          <NavLink href="/favorites">Favorites</NavLink>
         </div>
         <div className="flex items-center ml-auto space-x-4">
           <ModeToggle />
