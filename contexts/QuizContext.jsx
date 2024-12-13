@@ -1,10 +1,11 @@
 "use client";
 import { createContext, useContext, useState } from 'react';
 
-const QuizContext = createContext()
+const QuizContext = createContext();
 
 export function QuizProvider({ children }) {
   const [isQuizActive, setIsQuizActive] = useState(false);
+
   return (
     <QuizContext.Provider value={{ isQuizActive, setIsQuizActive }}>
       {children}

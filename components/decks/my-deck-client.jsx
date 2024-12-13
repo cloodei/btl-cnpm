@@ -117,15 +117,15 @@ export default function MyDecksClient({ decks }) {
                       </span>
                       <span className="flex items-center">
                         {deck.public
-                        ? <Send className="h-5 w-5 mr-1 text-sky-900 dark:text-sky-300/85" />
-                        : <MessageCircleOff className="h-5 w-5 mr-1 text-rose-900 dark:text-rose-300" />
+                          ? <Send className="h-5 w-5 mr-1 text-sky-900 dark:text-sky-300/85" />
+                          : <MessageCircleOff className="h-5 w-5 mr-1 text-rose-900 dark:text-rose-300" />
                         }
                       </span>
                     </div>
 
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">Last updated </span>
-                      <span>{getTimeIndicator(deck.updated_at)}</span>
+                      <span> {getTimeIndicator(deck.updated_at)}</span>
                     </div>
                   </div>
                 </div>
@@ -152,8 +152,14 @@ export default function MyDecksClient({ decks }) {
             Cancel
           </Button>
           <Button variant="destructive" onClick={handleDeleteDeck} className="gap-2" disabled={isDeleting}>
-            {isDeleting && <Loader2 className="h-4 w-4 animate-spin" />}
-            {isDeleting ? "Deleting..." : "Delete Deck"}
+            {isDeleting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Deleting...
+              </>
+            ) : (
+              "Delete Deck"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

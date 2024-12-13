@@ -27,21 +27,19 @@ export async function getComments(deckId: number, page: number = 1) {
     };
   }
   catch(error) {
-    return { success: false, error };
+    throw error;
   }
 }
 
 export async function addComment({ deckId, userId, comment }: { deckId: number, userId: string, comment: string }) {
   try {
-    const [result] = await sql`
+    await sql`
       INSERT INTO comments (commenter_id, deck_id, comment)
       VALUES (${userId}, ${deckId}, ${comment})
-      RETURNING id
     `;
-    return result;
   }
   catch(error) {
-    return { success: false, error };
+    throw error;
   }
 }
 
@@ -52,19 +50,17 @@ export async function updateComment({ commentId, comment }: { commentId: number,
       SET comment = ${comment}, updated_at = CURRENT_TIMESTAMP
       WHERE id = ${commentId}
     `;
-    return { success: true };
   }
   catch(error) {
-    return { success: false, error };
+    throw error;
   }
 }
 
 export async function deleteComment(commentId: number) {
   try {
     await sql `DELETE FROM comments WHERE id = ${commentId}`;
-    return { success: true };
   }
   catch(error) {
-    return { success: false, error };
+    throw error;
   }
 }

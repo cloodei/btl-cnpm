@@ -6,16 +6,18 @@ import { Button } from "@/components/ui/button";
 import { FloatTextarea } from "../ui/float-input";
 import { Loader2 } from "lucide-react";
 import Comment from "./comment";
+import { useRouter } from "next/navigation";
 
 export default function CommentList({ deckId, userId }) {
   const [newComment, setNewComment] = useState("");
+  const router = useRouter();
   const queryClient = useQueryClient();
 
   useEffect(() => {
     return  () => queryClient.resetQueries({ queryKey: ['comments', deckId] });
   }, []);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery({
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } = useInfiniteQuery({
     queryKey: ['comments', deckId],
     queryFn: ({ pageParam = 1 }) => getComments(deckId, pageParam),
     getNextPageParam: (lastPage, pages) => (lastPage.hasMore ? pages.length + 1 : undefined),
@@ -31,15 +33,32 @@ export default function CommentList({ deckId, userId }) {
     }
   });
 
-  const allComments = data?.pages.flatMap((page) => page.comments) || [];
+  if(error) {
+    return (
+      <div className="mt-8 pb-3 border rounded-lg flex flex-col items-center gap-[6px]">
+        <div className="pt-3 text-base md:text-xl font-medium tracking-tight text-rose-500">
+          {error.message || "An error occurred"}
+        </div>
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={() => router.reload()}
+        >
+          Retry
+        </Button>
+      </div>
+    );
+  }
   
   if(isLoading) {
     return (
-      <div className="flex justify-center p-8">
+      <div className="flex justify-center pt-11 pb-2">
         <Loader2 className="h-6 w-6 animate-spin" />
       </div>
     )
   }
+
+  const allComments = data?.pages.flatMap((page) => page.comments) || [];
 
   return (
     <div className="mt-8 border rounded-lg">
@@ -68,20 +87,13 @@ export default function CommentList({ deckId, userId }) {
         </Button>
       </div>
       
-      {!allComments.length && !isLoading ? (
-        <div className="pt-4 pb-3 text-center text-muted-foreground">
-          No comments yet. Be the first to comment!
-        </div>
-      ) : (
+      {allComments.length ? (
         <>
           <div className="divide-y">
-            {allComments.map((comment) => (
-              <Comment key={comment.id} comment={comment} permission={userId === comment.commenter_id} />
-            ))}
+            {allComments.map((comment, i) => <Comment key={i} comment={comment} permission={userId === comment.commenter_id} />)}
           </div>
-          
           {hasNextPage ? (
-            <div className="p-4 flex justify-center">
+            <div className="pb-[14px] flex justify-center">
               <Button
                 size="sm"
                 variant="outline"
@@ -91,15 +103,19 @@ export default function CommentList({ deckId, userId }) {
                 {isFetchingNextPage ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Loading more...
+                    Loading comments...
                   </>
                 ) : (
-                  'Load More Comments'
+                  "Load More"
                 )}
               </Button>
             </div>
           ): null}
         </>
+      ) : (
+        <div className="pt-4 pb-3 text-center text-muted-foreground">
+          No comments yet. Be the first to comment!
+        </div>
       )}
     </div>
   );

@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { getTimeIndicator } from "@/lib/utils";
 import { Pencil, Trash2, X, Check } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useToast } from "@/hooks/use-toast";
 
 const generateNameInitials = (name) => {
   let initials = (name[0]).toUpperCase();
@@ -20,6 +21,7 @@ const generateNameInitials = (name) => {
 export default function Comment({ comment, permission }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(comment.comment);
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   
   const updateMutation = useMutation({
@@ -27,12 +29,30 @@ export default function Comment({ comment, permission }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['comments', comment.deck_id] });
       setIsEditing(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error updating comment",
+        description: error?.message || error || "Something went wrong",
+        variant: "destructive",
+        duration: 2500
+      });
+      setEditedText(comment.comment);
+      setIsEditing(false);
     }
   });
 
   const deleteMutation = useMutation({
     mutationFn: deleteComment,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['comments', comment.deck_id] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['comments', comment.deck_id] }),
+    onError: (error) => {
+      toast({
+        title: "Error deleting comment",
+        description: error?.message || error || "Something went wrong",
+        variant: "destructive",
+        duration: 2500
+      });
+    }
   });
 
   const handleEdit = () => {
@@ -42,6 +62,11 @@ export default function Comment({ comment, permission }) {
       return;
     }
     updateMutation.mutate({ commentId: comment.id, comment: edited });
+  }
+
+  const handleCancel = () => {
+    setEditedText(comment.comment);
+    setIsEditing(false);
   }
   
   return (
@@ -79,7 +104,7 @@ export default function Comment({ comment, permission }) {
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => setIsEditing(false)}
+                onClick={handleCancel}
                 disabled={updateMutation.isPending || deleteMutation.isPending}
                 className="border-[#c5cad3] dark:border-[#36383f]"
               >
@@ -115,7 +140,7 @@ export default function Comment({ comment, permission }) {
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
-      ) :null}
+      ) : null}
     </div>
   );
 }
