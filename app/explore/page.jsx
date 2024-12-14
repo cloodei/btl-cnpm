@@ -8,6 +8,10 @@ import Image from "next/image";
 import Link from "next/link";
 import CommunityTab from "@/components/explore-content/community-tab";
 
+export const metadata = {
+  title: 'Browse | CoinCard'
+};
+
 const featured = [
   { id: 11, name: "Everyday Words: From English to French", description: "Quickstart Guide to speaking French", totalcards: 25 },
   { id: 12, name: "Vocabulary Expansion", description: "Highly Educative Expressions", totalcards: 20 },

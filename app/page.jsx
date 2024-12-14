@@ -4,6 +4,17 @@ import Link from "next/link";
 import { GraduationCap, Brain, Users, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+export const metadata = {
+  icons: {
+    icon: '/favicon.ico'
+  },
+  title: {
+    default: 'CoinCard',
+    template: '%s'
+  },
+  description: 'Improve your learning capabilities with CoinCard'
+};
+
 export default function Home() {
   return (
     <div className="min-h-[calc(100vh-48px)] bg-gradient-to-b from-background dark:from-[#0f131b] to-secondary">

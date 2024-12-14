@@ -6,6 +6,10 @@ import { auth } from "@clerk/nextjs/server";
 import { getCachedDeck } from "@/app/actions/deck";
 import { BookX } from 'lucide-react';
 
+export const metadata = {
+  title: "View | CoinCard",
+};
+
 const NFBoundary = ({ message, description = "The deck you're looking for doesn't exist or has been removed." }) => {
   return (
     <div className="container mx-auto max-w-2xl py-8 px-4">

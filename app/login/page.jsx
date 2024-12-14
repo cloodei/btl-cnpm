@@ -1,42 +1,13 @@
-"use client";
 export const dynamic = "force-static";
 
+export const metadata = {
+  title: 'Registration | CoinCard'
+};
+
 import Link from "next/link";
-import LoginForm from "@/components/auth/login-form-client";
-import RegisterForm from "@/components/auth/register-form-client";
-import { Suspense } from "react";
+import AuthContent from "./content";
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeftFromLine } from "lucide-react";
-import { useRouter, useSearchParams } from 'next/navigation';
-
-function AuthContent() {
-  const router = useRouter();
-  const tab = useSearchParams().get('tab') || 'login';
-
-  const handleTabChange = (value) => {
-    router.push(`/login?tab=${value}`, { scroll: false, shallow: true });
-  };
-
-  return (
-    <Tabs className="w-full" onValueChange={handleTabChange} value={tab}>
-      <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100 dark:bg-[#1a1a1a]">
-        <TabsTrigger value="login" className="text-gray-600 dark:text-[#e1e1e1] data-[state=active]:bg-white dark:data-[state=active]:bg-[#2a2a2a] data-[state=active]:text-gray-900 dark:data-[state=active]:text-white">
-          Login
-        </TabsTrigger>
-        <TabsTrigger value="register" className="text-gray-600 dark:text-[#e1e1e1] data-[state=active]:bg-white dark:data-[state=active]:bg-[#2a2a2a] data-[state=active]:text-gray-900 dark:data-[state=active]:text-white">
-          Register
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent value="login" className="mt-0">
-        <LoginForm />
-      </TabsContent>
-      <TabsContent value="register" className="mt-0">
-        <RegisterForm />
-      </TabsContent>
-    </Tabs>
-  );
-}
 
 export default function AuthPage() {
   return (
@@ -47,9 +18,7 @@ export default function AuthPage() {
           <ArrowLeftFromLine className="h-[22px] w-[22px]" />
           Back
         </Link>
-        <Suspense fallback={<div>Loading...</div>}>
-          <AuthContent />
-        </Suspense>
+        <AuthContent />
       </Card>
     </div>
   );

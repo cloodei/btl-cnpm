@@ -6,6 +6,10 @@ import { auth } from "@clerk/nextjs/server";
 import { Button } from "@/components/ui/button";
 import { Suspense } from "react";
 
+export const metadata = {
+  title: "Quiz | CoinCard",
+};
+
 const IneligibleDeck = ({ message, cardCount = null }) => {
   return (
     <div className="m-auto pt-12 pb-8">

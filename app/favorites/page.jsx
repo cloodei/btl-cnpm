@@ -6,6 +6,10 @@ import { getFavoriteDecksWithCardsCount } from "../actions/deck";
 import { Button } from "@/components/ui/button";
 import { Suspense } from "react";
 
+export const metadata = {
+  title: 'Favorites | CoinCard'
+};
+
 const EmptyState = ({ message, description = null }) => {
   return (
     <div className="flex min-h-[70vh] items-center justify-center p-4">

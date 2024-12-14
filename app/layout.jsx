@@ -11,36 +11,25 @@ import MobileSidebar from '@/components/mobile-sidebar';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata = {
-  icons: {
-    icon: '/favicon.ico'
-  },
-  title: {
-    default: 'CoinCard',
-    template: '%s'
-  },
-  description: 'Improve your learning capabilities with CoinCard'
-};
-
 export default function RootLayout({ children }) {
   return (
-  <ClerkProvider>
-    <html lang="en">
-      <SidebarProvider>
-        <body className={inter.className}>
-          <QueryProvider>
-            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
-              <QuizProvider>
-                <Navbar />
-                <main>{children}</main>
-                <Toaster />
-                <MobileSidebar />
-              </QuizProvider>
-            </ThemeProvider>
-          </QueryProvider>
-        </body>
-      </SidebarProvider>
-    </html>
-  </ClerkProvider>
+    <ClerkProvider>
+      <html lang="en">
+        <SidebarProvider>
+          <body className={inter.className}>
+            <QueryProvider>
+              <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
+                <QuizProvider>
+                  <Navbar />
+                  <main>{children}</main>
+                  <Toaster />
+                  <MobileSidebar />
+                </QuizProvider>
+              </ThemeProvider>
+            </QueryProvider>
+          </body>
+        </SidebarProvider>
+      </html>
+    </ClerkProvider>
   );
 }

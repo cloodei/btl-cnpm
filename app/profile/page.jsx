@@ -6,6 +6,10 @@ import { getCachedUserInfoWithDecks } from "../actions/user";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+export const metadata = {
+  title: "Profile | CoinCard"
+};
+
 const ProfileException = ({ message }) => {
   return (
     <div className="m-auto pt-12 pb-8">

@@ -5,6 +5,10 @@ import { auth } from "@clerk/nextjs/server";
 import { getCachedDecksWithCardsCount } from "../actions/deck";
 import { Suspense } from "react";
 
+export const metadata = {
+  title: 'My Decks | CoinCard',
+};
+
 const DecksException = ({ message }) => {
   return (
     <div className="flex min-h-[70vh] items-center justify-center p-2">

@@ -6,6 +6,10 @@ import { auth } from "@clerk/nextjs/server";
 import { Button } from "@/components/ui/button";
 import { Suspense } from "react";
 
+export const metadata = {
+  title: "Edit | CoinCard",
+};
+
 const DeckException = ({ message }) => {
   return (
     <div className="m-auto py-12">
