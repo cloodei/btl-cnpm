@@ -24,32 +24,32 @@ const DeckException = ({ message }) => {
   )
 }
 
-const EditWrapper = async ({ id }) => {
-  const deckId = parseInt(id);
-  const { userId } = await auth();
-  if(isNaN(deckId) || !userId) {
-    return <DeckException message="Invalid Deck ID" />
-  }
-  const { success, deck, cards, error } = await getCachedDeck({ deckId, userId });
-  if(!success) {
-    const err = error?.message || error || "Failed to load deck";
-    return <DeckException message={err} />
-  }
-  if(!deck) {
-    return <DeckException message="Deck Not Found" />
-  }
-  if(deck.creator_id !== userId) {
-    return <DeckException message="You are not authorized to edit this deck" />
-  }
-  return <UpdateDeckComponent deck={deck} cards={cards} userId={userId} />
-}
-
 export default async function EditDeckPage({ params }) {
   const { id } = await params;
 
+  const EditWrapper = async () => {
+    const deckId = parseInt(id);
+    const { userId } = await auth();
+    if(isNaN(deckId) || !userId) {
+      return <DeckException message="Invalid Deck ID" />
+    }
+    const { success, deck, cards, error } = await getCachedDeck({ deckId, userId });
+    if(!success) {
+      const err = error?.message || error || "Failed to load deck";
+      return <DeckException message={err} />
+    }
+    if(!deck) {
+      return <DeckException message="Deck Not Found" />
+    }
+    if(deck.creator_id !== userId) {
+      return <DeckException message="You are not authorized to edit this deck" />
+    }
+    return <UpdateDeckComponent deck={deck} cards={cards} userId={userId} />
+  }
+
   return (
     <Suspense fallback={<DeckViewerSkeleton />}>
-      <EditWrapper id={id} />
+      <EditWrapper />
     </Suspense>
   );
 }

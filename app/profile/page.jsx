@@ -74,7 +74,7 @@ const ProfileSkeleton = () => (
 );
 
 const PageWrapper = async () => {
-  const {userId} = await auth();
+  const { userId } = await auth();
   if(!userId) {
     return <ProfileException message="Please sign in to view your profile" />;
   }

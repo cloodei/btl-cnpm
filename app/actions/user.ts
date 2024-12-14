@@ -1,6 +1,6 @@
 'use server';
 import typedSql, { query } from '@/lib/db';
-import { unstable_cache, revalidateTag } from 'next/cache';
+import { unstable_cache, revalidateTag, revalidatePath } from 'next/cache';
 
 export type DBUser = {
   id: string,
@@ -17,6 +17,7 @@ export async function revalidateUser() {
   revalidateTag('recent-decks');
   revalidateTag('favorites');
   revalidateTag('decks');
+  revalidatePath('/profile');
 }
 
 export async function revalidateUserDecks(userId: string) {
@@ -87,6 +88,7 @@ export async function updateProfile({ userId, username, imageUrl }: { userId: st
     revalidateTag('user-info-decks');
     revalidateTag('recent-decks');
     revalidateTag('favorites');
+    revalidatePath('/profile');
     for(const deck of userDecks) {
       revalidateTag(`deck-${deck.id}`);
     }

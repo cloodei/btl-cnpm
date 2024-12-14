@@ -3,7 +3,7 @@ import Link from "next/link";
 import DeckViewerSkeleton from "@/components/dv-skeleton";
 import { Suspense } from "react";
 import { auth } from "@clerk/nextjs/server";
-import { getCachedDeck, getFeaturedDeck } from "@/app/actions/deck";
+import { getCachedDeck } from "@/app/actions/deck";
 import { BookX } from 'lucide-react';
 
 const NFBoundary = ({ message, description = "The deck you're looking for doesn't exist or has been removed." }) => {
@@ -30,33 +30,30 @@ const NFBoundary = ({ message, description = "The deck you're looking for doesn'
   );
 }
 
-const DeckWrapper = async ({ id }) => {
-  const deckId = parseInt(id);
-  const { userId } = await auth();
-  if(isNaN(deckId) || !userId) {
-    return <NFBoundary message="Invalid Deck ID" description="Please check the URL and try again." />
-  }
-  if(deckId === 9 || deckId === 11 || deckId === 12) {
-    const result = await getFeaturedDeck({ deckId, userId });
-    return <DeckViewer deck={result.deck} cards={result.cards} userId={userId} permissions={result.deck.creator_id === userId} avgRating={result.avgRating} />
-  }
-  const { success, deck, cards, avgRating, error } = await getCachedDeck({ deckId, userId });
-  if(!success) {
-    const err = error?.message || error || "Failed to load deck";
-    return <NFBoundary message={err} />
-  }
-  if(!deck || !cards?.length) {
-    return <NFBoundary message="Deck Not Found" />
-  }
-  return <DeckViewer deck={deck} cards={cards} userId={userId} permissions={deck.creator_id === userId} avgRating={avgRating} />
-}
-
 export default async function DeckPage({ params }) {
   const { id } = await params;
 
+  const DeckWrapper = async () => {
+    const deckId = parseInt(id);
+    const { userId } = await auth();
+    if(isNaN(deckId) || !userId) {
+      return <NFBoundary message="Invalid Deck ID" description="Please check the URL and try again." />
+    }
+    const revalidate = (deckId === 9 || deckId === 11 || deckId === 12) ? 120 : 600;
+    const { success, deck, cards, avgRating, error } = await getCachedDeck({ deckId, userId, revalidate });
+    if(!success) {
+      const err = error?.message || error || "Failed to load deck";
+      return <NFBoundary message={err} />
+    }
+    if(!deck || !cards?.length) {
+      return <NFBoundary message="Deck Not Found" />
+    }
+    return <DeckViewer deck={deck} cards={cards} userId={userId} permissions={deck.creator_id === userId} avgRating={avgRating} />
+  }
+
   return (
     <Suspense fallback={<DeckViewerSkeleton />}>
-      <DeckWrapper id={id} />
+      <DeckWrapper />
     </Suspense>
   );
 }

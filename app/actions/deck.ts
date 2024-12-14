@@ -86,7 +86,7 @@ export const getFavoriteDecksWithCardsCount = unstable_cache(async (userId: stri
     catch(error) {
       return { success: false, error };
     }
-  }, ["get-favorites"], { tags: ['favorites'], revalidate: 75 }
+  }, ["get-favorites"], { tags: ['favorites'], revalidate: 120 }
 );
 
 export const getCommunityDecksWithCardsCount = unstable_cache(async (userId: string) => {
@@ -107,10 +107,10 @@ export const getCommunityDecksWithCardsCount = unstable_cache(async (userId: str
     catch(error) {
       return { success: false, error };
     }
-  }, ["get-recent-decks"], { tags: ['recent-decks', 'favorites'], revalidate: 90 }
+  }, ["get-recent-decks"], { tags: ['recent-decks', 'favorites'], revalidate: 120 }
 );
 
-export async function getCachedDeck({ deckId, userId }: { deckId: number, userId: string }) {
+export async function getCachedDeck({ deckId, userId, revalidate = 120 }: { deckId: number, userId: string, revalidate: number }) {
   return unstable_cache(
     async () => {
       try {
@@ -141,37 +141,7 @@ export async function getCachedDeck({ deckId, userId }: { deckId: number, userId
       catch(error) {
         return { success: false, error };
       }
-    }, [`deck-${deckId}`], { tags: [`deck-${deckId}`], revalidate: 90 }
-  )();
-}
-
-export async function getFeaturedDeck({ deckId, userId }: { deckId: number, userId: string }) {
-  return unstable_cache(
-    async () => {
-      const [deck, cards, avg_rating] = await Promise.all([
-        sql`
-          SELECT d.id, d.creator_id, d.name, d.public, d.created_at, d.updated_at, u.username,
-          EXISTS(SELECT 1 FROM favorite_decks WHERE deck_id = d.id AND viewer_id = ${userId}) AS is_favorite
-          FROM decks AS d
-          INNER JOIN users AS u
-          ON d.creator_id = u.id
-          WHERE d.id = ${deckId}
-        `,
-        sql`
-          SELECT front, back
-          FROM cards
-          WHERE deck_id = ${deckId}
-        `,
-        sql`
-          SELECT AVG(rating) AS avg_rating
-          FROM ratings
-          WHERE deck_id = ${deckId}
-          GROUP BY deck_id
-        `
-      ]);
-      const avgRating = avg_rating[0]?.avg_rating ? parseFloat(avg_rating[0].avg_rating) : 0;
-      return { success: true, deck: deck[0], cards, avgRating };
-    }, [`get-featured-deck-${deckId}`], { tags: [`featured-deck-${deckId}`], revalidate: 600 }
+    }, [`deck-${deckId}`], { tags: [`deck-${deckId}`], revalidate }
   )();
 }
 

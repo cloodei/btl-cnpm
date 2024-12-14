@@ -12,8 +12,8 @@ import { useRouter } from "next/navigation";
 
 const shuffleArray = (arr) => {
   let res = [...arr];
-  for(let i = res.length - 1; i > 0; i--) {
-    let random = Math.floor(Math.random() * (i + 1));
+  for(let i = res.length - 1; i; i--) {
+    const random = Math.floor(Math.random() * (i + 1));
     let temp = res[i];
     res[i] = res[random];
     res[random] = temp;
@@ -29,7 +29,7 @@ const generateAnswers = (correctAnswer, allCards, useFront) => {
   wrongSet.delete(correctAnswer);
   let res = [correctAnswer];
   const random = shuffleArray(shuffleArray(Array.from(wrongSet)));
-  while(res.length < 4 && random.length) {
+  while(res.length != 4 && random.length) {
     res.push(random.pop());
   }
   return shuffleArray(res);
@@ -38,7 +38,7 @@ const generateAnswers = (correctAnswer, allCards, useFront) => {
 const TIME_PER_QUESTION = 15;
 
 export default function QuizPageClient({ deckTitle, cards }) {
-  const [stage, setStage] = useState(1);  // 1: form | 2: countdown | 3: start
+  const [stage, setStage] = useState(1);
   const [countdown, setCountdown] = useState(-1);
   const [questionCount, setQuestionCount] = useState(Math.min(10, cards.length));
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -67,6 +67,30 @@ export default function QuizPageClient({ deckTitle, cards }) {
   }, [isFinished]);
   
   useEffect(() => {
+    let timer2;
+    if(stage === 2 && countdown > 0) {
+      timer2 = setInterval(() => setCountdown(prev => prev - 1), 1000);
+    }
+    else if(stage === 2 && countdown === 0) {
+      const pickQuestions = Array(questionCount);
+      for(let i = 0; i != questionCount; i++) {
+        const useFront = (Math.random() < 0.5);
+        pickQuestions[i] = {
+          question: useFront ? cards[i].back : cards[i].front,
+          answer: useFront ? cards[i].front : cards[i].back,
+          useFront
+        };
+      }
+      const reShuffle = shuffleArray(shuffleArray(shuffleArray(shuffleArray(pickQuestions))));
+      setStage(3);
+      setQuestions(reShuffle);
+      setAnswers(generateAnswers(reShuffle[0].answer, cards, reShuffle[0].useFront));
+      setTimeLeft(questionCount * TIME_PER_QUESTION);
+    }
+    return () => clearInterval(timer2);
+  }, [countdown]);
+  
+  useEffect(() => {
     let timer1;
     if(timeLeft > 0 && !isFinished) {
       timer1 = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
@@ -89,32 +113,6 @@ export default function QuizPageClient({ deckTitle, cards }) {
     }
     return () => clearInterval(timer1);
   }, [timeLeft]);
-  
-  useEffect(() => {
-    let timer2;
-    if(stage === 2 && countdown > 0) {
-      timer2 = setInterval(() => setCountdown(prev => prev - 1), 1000);
-    }
-    else if(stage === 2 && countdown === 0) {
-      setStage(3);
-      const random = shuffleArray(cards);
-      const pickAllQuestions = Array(questionCount);
-      for(let i = 0; i != questionCount; i++) {
-        const useFront = (Math.random() < 0.5);
-        pickAllQuestions[i] = {
-          ...random[i],
-          question: (useFront ? random[i].back : random[i].front),
-          answer: (useFront ? random[i].front : random[i].back),
-          useFront
-        };
-      }
-      const reShuffle = shuffleArray(shuffleArray(pickAllQuestions));
-      setQuestions(reShuffle);
-      setAnswers(generateAnswers(reShuffle[0].answer, cards, reShuffle[0].useFront));
-      setTimeLeft(questionCount * TIME_PER_QUESTION);
-    }
-    return () => clearInterval(timer2);
-  }, [countdown]);
 
   const handleAnswer = (answer) => {
     setSelectedAnswer(answer);
@@ -156,10 +154,10 @@ export default function QuizPageClient({ deckTitle, cards }) {
   if(stage === 1) {
     return (
       <div className="min-h-[calc(100vh-48px)] bg-gradient-to-t from-background to-secondary/30 pt-[52px] px-5">
-        <Card className="max-w-md mx-auto p-9 pt-[22px] relative shadow-[0_4px_16px_rgba(0,0,0,0.26)] dark:border-[#2c303f]">
-          <div className="mb-6 pr-1" title={deckTitle}>
-            <h1 className="text-3xl font-bold truncate">{deckTitle}</h1>
-            <p className="text-sm text-muted-foreground">Test your knowledge</p>
+        <Card className="max-w-[384px] md:max-w-lg mx-auto md:p-9 p-7 md:pt-[22px] pt-4 relative shadow-[0_4px_10px_rgba(0,0,0,0.33)] dark:border-[#25262c]">
+          <div className="mb-4 pr-1" title={deckTitle}>
+            <h1 className="text-xl md:text-2xl tracking-tight font-semibold truncate mb-[3px]">{deckTitle}</h1>
+            <p className="text-xs text-muted-foreground">Test your knowledge</p>
           </div>
           <form onSubmit={handleQuestionCountSubmit} className="space-y-4">
             <div className="space-y-2">
@@ -207,15 +205,15 @@ export default function QuizPageClient({ deckTitle, cards }) {
   <div className="min-h-screen bg-gradient-to-t from-background to-secondary/30 pb-6 pt-10 px-4">
     <div className="max-w-4xl mx-auto">
       <div className="relative flex justify-between items-center mb-8">
-        <div className="relative md:pr-12 pr-40 w-full">
-          <h1 className="text-3xl font-bold mb-2 truncate" title={deckTitle}>{deckTitle} Quiz</h1>
-          <p className="text-muted-foreground">Test your knowledge</p>
-          <div className="absolute -bottom-3 right-2 flex md:gap-2 gap-1 items-center">
-            <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-800">
+        <div className="relative pr-40 lg:pr-36 xl:pr-0 w-full">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-1 truncate" title={deckTitle}>{deckTitle} Quiz</h1>
+          <p className="text-muted-foreground text-sm max-sm:text-xs">Test your knowledge</p>
+          <div className="absolute -bottom-[25px] right-2 flex md:gap-2 gap-1 items-center">
+            <div className="flex items-center gap-2 bg-card sm:px-4 sm:py-2 px-3 py-[6px] rounded-lg border border-gray-300 dark:border-gray-800">
               <Timer className="h-5 w-5 text-primary" />
               <span className="font-mono text-lg">{timeLeft}s</span>
             </div>
-            <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-800">
+            <div className="flex items-center gap-2 bg-card sm:px-4 sm:py-2 px-3 py-[6px] rounded-lg border border-gray-300 dark:border-gray-800">
               <BarChart3 className="h-5 w-5 text-primary" />
               <span className="font-mono text-lg">{currentQuestionIndex + 1}/{questions.length}</span>
             </div>
@@ -244,7 +242,8 @@ export default function QuizPageClient({ deckTitle, cards }) {
                 <Button
                   key={index}
                   variant="outline"
-                  className={`h-auto border-[#c6cbd1] dark:border-gray-700 py-4 px-6 text-lg whitespace-pre-line break-words text-center
+                  className={`
+                    h-auto border-[#c6cbd1] dark:border-gray-700 py-4 px-6 text-lg whitespace-pre-line break-words text-center
                     ${selectedAnswer !== null ? 'cursor-not-allowed' : 'hover:bg-accent'}
                   `}
                   onClick={() => handleAnswer(answer)}

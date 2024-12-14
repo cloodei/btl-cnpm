@@ -55,12 +55,16 @@ const generateRating = (rating) => {
 
 const generatePaginatedDeck = (decks, page) => {
   const end = page * 8;
-  return decks.slice(0, end);
+  let arr = Array((end > decks.length ? decks.length : end));
+  for(let i = 0; i != arr.length; i++) {
+    arr[i] = decks[i];
+  }
+  return arr;
 }
 
 export default function CommunityTabClient({ decks, userId }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState(decks);
   const [paginatedDecks, setPaginatedDecks] = useState(generatePaginatedDeck(decks, 1));
 
@@ -84,14 +88,7 @@ export default function CommunityTabClient({ decks, userId }) {
 
   const handleKeyDown = (e) => {
     if(e.key === 'Enter') {
-      const query = e.target.value.trim();
-      if(query) {
-        filterDecks(query.toLowerCase());
-        return;
-      }
-      setSearchResults(decks);
-      setCurrentPage(1);
-      setPaginatedDecks(generatePaginatedDeck(decks, 1));
+      handleInputBlur(e);
     }
   };
 
@@ -103,6 +100,7 @@ export default function CommunityTabClient({ decks, userId }) {
 
   const handleShowAll = () => {
     setSearchResults(decks);
+    setSearchQuery("");
     setCurrentPage(1);
     setPaginatedDecks(generatePaginatedDeck(decks, 1));
   }

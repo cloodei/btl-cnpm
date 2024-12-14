@@ -34,7 +34,7 @@ export default function CreateComponent() {
       return;
     }
     let validCards = [];
-    for(let i = 0; i < cards.length; i++) {
+    for(let i = 0; i != cards.length; i++) {
       const front = cards[i].front.trim();
       const back = cards[i].back.trim();
       if(front && back) {
@@ -121,7 +121,12 @@ export default function CreateComponent() {
           </Button>
         </div>
         <div className="mb-5 shadow-md">
-          <FloatInput label="Deck Title" value={deckTitle} className="border-gray-300 dark:border-[#282e41] font-medium" onChange={(e) => setDeckTitle(e.target.value)} />
+          <FloatInput
+            label="Deck Title"
+            value={deckTitle}
+            className="border-gray-300 dark:border-[#282e41] font-medium"
+            onChange={(e) => setDeckTitle(e.target.value)}
+          />
         </div>
         <div className="flex items-center space-x-2 mb-5 pl-2">
           <Switch id="public" checked={isPublic} onCheckedChange={setIsPublic} />
@@ -152,8 +157,8 @@ export default function CreateComponent() {
                 />
                 <FloatTextarea
                   label="Enter back side content"
-                  value={card.back}
                   onChange={(e) => updateCard(index, "back", e.target.value)}
+                  value={card.back}
                   className="border-gray-300 dark:border-[#212533bb] px-[18px] text-lg md:h-[140px] h-[120px]"
                   maxLength={128}
                 />
@@ -162,9 +167,14 @@ export default function CreateComponent() {
           ))}
         </div>
         <div ref={bottomRef} style={{ scrollMarginBottom: "32px" }}>
-          <Button onClick={addCard} className="border-[#c5cbd6] dark:border-[#222530] lg:mt-11 mt-8 w-full duration-200" variant="outline">
+          <Button
+            onClick={addCard}
+            className="border-[#c5cbd6] dark:border-[#222530] lg:mt-11 mt-8 w-full duration-200"
+            variant="outline"
+            disabled={cards.length >= 125}
+          >
             <Plus className="mr-2 h-4 w-4" />
-            Add Card
+            {cards.length >= 125 ? "You've reached the maximum card limit!" : "Add Card"}
           </Button>
         </div>
       </div>

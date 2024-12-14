@@ -127,6 +127,7 @@ export default function Comment({ comment, permission }) {
             variant="outline"
             onClick={() => setIsEditing(true)}
             disabled={updateMutation.isPending || deleteMutation.isPending}
+            className="dark:hover:bg-sky-900/75 hover:bg-sky-200/90"
           >
             <Pencil className="h-4 w-4" />
           </Button>
@@ -136,6 +137,7 @@ export default function Comment({ comment, permission }) {
             variant="outline"
             onClick={() => deleteMutation.mutate(comment.id)}
             disabled={updateMutation.isPending || deleteMutation.isPending}
+            className="dark:hover:bg-rose-900/75 hover:bg-rose-200"
           >
             <Trash2 className="h-4 w-4" />
           </Button>

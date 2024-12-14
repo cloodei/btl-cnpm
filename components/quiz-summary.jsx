@@ -60,10 +60,10 @@ export function QuizSummary({ results, totalTime, totalQuestions, deckTitle, car
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center md:mb-12 mb-8"
         >
-          <h1 className="text-4xl font-bold mb-4">Quiz Complete!</h1>
-          <p className="text-muted-foreground text-lg">Here's how you performed</p>
+          <h1 className="md:text-4xl text-3xl font-bold md:mb-4 mb-2">Quiz Complete!</h1>
+          <p className="md:text-lg text-sm text-muted-foreground">Here's how you performed</p>
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -74,8 +74,8 @@ export function QuizSummary({ results, totalTime, totalQuestions, deckTitle, car
           {stats.map((stat, index) => (
             <Card key={index} className="p-6 text-center border-gray-300 dark:border-gray-800">
               <stat.icon className={`h-8 w-8 mx-auto mb-4 ${stat.color}`} />
-              <p className="text-sm text-muted-foreground mb-2">{stat.label}</p>
-              <p className="text-2xl font-bold">{stat.value}</p>
+              <p className="text-xs md:text-sm text-muted-foreground md:mb-2 mb-[5px]">{stat.label}</p>
+              <p className="text-xl md:text-2xl font-bold">{stat.value}</p>
             </Card>
           ))}
         </motion.div>
@@ -96,29 +96,43 @@ export function QuizSummary({ results, totalTime, totalQuestions, deckTitle, car
               <Card className={cn("pl-6 pt-[18px] pb-[22px]", result.isUnanswered ? "border-[#969699d7] dark:border-[#435064] border-dashed" : (result.isCorrect ? "border-green-300 dark:border-green-900" : "border-red-300 dark:border-red-900"))}>
                 <div className="flex items-center gap-5">
                   {result.isUnanswered ? (
-                    <CircleHelp className="h-7 w-7 text-gray-400 dark:text-gray-600 mb-1 flex-shrink-0" />
+                    <CircleHelp className="h-6 w-6 text-gray-400 dark:text-gray-600 mb-1 mr-1 flex-shrink-0" />
                   ) : result.isCorrect ? (
                     <CheckCircle className="h-6 w-6 text-green-500 mb-1 mr-1 flex-shrink-0" />
                   ) : (
                     <XCircle className="h-6 w-6 text-red-500 mb-1 mr-1 flex-shrink-0" />
                   )}
-                  <div className="flex-1">
-                    <p className="font-medium mb-2">{result.question}</p>
-                    <div className="text-sm pr-2">
+                  <div className="flex-1 pr-2">
+                    <p className="font-semibold mb-[6px] whitespace-pre-line break-words">
+                      {result.question}
+                    </p>
+                    <div className="text-xs pr-2">
                       {result.isUnanswered ? (
-                        <p className="text-muted-foreground">
-                          Not answered
-                        </p>
+                        <>
+                          <p className="text-muted-foreground whitespace-pre-line break-words">
+                            Unanswered
+                          </p>
+                          <p className="text-muted-foreground whitespace-pre-line break-words mt-[2px]">
+                            Answer: 
+                            <span className="ml-1 text-green-500">
+                              {result.correctAnswer}
+                            </span>
+                          </p>
+                        </>
                       ) : (
                         <>
-                          <p className="text-muted-foreground">
-                            Your answer: <span className={result.isCorrect ? "text-green-500" : "text-red-500"}>
+                          <p className="text-muted-foreground whitespace-pre-line break-words">
+                            Your answer: 
+                            <span className={`ml-1 ${result.isCorrect ? "text-green-500" : "text-red-500"}`}>
                               {result.userAnswer}
                             </span>
                           </p>
                           {!result.isCorrect && (
-                            <p className="text-muted-foreground">
-                              Correct answer: <span className="text-green-500">{result.correctAnswer}</span>
+                            <p className="text-muted-foreground whitespace-pre-line break-words mt-[2px]">
+                              Correct answer: 
+                              <span className="ml-1 text-green-500">
+                                {result.correctAnswer}
+                              </span>
                             </p>
                           )}
                         </>

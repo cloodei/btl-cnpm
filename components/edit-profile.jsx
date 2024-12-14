@@ -102,8 +102,8 @@ export default function EditProfileModal({ currentUsername, currentImageUrl, use
             onChange={(e) => setUsername(e.target.value)}
             label="Enter your username"
             required
-            minLength={3}
-            maxLength={64}
+            minLength={4}
+            maxLength={48}
           />
           
           <div className="space-y-2">

@@ -1,7 +1,6 @@
 import './globals.css';
 import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { ClerkProvider } from '@clerk/nextjs';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from "@/components/ui/toaster"
@@ -36,7 +35,6 @@ export default function RootLayout({ children }) {
                 <main>{children}</main>
                 <Toaster />
                 <MobileSidebar />
-                <SpeedInsights />
               </QuizProvider>
             </ThemeProvider>
           </QueryProvider>
