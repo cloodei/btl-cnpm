@@ -17,10 +17,6 @@ export default function MyDecksClient({ decks }) {
   const { toast } = useToast();
   const router = useRouter();
 
-  for(let i = 0; i != decks.length; i++) {
-    router.prefetch(`/decks/${decks[i].id}`);
-  }
-
   const handleDeleteDeck = async () => {
     setIsDeleting(true);
     const { success, error } = await deleteDeck(deleteDialog.deckId);
@@ -81,7 +77,13 @@ export default function MyDecksClient({ decks }) {
       <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {decks.map((deck) => (
           <motion.div key={deck.id} variants={item}>
-            <Card className="relative transition-all duration-200 shadow-[0_2px_10px_rgba(0,0,0,0.22)] hover:shadow-[0_6px_24px_rgba(0,0,0,0.25)] hover:scale-[1.02] dark:hover:shadow-[0_4px_16px_rgba(255,255,255,0.24)]">
+            <Card
+              className="relative transition-all duration-200 shadow-[0_2px_10px_rgba(0,0,0,0.22)] hover:shadow-[0_6px_24px_rgba(0,0,0,0.25)] hover:scale-[1.02] dark:hover:shadow-[0_4px_16px_rgba(255,255,255,0.24)]"
+              onMouseEnter={() => {
+                router.prefetch(`/decks/${deck.id}`);
+                router.prefetch(`/decks/${deck.id}/edit`);
+              }}
+            >
               <div className="absolute top-4 right-4">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

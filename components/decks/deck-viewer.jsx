@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import ReactCardFlip from "react-card-flip";
 import CommentList from "../comments/comment-list";
 import FavoritesButton from "../favorites-button";
@@ -10,12 +9,19 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "../ui/input";
 import { Card } from "../ui/card";
+import { useRouter } from "next/navigation";
 
 export default function DeckViewer({ deck, cards, permissions, userId, avgRating }) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [inputValue, setInputValue] = useState(1);
+  const router = useRouter();
   const publicRef = useRef(deck.public);
+
+  router.prefetch(`/decks/${deck.id}/quiz`);
+  if(permissions) {
+    router.prefetch(`/decks/${deck.id}/edit`);
+  }
 
   const handleFlip = () => setIsFlipped(!isFlipped);
 
@@ -110,25 +116,38 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
         More Actions
       </h1>
       <div className="flex items-center gap-[14px] mx-auto w-fit">
-        <Link href={`/decks/${deck.id}/quiz`}>
-          <Card className="flex flex-col items-center gap-2 rounded-[7px] p-[10px] md:p-3 shadow-[0_2px_4px_rgba(0,0,0,0.35)] transition-all duration-200 hover:bg-secondary">
-            <BookOpenText className="h-8 md:h-9 w-8 md:w-9 text-primary" />
+        <Card
+          className="
+            flex flex-col cursor-pointer items-center gap-2 rounded-[7px] p-[10px] md:p-3 
+            shadow-[0_2px_4px_rgba(0,0,0,0.35)] transition-all duration-200 hover:bg-secondary
+          "
+          onMouseDown={(e) => {
+            e.preventDefault();
+            router.push(`/decks/${deck.id}/quiz`);
+          }}
+        >
+          <BookOpenText className="h-8 md:h-9 w-8 md:w-9 text-primary" />
+          <p className="text-xs md:text-sm text-primary">
+            Start Testing
+          </p>
+        </Card>
+        {permissions ? (
+          <Card
+            className="
+              flex flex-col cursor-pointer items-center gap-2 rounded-[7px] p-[10px] md:p-3 
+              shadow-[0_2px_4px_rgba(0,0,0,0.35)] transition-all duration-200 hover:bg-secondary
+            "
+            onMouseDown={(e) => {
+              e.preventDefault();
+              router.push(`/decks/${deck.id}/edit`);
+            }}
+          >
+            <Cog className="h-8 md:h-9 w-8 md:w-9 text-primary" />
             <p className="text-xs md:text-sm text-primary">
-              Start Testing
+              Modify Deck
             </p>
           </Card>
-        </Link>
-        {permissions ? (
-          <Link href={`/decks/${deck.id}/edit`}>
-            <Card className="flex flex-col items-center gap-2 rounded-[7px] p-[10px] md:p-3 shadow-[0_2px_4px_rgba(0,0,0,0.35)] transition-all duration-200 hover:bg-secondary">
-              <Cog className="h-8 md:h-9 w-8 md:w-9 text-primary" />
-              <p className="text-xs md:text-sm text-primary">
-                Modify Deck
-              </p>
-            </Card>
-          </Link>
-        )
-        : (
+        ) : (
           <>
             <FavoritesButton deckId={deck.id} is_favorite={deck.is_favorite} userId={userId} />
             <RatingButton deckId={deck.id} userId={userId} avgRating={avgRating} />
@@ -136,7 +155,7 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
         )}
       </div>
 
-      {publicRef.current ? <CommentList deckId={deck.id} userId={userId} /> : null}
+      {publicRef.current && <CommentList deckId={deck.id} userId={userId} />}
     </div>
   );
 }

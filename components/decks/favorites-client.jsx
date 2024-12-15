@@ -4,26 +4,21 @@ import { CalendarDays, BookOpen, User, Heart } from "lucide-react";
 import { getTimeIndicator } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
-const animations = {
-  container: {
-    hidden: { opacity: 0 },
-    show: { 
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  },
-  item: {
-    hidden: { y: 20, opacity: 0 },
-    show: { y: 0, opacity: 1 }
+const container = {
+  hidden: { opacity: 0 },
+  show: { 
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
   }
-};
+}
+
+const item = {
+  hidden: { y: 20, opacity: 0 },
+  show: { y: 0, opacity: 1 }
+}
 
 export default function FavoritesClient({ decks }) {
   const router = useRouter();
-  
-  for(let i = 0; i != decks.length; i++) {
-    router.prefetch(`/decks/${decks[i].id}`);
-  }
 
   return (
     <div className="min-h-[calc(100vh-48px)] bg-gradient-to-b from-background to-muted/20 px-6 py-8">
@@ -37,7 +32,7 @@ export default function FavoritesClient({ decks }) {
           </p>
         </header>
         <motion.div 
-          variants={animations.container}
+          variants={container}
           initial="hidden"
           animate="show"
           className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
@@ -45,7 +40,8 @@ export default function FavoritesClient({ decks }) {
           {decks.map((deck) => (
             <motion.div
               key={deck.id}
-              variants={animations.item}
+              variants={item}
+              onMouseEnter={() => router.prefetch(`/decks/${deck.id}`)}
               onMouseDown={(e) => {
                 e.preventDefault();
                 router.push(`/decks/${deck.id}`);

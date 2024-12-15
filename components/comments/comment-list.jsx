@@ -61,18 +61,18 @@ export default function CommentList({ deckId, userId }) {
   const allComments = data?.pages.flatMap((page) => page.comments) || [];
 
   return (
-    <div className="mt-8 border rounded-lg">
-      <div className="p-4 border-b">
+    <div className="mt-8 border rounded-lg shadow-[0px_1px_6px_rgba(0,0,0,0.1)]">
+      <div className="p-4 sm:p-[22px]">
         <FloatTextarea
           label="Add a comment..."
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
-          className="md:pb-6 pb-4 mb-4"
+          className="md:pb-6 pb-4 mb-4 border-gray-300 dark:border-[#232429]"
           maxLength={192}
         />
         <Button
           variant="outline"
-          className="w-full"
+          className="w-full border-gray-300 dark:border-[#232429] max-sm:text-sm"
           onClick={() => addMutation.mutate({ deckId, userId, comment: newComment.trim() })}
           disabled={!newComment.trim() || addMutation.isPending}
         >
@@ -89,9 +89,7 @@ export default function CommentList({ deckId, userId }) {
       
       {allComments.length ? (
         <>
-          <div className="divide-y">
-            {allComments.map((comment, i) => <Comment key={i} comment={comment} permission={userId === comment.commenter_id} />)}
-          </div>
+          {allComments.map((comment, i) => <Comment key={i} comment={comment} permission={userId === comment.commenter_id} />)}
           {hasNextPage ? (
             <div className="pb-[14px] flex justify-center">
               <Button

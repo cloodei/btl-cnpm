@@ -12,13 +12,16 @@ const TabException = ({ message, isCritical = false }) => {
 
 export default async function CommunityTab() {
   const { userId } = await auth();
+  if(!userId) {
+    return <TabException message="You need to be logged in to view public decks" isCritical />;
+  }
   const { success, decks, error } = await getCommunityDecksWithCardsCount(userId);
   if(!success) {
-    const err = error?.message || error || "Lỗi khi lấy data public";
+    const err = error?.message || error || "Error fetching public decks";
     return <TabException message={err} isCritical />;
   }
   if(!decks?.length) {
-    return <TabException message="Chưa có data public" />;
+    return <TabException message="There are no public decks available" />;
   }
   return <CommunityClient decks={decks} userId={userId} />;
 }

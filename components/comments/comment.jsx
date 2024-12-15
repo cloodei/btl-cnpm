@@ -70,7 +70,7 @@ export default function Comment({ comment, permission }) {
   }
   
   return (
-    <div className="flex gap-4 p-4 border-b">
+    <div className="flex gap-4 p-4 border-t border-gray-300 dark:border-[#232429]">
       <Avatar className="h-[34px] md:h-10 w-[34px] md:w-10 mt-1">
         <AvatarImage src={comment.imageurl} />
         <AvatarFallback>
@@ -80,10 +80,10 @@ export default function Comment({ comment, permission }) {
       
       <div className="w-full">
         <div className="flex items-center gap-[10px]">
-          <p className="text-base font-semibold">
+          <p className="max-sm:text-sm font-semibold">
             {comment.username}
           </p>
-          <p className="text-xs md:text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {getTimeIndicator(comment.created_at)}
           </p>
         </div>
@@ -93,28 +93,28 @@ export default function Comment({ comment, permission }) {
 
             <div className="flex gap-2 mt-2">
               <Button 
-                size="sm"
+                variant="outline"
                 onClick={handleEdit}
                 disabled={updateMutation.isPending || deleteMutation.isPending}
+                className="border-[#c5cad3] dark:border-[#36383f] h-8 w-8"
               >
-                <Check className="h-4 w-4 mr-[6px]" />
+                <Check className="h-[10px] w-[10px] sm:h-4 sm:w-4 mr-[6px]" />
                 Save
               </Button>
 
               <Button
-                size="sm"
                 variant="outline"
                 onClick={handleCancel}
                 disabled={updateMutation.isPending || deleteMutation.isPending}
-                className="border-[#c5cad3] dark:border-[#36383f]"
+                className="border-[#c5cad3] dark:border-[#36383f] h-8 w-8"
               >
-                <X className="h-4 w-4 mr-[6px]" />
+                <X className="h-[10px] w-[10px] sm:h-4 sm:w-4 mr-[6px]" />
                 Cancel
               </Button>
             </div>
           </div>
         ) : (
-          <p className="md:mt-[2px] break-words whitespace-pre-line overflow-wrap-anywhere text-sm font-normal">
+          <p className="mt-1 break-words whitespace-pre-line overflow-wrap-anywhere text-xs sm:text-sm font-normal">
             {comment.comment}
           </p>
         )}

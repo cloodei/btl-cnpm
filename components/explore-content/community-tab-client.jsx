@@ -24,7 +24,7 @@ const item = {
   
 const generateRating = (rating) => {
   const avg_rating = parseFloat(rating);
-  if(!avg_rating || isNaN(avg_rating)) {
+  if(avg_rating <= 0.5 || isNaN(avg_rating)) {
     return (
       <>
         <StarOff className="h-5 w-5" />
@@ -56,11 +56,7 @@ const generateRating = (rating) => {
 
 const generatePaginatedDeck = (decks, page) => {
   const end = page * 8;
-  let arr = Array((end > decks.length ? decks.length : end));
-  for(let i = 0; i != arr.length; i++) {
-    arr[i] = decks[i];
-  }
-  return arr;
+  return decks.slice(0, end);
 }
 
 export default function CommunityTabClient({ decks, userId }) {
@@ -122,67 +118,77 @@ export default function CommunityTabClient({ decks, userId }) {
     </motion.div>
 
     <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-5">
-    {paginatedDecks.length ? paginatedDecks.map((deck) => (
-      <motion.div key={deck.id} variants={item}>
-        <Card className="relative group transition-all [transition-duration:_250ms] [animation-duration:_250ms] dark:border-[#272a31] shadow-[0_2px_4px_rgba(0,0,0,0.3)] hover:scale-[1.03]">
-          {(userId === deck.creator_id) && (
-            <Link
-              href={`/decks/${deck.id}/edit`}
-              className="absolute top-[10px] lg:top-[14px] right-[20px] transition hover:bg-gray-200 dark:hover:bg-gray-900 rounded-full p-2"
-              prefetch={true}
-            >
-              <Settings2 className="h-6 lg:h-4 w-6 lg:w-4" />
-            </Link>
-          )}
-          <div className="p-6 pb-4 xl:pt-5">
-            <div className="mb-2 xl:mb-3 pr-9" title={deck.name}>
-              <h3 className="text-2xl font-bold truncate dark:[text-shadow:_0_2px_5px_rgb(145_164_203_/_0.85)]">
-                {deck.name}
-              </h3>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Cards</span>
-                <div className="flex items-center">
-                  <BookOpen className="h-4 w-4 mr-1" />
-                  {deck.totalcards}
+      {paginatedDecks.length ? paginatedDecks.map((deck) => (
+        <motion.div key={deck.id} variants={item}>
+          <Card
+            className="relative group transition-all [transition-duration:_250ms] [animation-duration:_250ms] dark:border-[#272a31] shadow-[0_2px_4px_rgba(0,0,0,0.3)] hover:scale-[1.03]"
+            onMouseEnter={() => {
+              router.prefetch(`/decks/${deck.id}`);
+              if(userId === deck.creator_id) {
+                router.prefetch(`/decks/${deck.id}/edit`);
+              }
+            }}
+          >
+            {(userId === deck.creator_id) && (
+              <Link
+                href={`/decks/${deck.id}/edit`}
+                className="absolute top-[10px] lg:top-[14px] right-[20px] transition hover:bg-gray-200 dark:hover:bg-gray-900 rounded-full p-2"
+                prefetch={true}
+              >
+                <Settings2 className="h-6 lg:h-4 w-6 lg:w-4" />
+              </Link>
+            )}
+            <div className="p-6 pb-4 xl:pt-5">
+              <div className="mb-2 xl:mb-3 pr-9" title={deck.name}>
+                <h3 className="text-2xl font-bold truncate dark:[text-shadow:_0_2px_5px_rgb(145_164_203_/_0.85)]">
+                  {deck.name}
+                </h3>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Cards</span>
+                  <div className="flex items-center">
+                    <BookOpen className="h-4 w-4 mr-1" />
+                    {deck.totalcards}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Ratings</span>
+                  <div className="flex items-center gap-2">
+                    {generateRating(deck.avg_rating)}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground text-sm">Created By</span>
+                  {deck.creator_id === userId ? (
+                    <span className="text-base font-semibold flex items-center">
+                      <CircleUser className="h-5 w-5 md:mr-[6px] mr-1" />
+                      You
+                    </span>
+                  ) : (
+                    <span className="text-base font-semibold">{deck.username}</span>
+                  )}
                 </div>
               </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Ratings</span>
-                <div className="flex items-center gap-2">
-                  {generateRating(deck.avg_rating)}
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground text-sm">Created By</span>
-                {deck.creator_id === userId ? (
-                  <span className="text-base font-semibold flex items-center">
-                    <CircleUser className="h-5 w-5 md:mr-[6px] mr-1" />
-                    You
-                  </span>
-                ) : (
-                  <span className="text-base font-semibold">{deck.username}</span>
-                )}
-              </div>
+              <Button
+                variant="expandIcon"
+                Icon={ArrowLeftFromLine}
+                iconPlacement="left"
+                className="w-full mt-4 h-8 transition dark:bg-[#d0d1d1] dark:hover:bg-[#d0d1d1]/70 bg-[#323a41] hover:bg-[#323a41]/80"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  router.push(`/decks/${deck.id}`);
+                }}
+              >
+                View Deck
+              </Button>
             </div>
-            <Button
-              variant="expandIcon"
-              Icon={ArrowLeftFromLine}
-              iconPlacement="left"
-              className="w-full mt-4 h-8 transition dark:bg-[#d0d1d1] dark:hover:bg-[#d0d1d1]/70 bg-[#323a41] hover:bg-[#323a41]/80"
-              onMouseEnter={() => router.prefetch(`/decks/${deck.id}`)}
-              onMouseDown={(e) => {
-                e.preventDefault();
-                router.push(`/decks/${deck.id}`);
-              }}
-            >
-              View Deck
-            </Button>
-          </div>
-        </Card>
-      </motion.div>
-    )) : null}
+          </Card>
+        </motion.div>
+      )) : null}
     </motion.div>
 
     {!paginatedDecks.length ? (
@@ -195,14 +201,13 @@ export default function CommunityTabClient({ decks, userId }) {
           Show All
         </Button>
       </div>
-    ) :
-    (paginatedDecks.length < searchResults.length) ? (
+    ) : (paginatedDecks.length < searchResults.length) && (
       <div className="flex justify-center mt-8">
         <Button variant="outline" size="lg" className="w-full md:w-auto shadow-[0_1px_3px_rgba(0,0,0,0.25)] dark:border-[#34393f]" onClick={handleLoadMore}>
           Load More
         </Button>
       </div>
-    ) : null}
+    )}
   </div>
   );
 }
