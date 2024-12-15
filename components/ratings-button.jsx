@@ -56,10 +56,7 @@ export default function RatingButton({ deckId, userId, avgRating = 0 }) {
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
         <Card
-          className={`
-            flex flex-col items-center gap-2 rounded-[7px] p-[10px] md:p-3 shadow-[0_2px_4px_rgba(0,0,0,0.35)] 
-            ${(isLoading || isPending) ? "opacity-50 cursor-not-allowed pointer-events-none" : "transition-all duration-200 hover:bg-secondary cursor-pointer"}
-          `}
+          className={`flex flex-col items-center gap-2 rounded-[7px] p-[10px] md:p-3 shadow-[0_2px_4px_rgba(0,0,0,0.35)] ${(isLoading || isPending) ? "opacity-50 cursor-not-allowed pointer-events-none" : "transition-all duration-200 hover:bg-secondary cursor-pointer"}`}
           onClick={() => { if(!isLoading && !isPending) setIsOpen(!isOpen) }}
         >
           {(isLoading || isPending)

@@ -42,7 +42,7 @@ export default function QuizPageClient({ deckTitle, cards }) {
   const [countdown, setCountdown] = useState(-1);
   const [questionCount, setQuestionCount] = useState(Math.min(10, cards.length));
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [answers, setAnswers] = useState([]);
   const [timeLeft, setTimeLeft] = useState(-100);
   const [isFinished, setIsFinished] = useState(false);
@@ -115,7 +115,7 @@ export default function QuizPageClient({ deckTitle, cards }) {
   }, [timeLeft]);
 
   const handleAnswer = (answer) => {
-    setSelectedAnswer(answer);
+    setLoading(true);
     const currentQuestion = questions[currentQuestionIndex];
     setResults(prev => [...prev, {
       question: currentQuestion.question,
@@ -130,7 +130,7 @@ export default function QuizPageClient({ deckTitle, cards }) {
     setTimeout(() => {
       const nextQuestion = questions[currentQuestionIndex + 1];
       setCurrentQuestionIndex(prev => prev + 1);
-      setSelectedAnswer(null);
+      setLoading(false);
       setAnswers(generateAnswers(nextQuestion.answer, cards, nextQuestion.useFront));
     }, 500)
   };
@@ -174,7 +174,14 @@ export default function QuizPageClient({ deckTitle, cards }) {
             </div>
             <Button type="submit" className="w-full">Start Quiz</Button>
           </form>
-          <Button variant="link" className="absolute -bottom-10 -left-2 transition duration-300 hover:underline" onClick={() => router.back()}>
+          <Button
+            variant="link"
+            className="absolute -bottom-10 -left-2 transition duration-300 hover:underline"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              router.back();
+            }}
+          >
             <ArrowLeftFromLine className="h-[22px] w-[22px] mr-2" />
             Return
           </Button>
@@ -202,17 +209,21 @@ export default function QuizPageClient({ deckTitle, cards }) {
   }
 
   return (
-  <div className="min-h-screen bg-gradient-to-t from-background to-secondary/30 pb-6 pt-10 px-4">
-    <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen max-w-4xl mx-auto pb-6 pt-10 px-4">
       <div className="relative flex justify-between items-center mb-8">
         <div className="relative pr-40 lg:pr-36 xl:pr-0 w-full">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-1 truncate" title={deckTitle}>{deckTitle} Quiz</h1>
-          <p className="text-muted-foreground text-sm max-sm:text-xs">Test your knowledge</p>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-1 truncate" title={deckTitle}>
+            {deckTitle} Quiz
+          </h1>
+          <p className="text-muted-foreground text-sm max-sm:text-xs">
+            Test your knowledge
+          </p>
           <div className="absolute -bottom-[25px] right-2 flex md:gap-2 gap-1 items-center">
             <div className="flex items-center gap-2 bg-card sm:px-4 sm:py-2 px-3 py-[6px] rounded-lg border border-gray-300 dark:border-gray-800">
               <Timer className="h-5 w-5 text-primary" />
               <span className="font-mono text-lg">{timeLeft}s</span>
             </div>
+            
             <div className="flex items-center gap-2 bg-card sm:px-4 sm:py-2 px-3 py-[6px] rounded-lg border border-gray-300 dark:border-gray-800">
               <BarChart3 className="h-5 w-5 text-primary" />
               <span className="font-mono text-lg">{currentQuestionIndex + 1}/{questions.length}</span>
@@ -224,7 +235,9 @@ export default function QuizPageClient({ deckTitle, cards }) {
           Exit Quiz
         </Button>
       </div>
+
       <Progress value={(currentQuestionIndex + 1) / questions.length * 100} className="mb-8" />
+
       <AnimatePresence mode="wait">
         <motion.div
           key={currentQuestionIndex}
@@ -235,19 +248,16 @@ export default function QuizPageClient({ deckTitle, cards }) {
         >
           <Card className="p-8 shadow-[0_2px_12px_rgba(0,0,0,0.3)]">
             <h2 className="text-2xl font-semibold text-center mb-8 whitespace-pre-line break-words">
-              {questions[currentQuestionIndex]?.question}
+              {questions[currentQuestionIndex].question}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {answers.map((answer, index) => (
                 <Button
                   key={index}
                   variant="outline"
-                  className={`
-                    h-auto border-[#c6cbd1] dark:border-gray-700 py-4 px-6 text-lg whitespace-pre-line break-words text-center
-                    ${selectedAnswer !== null ? 'cursor-not-allowed' : 'hover:bg-accent'}
-                  `}
+                  className="h-auto border-[#c6cbd1] dark:border-gray-700 py-4 px-6 text-lg whitespace-pre-line break-words text-center"
                   onClick={() => handleAnswer(answer)}
-                  disabled={selectedAnswer !== null}
+                  disabled={loading}
                 >
                   {answer}
                 </Button>
@@ -257,6 +267,5 @@ export default function QuizPageClient({ deckTitle, cards }) {
         </motion.div>
       </AnimatePresence>
     </div>
-  </div>
   );
 }

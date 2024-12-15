@@ -37,10 +37,7 @@ export default function FavoritesButton({ deckId, is_favorite, userId }) {
 
   return (
     <Card
-      className={`
-        flex flex-col items-center gap-2 rounded-[7px] p-[10px] md:p-3 shadow-[0_2px_4px_rgba(0,0,0,0.35)] 
-        ${loading ? "opacity-50 cursor-not-allowed pointer-events-none" : "transition-all duration-200 hover:bg-secondary cursor-pointer"}
-      `}
+      className={`flex flex-col items-center gap-2 rounded-[7px] p-[10px] md:p-3 shadow-[0_2px_4px_rgba(0,0,0,0.35)] ${loading ? "opacity-50 cursor-not-allowed pointer-events-none" : "transition-all duration-200 hover:bg-secondary cursor-pointer"}`}
       onClick={handleToggleFavorite}
     >
       <HandHeart className={`h-8 md:h-9 w-8 md:w-9 ${isFavorite ? "text-rose-500" : "text-primary"}`} />

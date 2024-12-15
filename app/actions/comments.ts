@@ -1,5 +1,5 @@
 "use server";
-import sql from "@/lib/db";
+import { sql } from "@/lib/db";
 
 export async function getComments(deckId: number, page: number = 1) {
   try {

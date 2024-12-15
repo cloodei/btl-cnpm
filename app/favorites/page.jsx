@@ -45,7 +45,7 @@ const FavoritesWrapper = async () => {
   if(!decks?.length) {
     return <EmptyState message="No favorite decks" description="Start adding decks to your favorites!" />
   }
-  return <FavoritesClient decks={decks} />
+  return <FavoritesClient decks={decks} userId={userId} />
 }
 
 export default async function FavoritesPage() {

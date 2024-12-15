@@ -61,7 +61,7 @@ export default function CommentList({ deckId, userId }) {
   const allComments = data?.pages.flatMap((page) => page.comments) || [];
 
   return (
-    <div className="mt-8 border rounded-lg shadow-[0px_1px_6px_rgba(0,0,0,0.1)]">
+    <div className="mt-8 border rounded-lg shadow-[0px_2px_8px_rgba(0,0,0,0.17)]">
       <div className="p-4 sm:p-[22px]">
         <FloatTextarea
           label="Add a comment..."
@@ -111,7 +111,7 @@ export default function CommentList({ deckId, userId }) {
           ): null}
         </>
       ) : (
-        <div className="pt-4 pb-3 text-center text-muted-foreground">
+        <div className="border-t border-gray-300/80 dark:border-[#1c1c1d] py-3 text-center text-muted-foreground">
           No comments yet. Be the first to comment!
         </div>
       )}
