@@ -9,6 +9,17 @@ import { QueryProvider } from './provider';
 import Navbar from "@/components/navbar-client";
 import MobileSidebar from '@/components/mobile-sidebar';
 
+export const metadata = {
+  icons: {
+    icon: '/favicon.ico'
+  },
+  title: {
+    default: 'CoinCard',
+    template: '%s'
+  },
+  description: 'Improve your learning capabilities with CoinCard'
+};
+
 const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({ children }) {

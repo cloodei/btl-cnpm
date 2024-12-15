@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
@@ -17,6 +16,10 @@ export default function MyDecksClient({ decks }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+
+  for(let i = 0; i != decks.length; i++) {
+    router.prefetch(`/decks/${decks[i].id}`);
+  }
 
   const handleDeleteDeck = async () => {
     setIsDeleting(true);
@@ -63,12 +66,16 @@ export default function MyDecksClient({ decks }) {
             Manage and study your personal collection of flashcard decks
           </p>
         </div>
-        <Link href="/create" className="mb-4">
-          <Button className="lg:px-4 pr-3 pl-2 lg:py-2 py-[4px] lg:text-base text-sm">
-            <Plus className="lg:mr-2 mr-1 h-4 w-4" />
-            Create New Deck
-          </Button>
-        </Link>
+        <Button
+          className="lg:px-4 pr-3 pl-2 lg:py-2 py-[4px] lg:text-base text-sm"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            router.push("/create");
+          }}
+        >
+          <Plus className="lg:mr-2 mr-1 h-4 w-4" />
+          Create New Deck
+        </Button>
       </div>
 
       <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -83,7 +90,10 @@ export default function MyDecksClient({ decks }) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
-                    <DropdownMenuItem onClick={() => router.push(`/decks/${deck.id}/edit`)}>
+                    <DropdownMenuItem onMouseDown={(e) => {
+                      e.preventDefault();
+                      router.push(`/decks/${deck.id}/edit`);
+                    }}>
                       <div className="flex items-center gap-2">
                         <Edit className="h-4 w-4" />
                         Edit Deck
@@ -99,37 +109,42 @@ export default function MyDecksClient({ decks }) {
                 </DropdownMenu>
               </div>
 
-              <Link href={`/decks/${deck.id}`}>
-                <div className="p-6" title={deck.name}>
-                  <h3 className="text-xl font-semibold mb-2 pr-12 truncate">{deck.name}</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Cards</span>
-                      <div className="flex items-center">
-                        <BookOpen className="h-4 w-4 mr-1" />
-                        {deck.totalcards}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        Public
-                      </span>
-                      <span className="flex items-center">
-                        {deck.public
-                          ? <Send className="h-5 w-5 mr-1 text-sky-900 dark:text-sky-300/85" />
-                          : <MessageCircleOff className="h-5 w-5 mr-1 text-rose-900 dark:text-rose-300" />
-                        }
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Last updated </span>
-                      <span> {getTimeIndicator(deck.updated_at)}</span>
+              <div
+                className="p-6 cursor-pointer"
+                title={deck.name}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  router.push(`/decks/${deck.id}`);
+                }}
+              >
+                <h3 className="text-xl font-semibold mb-2 pr-12 truncate">{deck.name}</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Cards</span>
+                    <div className="flex items-center">
+                      <BookOpen className="h-4 w-4 mr-1" />
+                      {deck.totalcards}
                     </div>
                   </div>
+
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      Public
+                    </span>
+                    <span className="flex items-center">
+                      {deck.public
+                        ? <Send className="h-5 w-5 mr-1 text-sky-900 dark:text-sky-300/85" />
+                        : <MessageCircleOff className="h-5 w-5 mr-1 text-rose-900 dark:text-rose-300" />
+                      }
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Last updated </span>
+                    <span> {getTimeIndicator(deck.updated_at)}</span>
+                  </div>
                 </div>
-              </Link>
+              </div>
             </Card>
           </motion.div>
         ))}

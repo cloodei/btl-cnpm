@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { BookOpen, Settings2, CircleUser, ArrowLeftFromLine, SearchX, StarOff, Star, StarHalf } from 'lucide-react';
 import { FloatInput } from '../ui/float-input';
 import { Button } from '../ui/button';
+import { useRouter } from 'next/navigation';
 
 const container = {
   hidden: { opacity: 0 },
@@ -67,6 +68,7 @@ export default function CommunityTabClient({ decks, userId }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState(decks);
   const [paginatedDecks, setPaginatedDecks] = useState(generatePaginatedDeck(decks, 1));
+  const router = useRouter();
 
   const filterDecks = (query) => {
     const filtered = decks.filter((deck) => deck.name.toLowerCase().includes(query));
@@ -124,7 +126,11 @@ export default function CommunityTabClient({ decks, userId }) {
       <motion.div key={deck.id} variants={item}>
         <Card className="relative group transition-all [transition-duration:_250ms] [animation-duration:_250ms] dark:border-[#272a31] shadow-[0_2px_4px_rgba(0,0,0,0.3)] hover:scale-[1.03]">
           {(userId === deck.creator_id) && (
-            <Link href={`/decks/${deck.id}/edit`} className="absolute top-[10px] lg:top-[14px] right-[20px] transition hover:bg-gray-200 dark:hover:bg-gray-900 rounded-full p-2">
+            <Link
+              href={`/decks/${deck.id}/edit`}
+              className="absolute top-[10px] lg:top-[14px] right-[20px] transition hover:bg-gray-200 dark:hover:bg-gray-900 rounded-full p-2"
+              prefetch={true}
+            >
               <Settings2 className="h-6 lg:h-4 w-6 lg:w-4" />
             </Link>
           )}
@@ -160,11 +166,19 @@ export default function CommunityTabClient({ decks, userId }) {
                 )}
               </div>
             </div>
-            <Link href={`/decks/${deck.id}`}>
-              <Button variant="expandIcon" Icon={ArrowLeftFromLine} iconPlacement='left' className="w-full mt-4 sm:h-8 h-[37px] transition dark:bg-[#d0d1d1] dark:hover:bg-[#d0d1d1]/70 bg-[#323a41] hover:bg-[#323a41]/80">
-                View Deck
-              </Button>
-            </Link>
+            <Button
+              variant="expandIcon"
+              Icon={ArrowLeftFromLine}
+              iconPlacement="left"
+              className="w-full mt-4 h-8 transition dark:bg-[#d0d1d1] dark:hover:bg-[#d0d1d1]/70 bg-[#323a41] hover:bg-[#323a41]/80"
+              onMouseEnter={() => router.prefetch(`/decks/${deck.id}`)}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                router.push(`/decks/${deck.id}`);
+              }}
+            >
+              View Deck
+            </Button>
           </div>
         </Card>
       </motion.div>

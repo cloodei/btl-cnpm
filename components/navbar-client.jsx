@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Brain, Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSidebar } from "./ui/sidebar";
 import { useEffect } from "react";
 import { useQuiz } from '@/contexts/QuizContext';
@@ -11,6 +11,7 @@ import { SignedIn, SignedOut } from "@clerk/nextjs";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { setOpenMobile } = useSidebar();
   const { isQuizActive } = useQuiz();
   
@@ -21,12 +22,20 @@ export default function Navbar() {
   }
 
   const NavLink = ({ href, children }) => (
-    <Link href={href}>
-      <Button variant={pathname === href ? "default" : "linkHover2"}
-        className= {`${pathname === href && "pointer-events-none"} transition-all duration-300 hover:scale-[1.12] active:scale-95`}>
-        {children}
-      </Button>
-    </Link>
+    <Button
+      variant={pathname === href ? "default" : "linkHover2"}
+      className={`
+        ${pathname === href && "pointer-events-none "}
+        transition-all duration-300 hover:scale-[1.12] active:scale-95
+      `}
+      onMouseEnter={() => router.prefetch(href)}
+      onMouseDown={(e) => {
+        e.preventDefault();
+        router.push(href);
+      }}
+    >
+      {children}
+    </Button>
   );
 
   return (
@@ -52,11 +61,16 @@ export default function Navbar() {
             </Link>
           </SignedOut>
           <SignedIn>
-            <Link href="/profile">
-              <div className="h-8 w-8 transition-all duration-200 cursor-pointer hover:opacity-80 flex items-center justify-center bg-gray-200 dark:bg-gray-800 rounded-full">
-                <User className="h-4 w-4" />
-              </div>
-            </Link>
+            <div
+              className="h-[30px] w-[30px] transition-all duration-200 cursor-pointer hover:opacity-80 flex items-center justify-center bg-gray-200 dark:bg-gray-800 rounded-full"
+              onMouseEnter={() => router.prefetch('/profile')}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                router.push('/profile');
+              }}
+            >
+              <User className="h-4 w-4" />
+            </div>
           </SignedIn>
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setOpenMobile(true)}>
             <Menu className="h-6 w-6" />

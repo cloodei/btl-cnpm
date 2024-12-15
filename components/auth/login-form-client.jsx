@@ -55,8 +55,10 @@ export default function LoginFormClient() {
       if(result.status !== 'complete') {
         throw new Error('Login failed')
       }
-      await revalidateUser();
+      await revalidateUser()
       await setActive({ session: result.createdSessionId })
+      router.prefetch('/my-decks')
+      router.prefetch('/explore')
       router.push('/')
     }
     catch(err) {
@@ -83,7 +85,7 @@ export default function LoginFormClient() {
           value={formData.username}
           onChange={handleChange}
           className={`
-            ${errors.username ? "border-rose-300/90 dark:border-rose-950" : ""}
+            ${errors.username ? "border-rose-300/90 dark:border-rose-950 " : ""}
             max-sm:text-sm h-[38px] sm:h-10 max-sm:placeholder:text-sm
           `}
         />
@@ -100,7 +102,7 @@ export default function LoginFormClient() {
           onChange={handleChange}
           placeholder="Password"
           className={`
-            ${errors.password ? "border-rose-300/90 dark:border-rose-950" : ""}
+            ${errors.password ? "border-rose-300/90 dark:border-rose-950 " : ""}
             max-sm:text-sm h-[38px] sm:h-10 max-sm:placeholder:text-sm
           `}
         />

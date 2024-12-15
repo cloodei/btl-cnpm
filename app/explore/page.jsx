@@ -91,7 +91,7 @@ export default function ExplorePage() {
             <h2 className="text-2xl font-bold mb-4 [text-shadow:_0_3px_6px_rgb(18,18,24,0.25)] dark:[text-shadow:_0_1px_8px_rgb(145_164_203_/_0.6)]">Featured Decks</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featured.map((deck, index) => (
-                <Link href={`/decks/${deck.id}`} passHref key={index}>
+                <Link href={`/decks/${deck.id}`} passHref key={index} prefetch={true}>
                   <Card title={deck.name} className="p-6 shadow-[0_3px_4px_rgba(0,0,0,0.25)] dark:border-[#34393f] transition-all hover:shadow-[0_4px_20px_rgba(0,0,0,0.35)] hover:scale-[1.02]">
                     <div className="flex items-center space-x-2 mb-4">
                       <Sparkles className="h-5 w-5 text-primary" />

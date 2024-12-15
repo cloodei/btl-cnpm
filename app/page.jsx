@@ -4,17 +4,6 @@ import Link from "next/link";
 import { GraduationCap, Brain, Users, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export const metadata = {
-  icons: {
-    icon: '/favicon.ico'
-  },
-  title: {
-    default: 'CoinCard',
-    template: '%s'
-  },
-  description: 'Improve your learning capabilities with CoinCard'
-};
-
 export default function Home() {
   return (
     <div className="min-h-[calc(100vh-48px)] bg-gradient-to-b from-background dark:from-[#0f131b] to-secondary">
@@ -32,7 +21,7 @@ export default function Home() {
                 Create Flashcards
               </Button>
             </Link>
-            <Link href="/explore">
+            <Link href="/explore" prefetch={true}>
               <Button size="lg" variant="outline" className="lg:text-lg text-base px-5 lg:px-8 border-gray-400 dark:border-gray-700">
                 Explore Decks
               </Button>

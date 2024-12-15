@@ -74,9 +74,11 @@ export default function RegisterFormClient() {
       if(res.error) {
         throw new Error(res.error);
       }
-      await revalidateUser();
-      await setActive({ session: result.createdSessionId });
-      router.push("/");
+      await revalidateUser()
+      await setActive({ session: result.createdSessionId })
+      router.prefetch('/my-decks')
+      router.prefetch("/explore")
+      router.push("/")
     }
     catch(error) {
       setError(error?.message || error || "An error occurred");
@@ -116,7 +118,7 @@ export default function RegisterFormClient() {
               onChange={handleInputChange}
               disabled={loading}
               className={`
-                ${errors[field.name] ? "border-rose-300/90 dark:border-rose-950" : ""}
+                ${errors[field.name] ? "border-rose-300/90 dark:border-rose-950 " : ""}
                 max-sm:text-sm h-[38px] sm:h-10 max-sm:placeholder:text-sm
               `}
             />
