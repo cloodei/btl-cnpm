@@ -73,15 +73,16 @@ export default function QuizPageClient({ deckTitle, cards }) {
     }
     else if(stage === 2 && countdown === 0) {
       const pickQuestions = Array(questionCount);
+      const shuffledCards = shuffleArray(shuffleArray(cards));
       for(let i = 0; i != questionCount; i++) {
         const useFront = (Math.random() < 0.5);
         pickQuestions[i] = {
-          question: useFront ? cards[i].back : cards[i].front,
-          answer: useFront ? cards[i].front : cards[i].back,
+          question: useFront ? shuffledCards[i].back : shuffledCards[i].front,
+          answer: useFront ? shuffledCards[i].front : shuffledCards[i].back,
           useFront
         };
       }
-      const reShuffle = shuffleArray(shuffleArray(shuffleArray(shuffleArray(pickQuestions))));
+      const reShuffle = shuffleArray(shuffleArray(pickQuestions));
       setStage(3);
       setQuestions(reShuffle);
       setAnswers(generateAnswers(reShuffle[0].answer, cards, reShuffle[0].useFront));
@@ -161,7 +162,7 @@ export default function QuizPageClient({ deckTitle, cards }) {
           </div>
           <form onSubmit={handleQuestionCountSubmit} className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">
+              <label className="text-xs sm:text-sm font-medium">
                 Number of Questions (4 - {cards.length})
               </label>
               <Input 
@@ -170,6 +171,7 @@ export default function QuizPageClient({ deckTitle, cards }) {
                 max={cards.length}
                 value={questionCount}
                 onChange={(e) => setQuestionCount(Number(e.target.value))}
+                className="md:text-base text-sm"
               />
             </div>
             <Button type="submit" className="w-full">Start Quiz</Button>
@@ -210,33 +212,35 @@ export default function QuizPageClient({ deckTitle, cards }) {
 
   return (
     <div className="min-h-screen max-w-4xl mx-auto pb-6 pt-10 px-4">
-      <div className="relative flex justify-between items-center mb-8">
-        <div className="relative pr-40 lg:pr-36 xl:pr-0 w-full">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-1 truncate" title={deckTitle}>
+      <div className="relative flex justify-between items-center mb-6 sm:mb-8">
+        <div className="relative pl-3 pr-40 lg:pr-36 xl:pr-3 w-full">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-[2px] sm:mb-1 truncate" title={deckTitle}>
             {deckTitle} Quiz
           </h1>
           <p className="text-muted-foreground text-sm max-sm:text-xs">
             Test your knowledge
           </p>
-          <div className="absolute -bottom-[25px] right-2 flex md:gap-2 gap-1 items-center">
-            <div className="flex items-center gap-2 bg-card sm:px-4 sm:py-2 px-3 py-[6px] rounded-lg border border-gray-300 dark:border-gray-800">
-              <Timer className="h-5 w-5 text-primary" />
-              <span className="font-mono text-lg">{timeLeft}s</span>
+          <div className="absolute -bottom-[15px] sm:-bottom-[24px] right-3 flex md:gap-2 gap-1 items-center">
+            <div className="flex items-center gap-2 bg-card sm:px-[14px] sm:py-[7px] px-3 py-[5px] rounded-lg border border-gray-300 dark:border-gray-800">
+              <Timer className="sm:h-5 sm:w-5 h-[14px] w-[14px] text-primary" />
+              <span className="font-mono text-sm sm:text-lg">{timeLeft}s</span>
             </div>
             
-            <div className="flex items-center gap-2 bg-card sm:px-4 sm:py-2 px-3 py-[6px] rounded-lg border border-gray-300 dark:border-gray-800">
-              <BarChart3 className="h-5 w-5 text-primary" />
-              <span className="font-mono text-lg">{currentQuestionIndex + 1}/{questions.length}</span>
+            <div className="flex items-center gap-2 bg-card sm:px-[14px] sm:py-[7px] px-3 py-[5px] rounded-lg border border-gray-300 dark:border-gray-800">
+              <BarChart3 className="sm:h-5 sm:w-5 h-[14px] w-[14px] text-primary" />
+              <span className="font-mono text-sm sm:text-lg">{currentQuestionIndex + 1}/{questions.length}</span>
             </div>
           </div>
         </div>
-        <Button variant="destructive" onClick={handleTerminate} className="absolute xl:-right-48 right-1 -top-1">
-          <X className="mr-1 text-4xl" size={22} />
+        <Button variant="destructive" onClick={handleTerminate} className="absolute xl:-right-48 right-3 -top-2 text-sm max-sm:h-8 max-sm:px-3">
+          <X className="mr-1 h-5 w-5" />
           Exit Quiz
         </Button>
       </div>
 
-      <Progress value={(currentQuestionIndex + 1) / questions.length * 100} className="mb-8" />
+      <div className="px-3 mb-8">
+        <Progress value={(currentQuestionIndex + 1) / questions.length * 100} />
+      </div>
 
       <AnimatePresence mode="wait">
         <motion.div

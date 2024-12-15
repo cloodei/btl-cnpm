@@ -87,7 +87,7 @@ export default function FavoritesClient({ decks, userId }) {
                 variant="ghost"
                 size="icon"
                 onMouseDown={(e) => handleRemove(e, deck.id, deck.name)}
-                className={`absolute right-[20px] h-[35px] w-[35px] rounded top-6 z-50 animate-bounce ease-linear [animation-duration:_1.5s] hover:bg-[none] bg-[none] hover:text-[none] ${Loading === deck.id ? "text-gray-300 dark:text-gray-600" : "text-red-400"}`}
+                className={`absolute right-[20px] h-[35px] w-[35px] rounded top-6 z-50 animate-bounce ease-linear [animation-duration:_1.5s] hover:bg-[none] bg-[none] hover:text-[none] ${loading === deck.id ? "text-gray-300 dark:text-gray-600" : "text-red-400"}`}
                 disabled={loading === deck.id}
               >
                 <Heart className="h-[35px] w-[35px] p-[6px] hover:fill-current" />
