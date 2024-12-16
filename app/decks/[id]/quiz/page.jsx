@@ -39,7 +39,7 @@ export default async function QuizPage({ params }) {
   const QuizPageWrapper = async () => {
     const deckId = parseInt(id);
     const { userId } = await auth();
-    const revalidate = (deckId === 9 || deckId === 11 || deckId === 12) ? 120 : 600;
+    const revalidate = (deckId === 9 || deckId === 11 || deckId === 12) ? 900 : 120;
     const { success, deck, cards, error } = await getCachedDeck({ deckId, userId, revalidate });
     if(!success) {
       const err = error?.message || error || "Failed to load deck";

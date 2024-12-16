@@ -10,12 +10,7 @@ export async function rateDeck({ deckId, userId, rating }: { deckId: number, use
     ON CONFLICT (reviewer_id, deck_id) 
     DO UPDATE SET rating = ${rating}, updated_at = CURRENT_TIMESTAMP
   `;
-  if(deckId === 9 || deckId === 11 || deckId === 12) {
-    revalidateTag(`featured-deck-${deckId}`);
-  }
-  else {
-    revalidateTag(`deck-${deckId}`);
-  }
+  revalidateTag(`deck-${deckId}`);
   revalidateTag('recent-decks');
   revalidateTag('decks');
 }

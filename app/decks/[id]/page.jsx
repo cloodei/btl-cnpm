@@ -48,7 +48,7 @@ export default async function DeckPage({ params }) {
     if(!userId) {
       return <NFBoundary message="Unauthorized" description="You need to be logged in to view this deck." />
     }
-    const revalidate = (deckId === 9 || deckId === 11 || deckId === 12) ? 120 : 600;
+    const revalidate = (deckId === 9 || deckId === 11 || deckId === 12) ? 900 : 120;
     const { success, deck, cards, avgRating, error } = await getCachedDeck({ deckId, userId, revalidate });
     if(!success) {
       const err = error?.message || error || "Failed to load deck";

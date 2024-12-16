@@ -27,16 +27,16 @@ const generateRating = (rating) => {
   const avg_rating = parseFloat(rating);
   if(avg_rating <= 0.5 || isNaN(avg_rating)) {
     return (
-      <>
+      <div className="flex items-center gap-2">
         <StarOff className="h-5 w-5" />
         <span className="font-medium">None</span>
-      </>
+      </div>
     );
   }
   let level = (avg_rating <= 5 ? 0 : avg_rating <= 8 ? 1 : 2);
 
   return (
-    <>
+    <div className="flex items-center gap-2">
       {level === 0 ? (
         <StarHalf className="h-5 w-5 text-[#dfc42f] dark:text-[rgb(211,201,65)]" />
       ) : level === 1 ? (
@@ -52,7 +52,7 @@ const generateRating = (rating) => {
       <span className="text-muted-foreground">
         / 10
       </span>
-    </>
+    </div>
   );
 }
 
@@ -75,8 +75,8 @@ export default function CommunityTabClient({ decks, userId }) {
     setPaginatedDecks(generatePaginatedDeck(filtered, 1));
   };
 
-  const handleInputBlur = (e) => {
-    const query = e.target.value.trim();
+  const handleInputBlur = (val) => {
+    const query = val.trim();
     if(query) {
       filterDecks(query.toLowerCase());
       return;
@@ -88,17 +88,19 @@ export default function CommunityTabClient({ decks, userId }) {
 
   const handleKeyDown = (e) => {
     if(e.key === 'Enter') {
-      handleInputBlur(e);
+      handleInputBlur(e.target.value);
     }
   };
 
-  const handleLoadMore = () => {
+  const handleLoadMore = (e) => {
+    e.preventDefault();
     const nextPage = currentPage + 1;
     setCurrentPage(nextPage);
     setPaginatedDecks(generatePaginatedDeck(searchResults, nextPage));
   }
 
-  const handleShowAll = () => {
+  const handleShowAll = (e) => {
+    e.preventDefault();
     setSearchResults(decks);
     setSearchQuery("");
     setCurrentPage(1);
@@ -111,7 +113,7 @@ export default function CommunityTabClient({ decks, userId }) {
       <FloatInput 
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        onBlur={handleInputBlur}
+        onBlur={(e)  => handleInputBlur(e.target.value)}
         onKeyDown={handleKeyDown}
         label="Search Decks"
         className="max-sm:w-[212px] border-gray-300 dark:border-gray-800 max-sm:pt-[7px] max-sm:pb-[8px] max-sm:text-sm"
@@ -153,9 +155,7 @@ export default function CommunityTabClient({ decks, userId }) {
 
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Ratings</span>
-                  <div className="flex items-center gap-2">
-                    {generateRating(deck.avg_rating)}
-                  </div>
+                  {generateRating(deck.avg_rating)}
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -194,13 +194,13 @@ export default function CommunityTabClient({ decks, userId }) {
           No decks found
           <SearchX className="h-6 w-6" />
         </p>
-        <Button variant="outline" size="lg" className="mt-[10px] ml-[calc(50%-66px)]" onMouseDown={handleShowAll}>
+        <Button variant="outline" size="lg" className="mt-[10px] ml-[calc(50%-66px)]" onMouseDown={(e) => handleShowAll(e)}>
           Show All
         </Button>
       </div>
     ) : (paginatedDecks.length < searchResults.length) && (
       <div className="flex justify-center mt-8">
-        <Button variant="outline" size="lg" className="w-full md:w-auto shadow-[0_1px_3px_rgba(0,0,0,0.25)] dark:border-[#34393f]" onMouseDown={handleLoadMore}>
+        <Button variant="outline" size="lg" className="w-full md:w-auto shadow-[0_1px_3px_rgba(0,0,0,0.25)] dark:border-[#34393f]" onMouseDown={(e) => handleLoadMore(e)}>
           Load More
         </Button>
       </div>
