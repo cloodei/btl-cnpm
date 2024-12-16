@@ -1,32 +1,10 @@
-import Link from "next/link";
 import Profile from './profile';
-import { auth } from "@clerk/nextjs/server";
 import { Suspense } from "react";
-import { getCachedUserInfoWithDecks } from "../actions/user";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 export const metadata = {
   title: "Profile | CoinCard"
 };
-
-const ProfileException = ({ message }) => {
-  return (
-    <div className="m-auto pt-12 pb-8">
-      <p className="text-center text-4xl font-medium text-red-500">
-        {message}
-      </p>
-      <div className="flex items-center justify-center gap-3 mt-7">
-        <Link href="/my-decks">
-          <Button>Back to Decks</Button>
-        </Link>
-        <Link href="/">
-          <Button variant="outline">Back to Home</Button>
-        </Link>
-      </div>
-    </div>
-  );
-}
 
 const ProfileSkeleton = () => (
   <div className="container mx-auto max-w-6xl py-8 px-4 grid gap-6 animate-pulse">
@@ -77,26 +55,10 @@ const ProfileSkeleton = () => (
   </div>
 );
 
-const PageWrapper = async () => {
-  const { userId } = await auth();
-  if(!userId) {
-    return <ProfileException message="Please sign in to view your profile" />;
-  }
-  const { success, user, decks, countFav, error } = await getCachedUserInfoWithDecks(userId);
-  if(!success) {
-    const err = error?.message || error || "An error has occurred";
-    return <ProfileException message={err} />;
-  }
-  
-  return (
-    <Profile user={user} decks={decks} countFav={countFav} userId={userId} />
-  )
-}
-
 export default function ProfilePage() {
   return (
     <Suspense fallback={<ProfileSkeleton />}>
-      <PageWrapper />
+      <Profile />
     </Suspense>
   );
 }

@@ -22,7 +22,7 @@ const EmptyState = ({ message, description = null }) => {
             {description}
           </p>
         )}
-        <Link href="/explore" className="inline-block">
+        <Link href="/explore" className="inline-block" prefetch={true}>
           <Button>
             Explore Decks
           </Button>

@@ -17,6 +17,7 @@ const container = {
     }
   }
 };
+
 const item = {
   hidden: { y: 20, opacity: 0 },
   show: { y: 0, opacity: 1 }
@@ -33,6 +34,7 @@ const generateRating = (rating) => {
     );
   }
   let level = (avg_rating <= 5 ? 0 : avg_rating <= 8 ? 1 : 2);
+
   return (
     <>
       {level === 0 ? (
@@ -122,12 +124,7 @@ export default function CommunityTabClient({ decks, userId }) {
         <motion.div key={deck.id} variants={item}>
           <Card
             className="relative group transition-all [transition-duration:_250ms] [animation-duration:_250ms] dark:border-[#272a31] shadow-[0_2px_4px_rgba(0,0,0,0.3)] hover:scale-[1.03]"
-            onMouseEnter={() => {
-              router.prefetch(`/decks/${deck.id}`);
-              if(userId === deck.creator_id) {
-                router.prefetch(`/decks/${deck.id}/edit`);
-              }
-            }}
+            onMouseEnter={() => router.prefetch(`/decks/${deck.id}`)}
           >
             {(userId === deck.creator_id) && (
               <Link
@@ -197,13 +194,13 @@ export default function CommunityTabClient({ decks, userId }) {
           No decks found
           <SearchX className="h-6 w-6" />
         </p>
-        <Button variant="outline" size="lg" className="mt-[10px] ml-[calc(50%-66px)]" onClick={handleShowAll}>
+        <Button variant="outline" size="lg" className="mt-[10px] ml-[calc(50%-66px)]" onMouseDown={handleShowAll}>
           Show All
         </Button>
       </div>
     ) : (paginatedDecks.length < searchResults.length) && (
       <div className="flex justify-center mt-8">
-        <Button variant="outline" size="lg" className="w-full md:w-auto shadow-[0_1px_3px_rgba(0,0,0,0.25)] dark:border-[#34393f]" onClick={handleLoadMore}>
+        <Button variant="outline" size="lg" className="w-full md:w-auto shadow-[0_1px_3px_rgba(0,0,0,0.25)] dark:border-[#34393f]" onMouseDown={handleLoadMore}>
           Load More
         </Button>
       </div>

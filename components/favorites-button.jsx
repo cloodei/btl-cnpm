@@ -42,7 +42,7 @@ export default function FavoritesButton({ deckId, is_favorite, userId }) {
     >
       <HandHeart className={`h-8 md:h-9 w-8 md:w-9 ${isFavorite ? "text-rose-500" : "text-primary"}`} />
       <p className="text-xs md:text-sm text-primary">
-        {isFavorite ? "Deck Saved" : "Save Deck"}
+        {isFavorite ? "Unsave Deck" : "Save Deck"}
       </p>
     </Card>
   );

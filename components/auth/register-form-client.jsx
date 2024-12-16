@@ -117,10 +117,7 @@ export default function RegisterFormClient() {
               value={formData[field.name]}
               onChange={handleInputChange}
               disabled={loading}
-              className={`
-                ${errors[field.name] ? "border-rose-300/90 dark:border-rose-950 " : ""}
-                max-sm:text-sm h-[38px] sm:h-10 max-sm:placeholder:text-sm
-              `}
+              className={`${errors[field.name] ? "border-rose-300/90 dark:border-rose-950 " : ""} max-sm:text-sm h-[38px] sm:h-10 max-sm:placeholder:text-sm`}
             />
             {errors[field.name] ? (
               <p className="text-red-500 dark:text-red-500/90 text-sm pl-2" style={{ marginTop: "3px" }}>

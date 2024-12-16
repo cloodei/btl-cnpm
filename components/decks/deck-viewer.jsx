@@ -115,10 +115,7 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
       </h1>
       <div className="flex items-center gap-[14px] mx-auto w-fit">
         <Card
-          className="
-            flex flex-col cursor-pointer items-center gap-2 rounded-[7px] p-[10px] md:p-3 
-            shadow-[0_2px_4px_rgba(0,0,0,0.35)] transition-all duration-200 hover:bg-secondary
-          "
+          className="flex flex-col cursor-pointer items-center gap-2 rounded-[7px] p-[10px] md:p-3 shadow-[0_2px_4px_rgba(0,0,0,0.35)] transition-all duration-200 hover:bg-secondary"
           onMouseDown={(e) => {
             e.preventDefault();
             router.push(`/decks/${deck.id}/quiz`);
@@ -131,10 +128,7 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
         </Card>
         {permissions ? (
           <Card
-            className="
-              flex flex-col cursor-pointer items-center gap-2 rounded-[7px] p-[10px] md:p-3 
-              shadow-[0_2px_4px_rgba(0,0,0,0.35)] transition-all duration-200 hover:bg-secondary
-            "
+            className="flex flex-col cursor-pointer items-center gap-2 rounded-[7px] p-[10px] md:p-3 shadow-[0_2px_4px_rgba(0,0,0,0.35)] transition-all duration-200 hover:bg-secondary"
             onMouseDown={(e) => {
               e.preventDefault();
               router.push(`/decks/${deck.id}/edit`);

@@ -71,11 +71,11 @@ export default function LoginFormClient() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-    <div className="flex flex-col items-center sm:gap-2 gap-[5px]">
-      <LogIn className="sm:h-12 h-10 sm:w-12 w-10" />
-      <h1 className="sm:text-3xl text-2xl font-bold">Welcome back</h1>
-      <p className="text-muted-foreground max-sm:text-[13px]">Login to access your flashcards</p>
-    </div>
+      <div className="flex flex-col items-center sm:gap-2 gap-[5px]">
+        <LogIn className="sm:h-12 h-10 sm:w-12 w-10" />
+        <h1 className="sm:text-3xl text-2xl font-bold">Welcome back</h1>
+        <p className="text-muted-foreground max-sm:text-[13px]">Login to access your flashcards</p>
+      </div>
 
       <div className="space-y-4">
         <Input
@@ -84,10 +84,7 @@ export default function LoginFormClient() {
           placeholder="Account Name"
           value={formData.username}
           onChange={handleChange}
-          className={`
-            ${errors.username ? "border-rose-300/90 dark:border-rose-950 " : ""}
-            max-sm:text-sm h-[38px] sm:h-10 max-sm:placeholder:text-sm
-          `}
+          className={`${errors.username ? "border-rose-300/90 dark:border-rose-950 " : ""} max-sm:text-sm h-[38px] sm:h-10 max-sm:placeholder:text-sm`}
         />
         {errors?.username ? (
           <p className="text-red-500 dark:text-red-500/90 text-sm pl-2" style={{ marginTop: "3px" }}>
@@ -101,10 +98,7 @@ export default function LoginFormClient() {
           value={formData.password}
           onChange={handleChange}
           placeholder="Password"
-          className={`
-            ${errors.password ? "border-rose-300/90 dark:border-rose-950 " : ""}
-            max-sm:text-sm h-[38px] sm:h-10 max-sm:placeholder:text-sm
-          `}
+          className={`${errors.password ? "border-rose-300/90 dark:border-rose-950 " : ""} max-sm:text-sm h-[38px] sm:h-10 max-sm:placeholder:text-sm`}
         />
         {errors?.password ? (
           <p className="text-red-500 dark:text-red-500/90 text-sm pl-2" style={{ marginTop: "3px" }}>

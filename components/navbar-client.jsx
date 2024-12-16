@@ -18,13 +18,12 @@ export default function Navbar() {
   useEffect(() => {
     document.querySelector('.flex.min-h-svh.w-full')?.classList.add('hidden');
     router.prefetch('/explore');
-    router.prefetch('/create');
     router.prefetch('/my-decks');
     router.prefetch('/favorites');
     router.prefetch('/profile');
   }, []);
 
-  if(isQuizActive || pathname === '/login' || pathname === '/register') {
+  if(isQuizActive || pathname === '/login') {
     return null;
   }
 
@@ -57,7 +56,7 @@ export default function Navbar() {
           <NavLink href="/my-decks">My Decks</NavLink>
           <NavLink href="/favorites">Favorites</NavLink>
         </div>
-        
+
         <div className="flex items-center ml-auto space-x-4">
           <ModeToggle />
           <SignedOut>

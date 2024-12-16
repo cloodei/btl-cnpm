@@ -70,17 +70,17 @@ export default function RatingButton({ deckId, userId, avgRating = 0 }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[280px] p-2" onMouseLeave={() => setHoverRating(0)}>
         <div className="flex items-center gap-1 mb-1 relative">
-          {[...Array(10)].map((_, i) => (
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9 ,10].map((i) => (
             <Button
               key={i}
               variant="ghost"
               size="sm"
               disabled={isLoading}
-              className={`p-0 h-8 w-8 ${(hoverRating >= i + 1 || userRating >= i + 1) ? 'text-yellow-400' : 'text-muted-foreground'}`}
-              onMouseEnter={() => setHoverRating(i + 1)}
-              onClick={() => handleRating(i + 1)}
+              className={`p-0 h-8 w-8 ${(hoverRating >= i || userRating >= i) ? 'text-yellow-400' : 'text-muted-foreground'}`}
+              onMouseEnter={() => setHoverRating(i)}
+              onClick={() => handleRating(i)}
             >
-              <Star className={`h-4 w-4 ${(hoverRating >= i + 1 || userRating >= i + 1) ? 'fill-current' : ''}`} />
+              <Star className={`h-4 w-4 ${(hoverRating >= i || userRating >= i) && 'fill-current'}`} />
             </Button>
           ))}
         </div>

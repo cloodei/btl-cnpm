@@ -17,10 +17,10 @@ const DeckException = ({ message }) => {
         {message}
       </p>
       <div className="flex items-center justify-center gap-3 mt-4">
-        <Link href="/my-decks">
+        <Link href="/my-decks" prefetch={true}>
           <Button>Back to Decks</Button>
         </Link>
-        <Link href="/">
+        <Link href="/" prefetch={true}>
           <Button variant="outline">Back to Home</Button>
         </Link>
       </div>
@@ -34,8 +34,8 @@ export default async function EditDeckPage({ params }) {
   const EditWrapper = async () => {
     const deckId = parseInt(id);
     const { userId } = await auth();
-    if(isNaN(deckId) || !userId) {
-      return <DeckException message="Invalid Deck ID" />
+    if(isNaN(deckId) || deckId < 1) {
+      return <DeckException message="Invalid Deck. Please check the URL and try again." />
     }
     const { success, deck, cards, error } = await getCachedDeck({ deckId, userId });
     if(!success) {

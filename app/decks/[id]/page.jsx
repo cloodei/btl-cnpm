@@ -25,6 +25,7 @@ const NFBoundary = ({ message, description = "The deck you're looking for doesn'
           <Link 
             href="/"
             className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-primary bg-primary-foreground rounded-lg hover:bg-slate-200 dark:hover:bg-gray-800"
+            prefetch={true}
           >
             Return Home
           </Link>
@@ -40,8 +41,11 @@ export default async function DeckPage({ params }) {
   const DeckWrapper = async () => {
     const deckId = parseInt(id);
     const { userId } = await auth();
-    if(isNaN(deckId) || !userId) {
+    if(isNaN(deckId) || deckId < 1) {
       return <NFBoundary message="Invalid Deck ID" description="Please check the URL and try again." />
+    }
+    if(!userId) {
+      return <NFBoundary message="Unauthorized" description="You need to be logged in to view this deck." />
     }
     const revalidate = (deckId === 9 || deckId === 11 || deckId === 12) ? 120 : 600;
     const { success, deck, cards, avgRating, error } = await getCachedDeck({ deckId, userId, revalidate });

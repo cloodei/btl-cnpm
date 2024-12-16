@@ -22,10 +22,10 @@ const IneligibleDeck = ({ message, cardCount = null }) => {
         </p>
       )}
       <div className="flex items-center justify-center gap-3 mt-4">
-        <Link href="/my-decks">
+        <Link href="/my-decks" prefetch={true}>
           <Button>Back to Decks</Button>
         </Link>
-        <Link href="/">
+        <Link href="/" prefetch={true}>
           <Button variant="outline">Back to Home</Button>
         </Link>
       </div>
