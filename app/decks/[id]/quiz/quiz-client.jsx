@@ -259,7 +259,7 @@ export default function QuizPageClient({ deckTitle, cards }) {
                 <Button
                   key={index}
                   variant="outline"
-                  className="h-auto border-[#c6cbd1] dark:border-gray-700 py-4 px-6 text-lg whitespace-pre-line break-words text-center"
+                  className="h-auto border-[#c6cbd1] dark:border-gray-700/90 py-3 px-5 text-lg whitespace-pre-line break-words text-center"
                   onClick={() => handleAnswer(answer)}
                   disabled={loading}
                 >

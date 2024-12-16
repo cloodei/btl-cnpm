@@ -101,7 +101,7 @@ export default function CreateComponent() {
     }
     let incompleteWarn = "";
     if(incomplete) {
-      incompleteWarn = (incomplete > 1) ? `\n${incomplete} cards are incomplete and will not be saved.` : "\nOne card is incomplete and will not be saved.";
+      incompleteWarn = (incomplete > 1) ? `\n${incomplete} cards are incomplete and will not be saved.` : "\n1 card is incomplete and will not be saved.";
     }
     
     return `Saving will create a new flashcard deck with ${complete} cards.${incompleteWarn}`;

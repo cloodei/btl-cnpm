@@ -6,6 +6,8 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from "@/components/ui/toaster"
 import { QuizProvider } from '@/contexts/QuizContext';
 import { QueryProvider } from './provider';
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import Navbar from "@/components/navbar-client";
 import MobileSidebar from '@/components/mobile-sidebar';
 
@@ -35,6 +37,8 @@ export default function RootLayout({ children }) {
                   <main>{children}</main>
                   <Toaster />
                   <MobileSidebar />
+                  <Analytics />
+                  <SpeedInsights />
                 </QuizProvider>
               </ThemeProvider>
             </QueryProvider>
