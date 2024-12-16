@@ -1,6 +1,7 @@
 import DeckViewer from "@/components/decks/deck-viewer";
-import Link from "next/link";
 import DeckViewerSkeleton from "@/components/dv-skeleton";
+import Link from "next/link";
+import { Card } from "@/components/ui/card";
 import { Suspense } from "react";
 import { auth } from "@clerk/nextjs/server";
 import { getCachedDeck } from "@/app/actions/deck";
