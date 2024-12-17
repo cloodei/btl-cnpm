@@ -49,7 +49,7 @@ export default async function DeckPage({ params }) {
       return <NFBoundary message="Unauthorized" description="You need to be logged in to view this deck." />
     }
     const revalidate = (deckId === 9 || deckId === 11 || deckId === 12) ? 900 : 120;
-    const { success, deck, cards, avgRating, error } = await getCachedDeck({ deckId, userId, revalidate });
+    const { success, deck, cards, avgRating, isFavorite, error } = await getCachedDeck({ deckId, userId, revalidate });
     if(!success) {
       const err = error?.message || error || "Failed to load deck";
       return <NFBoundary message={err} />
@@ -57,7 +57,7 @@ export default async function DeckPage({ params }) {
     if(!deck || !cards?.length) {
       return <NFBoundary message="Deck Not Found" />
     }
-    return <DeckViewer deck={deck} cards={cards} userId={userId} permissions={deck.creator_id === userId} avgRating={avgRating} />
+    return <DeckViewer deck={deck} cards={cards} userId={userId} permissions={deck.creator_id === userId} avgRating={avgRating} isFavorite={isFavorite} />;
   }
 
   return (

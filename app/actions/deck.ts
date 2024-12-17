@@ -114,10 +114,9 @@ export async function getCachedDeck({ deckId, userId, revalidate = 120 }: { deck
   return unstable_cache(
     async () => {
       try {
-        const [deck, cards, avg_rating] = await Promise.all([
+        const [deck, cards, avg_rating, is_favorite] = await Promise.all([
           sql`
-            SELECT d.id, d.creator_id, d.name, d.public, d.created_at, d.updated_at, u.username,
-            EXISTS(SELECT 1 FROM favorite_decks WHERE deck_id = d.id AND viewer_id = ${userId}) AS is_favorite
+            SELECT d.*, u.username
             FROM decks AS d
             INNER JOIN users AS u
             ON d.creator_id = u.id
@@ -133,10 +132,16 @@ export async function getCachedDeck({ deckId, userId, revalidate = 120 }: { deck
             FROM ratings
             WHERE deck_id = ${deckId}
             GROUP BY deck_id
+          `,
+          sql`
+            SELECT 1
+            FROM favorite_decks
+            WHERE deck_id = ${deckId}
+            AND viewer_id = ${userId}
           `
         ]);
         const avgRating = avg_rating[0]?.avg_rating ? parseFloat(avg_rating[0].avg_rating) : 0;
-        return { success: true, deck: deck[0], cards, avgRating };
+        return { success: true, deck: deck[0], cards, avgRating, isFavorite: is_favorite.length > 0 };
       }
       catch(error) {
         return { success: false, error };

@@ -1,12 +1,12 @@
 "use client";
 import Link from "next/link";
-import { Brain, Menu, User } from "lucide-react";
+import { useQuiz } from "@/app/provider";
+import { useEffect } from "react";
+import { useSidebar } from "./ui/sidebar";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
-import { usePathname, useRouter } from "next/navigation";
-import { useSidebar } from "./ui/sidebar";
-import { useEffect } from "react";
-import { useQuiz } from '@/contexts/QuizContext';
+import { Brain, Menu, User } from "lucide-react";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 
 export default function Navbar() {

@@ -7,8 +7,8 @@ import { Progress } from "@/components/ui/progress";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { QuizSummary } from "@/components/quiz-summary";
-import { useQuiz } from '@/contexts/QuizContext';
 import { useRouter } from "next/navigation";
+import { useQuiz } from "@/app/provider";
 
 const shuffleArray = (arr) => {
   let res = [...arr];

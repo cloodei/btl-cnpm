@@ -86,12 +86,6 @@ export default function CommunityTabClient({ decks, userId }) {
     setPaginatedDecks(generatePaginatedDeck(decks, 1));
   };
 
-  const handleKeyDown = (e) => {
-    if(e.key === 'Enter') {
-      handleInputBlur(e.target.value);
-    }
-  };
-
   const handleLoadMore = (e) => {
     e.preventDefault();
     const nextPage = currentPage + 1;
@@ -114,7 +108,7 @@ export default function CommunityTabClient({ decks, userId }) {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         onBlur={(e)  => handleInputBlur(e.target.value)}
-        onKeyDown={handleKeyDown}
+        onKeyDown={(e) => e.key === 'Enter' && handleInputBlur(e.target.value)}
         label="Search Decks"
         className="max-sm:w-[212px] border-gray-300 dark:border-gray-800 max-sm:pt-[7px] max-sm:pb-[8px] max-sm:text-sm"
         labelClassname="max-sm:text-xs max-sm:left-[9px] max-sm:top-[9px]"
@@ -191,7 +185,7 @@ export default function CommunityTabClient({ decks, userId }) {
     {!paginatedDecks.length ? (
       <div className="w-full mt-3">
         <p className="flex items-center justify-center gap-[6px] text-lg font-semibold text-muted-foreground text-center">
-          No decks found
+          No decks match your search
           <SearchX className="h-6 w-6" />
         </p>
         <Button variant="outline" size="lg" className="mt-[10px] ml-[calc(50%-66px)]" onMouseDown={(e) => handleShowAll(e)}>

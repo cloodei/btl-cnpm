@@ -11,7 +11,7 @@ import { Input } from "../ui/input";
 import { Card } from "../ui/card";
 import { useRouter } from "next/navigation";
 
-export default function DeckViewer({ deck, cards, permissions, userId, avgRating }) {
+export default function DeckViewer({ deck, cards, permissions, userId, avgRating, isFavorite }) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [inputValue, setInputValue] = useState("1");
@@ -28,6 +28,7 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
   const updateCardIndex = (newIndex) => {
     setCurrentCardIndex(newIndex);
     setInputValue(newIndex + 1);
+    setIsFlipped(false);
   };
 
   const handleInputBlur = () => {
@@ -65,7 +66,12 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
       </div>
 
       <div className="relative md:h-[264px] h-[228px] mb-8">
-        <ReactCardFlip isFlipped={isFlipped} flipDirection="horizontal" containerClassName="h-full">
+        <ReactCardFlip
+          key={currentCardIndex}
+          isFlipped={isFlipped}
+          flipDirection="horizontal"
+          containerClassName="h-full"
+        >
           <div className="h-full cursor-pointer rounded-xl p-8 bg-card border dark:border-[#303242] shadow-[0_2px_9px_rgba(0,0,0,0.26)]" onClick={() => setIsFlipped(!isFlipped)}>
             <div className="flex flex-col justify-center items-center h-full">
               <p className="md:text-3xl text-2xl font-semibold text-center">
@@ -141,7 +147,7 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
           </Card>
         ) : (
           <>
-            <FavoritesButton deckId={deck.id} is_favorite={deck.is_favorite} userId={userId} />
+            <FavoritesButton deckId={deck.id} is_favorite={isFavorite} userId={userId} />
             <RatingButton deckId={deck.id} userId={userId} avgRating={avgRating} />
           </>
         )}
