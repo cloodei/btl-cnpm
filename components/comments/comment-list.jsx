@@ -1,14 +1,15 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getComments, addComment } from "@/app/actions/comments";
 import { Button } from "@/components/ui/button";
 import { FloatTextarea } from "../ui/float-input";
 import { Loader2 } from "lucide-react";
-import Comment from "./comment";
 import { useRouter } from "next/navigation";
+import Comment from "./comment";
 
-export default function CommentList({ deckId, userId }) {
+const CommentList = memo(({ deckId, userId, pub }) => {
+  if(!pub) return null;
   const [newComment, setNewComment] = useState("");
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -117,4 +118,6 @@ export default function CommentList({ deckId, userId }) {
       )}
     </div>
   );
-}
+});
+
+export default CommentList;

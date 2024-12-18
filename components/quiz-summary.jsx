@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { CheckCircle, XCircle, Clock, Trophy, Zap, CircleHelp, Goal } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import QuizPageClient from "@/app/decks/[id]/quiz/quiz-client";
 
@@ -20,48 +20,53 @@ const animation = {
 export function QuizSummary({ results, totalTime, totalQuestions, deckTitle, cards }) {
   const [retake, setRetake] = useState(false)
   const [pageLen, setPageLen] = useState(Math.min(5, results.length))
+
   if(retake) {
     return <QuizPageClient deckTitle={deckTitle} cards={cards} />
   }
+
   const router = useRouter()
-  let correctAnswers = 0
-  let answered = 0
-  for(let i = 0; i != results.length; i++) {
-    if(!results[i].isUnanswered) {
-      answered++;
-      if(results[i].isCorrect) {
-        correctAnswers++;
+  const stats = useMemo(() => {
+    let correctAnswers = 0
+    let answered = 0
+    for(let i = 0; i != results.length; i++) {
+      if(!results[i].isUnanswered) {
+        answered++;
+        if(results[i].isCorrect) {
+          correctAnswers++;
+        }
       }
     }
-  }
-  const averageTime = answered ? (totalTime / answered).toFixed(1) + "s" : "N/A"
-  const accuracy = ((correctAnswers / totalQuestions) * 100).toFixed(1) + "%"
-  const stats = [
-    {
-      icon: Trophy,
-      label: "Final Score",
-      value: `${correctAnswers}/${totalQuestions}`,
-      color: "text-yellow-500",
-    },
-    {
-      icon: Goal,
-      label: "Accuracy",
-      value: accuracy,
-      color: "text-rose-500",
-    },
-    {
-      icon: Clock,
-      label: "Total Time",
-      value: `${totalTime}s`,
-      color: "text-green-500",
-    },
-    {
-      icon: Zap,
-      label: "Avg. Time per Question",
-      value: averageTime,
-      color: "text-purple-500",
-    }
-  ]
+    const averageTime = answered ? (totalTime / answered).toFixed(1) + "s" : "N/A"
+    const accuracy = ((correctAnswers / totalQuestions) * 100).toFixed(1) + "%"
+    
+    return [
+      {
+        icon: Trophy,
+        label: "Final Score",
+        value: `${correctAnswers}/${totalQuestions}`,
+        color: "text-yellow-500",
+      },
+      {
+        icon: Goal,
+        label: "Accuracy",
+        value: accuracy,
+        color: "text-rose-500",
+      },
+      {
+        icon: Clock,
+        label: "Total Time",
+        value: `${totalTime}s`,
+        color: "text-green-500",
+      },
+      {
+        icon: Zap,
+        label: "Avg. Time per Question",
+        value: averageTime,
+        color: "text-purple-500",
+      }
+    ]
+  }, [])
   
   return (
     <div className="min-h-[calc(100vh-48px)] bg-gradient-to-b from-background to-secondary/20 py-8 px-6">

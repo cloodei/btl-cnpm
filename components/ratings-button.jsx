@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { Star, Loader2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { rateDeck, getUserRating } from "@/app/actions/ratings";
@@ -8,11 +8,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/compon
 import { Button } from "@/components/ui/button";
 import { Card } from "./ui/card";
 
-export default function RatingButton({ deckId, userId, avgRating = 0 }) {
+const RatingButton = memo(({ deckId, userId, avgRating }) => {
   const [hoverRating, setHoverRating] = useState(0);
   const [selectedRating, setSelectedRating] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
+  
   const queryClient = useQueryClient();
   
   const { data: userRatingData, isLoading } = useQuery({
@@ -61,10 +62,10 @@ export default function RatingButton({ deckId, userId, avgRating = 0 }) {
         >
           {(isLoading || isPending)
             ? <Loader2 className="h-8 md:h-9 w-8 md:w-9 animate-spin text-primary" />
-            : <Star className={`h-8 md:h-9 w-8 md:w-9 ${userRating > 0 ? "text-amber-400" : "text-primary"}`} />
+            : <Star className={`h-8 md:h-9 w-8 md:w-9 ${userRating > 0 ? "text-amber-400" : "text-primary"} ${avgRating > 8 ? "fill-current" : ""}`} />
           }
           <p className="text-xs md:text-sm text-primary">
-            {userRating > 0 ? "Change Rating" : "Rate Deck"}
+            {avgRating > 0 ? avgRating.toFixed(1) + " / 10 Rating" : "Unrated"}
           </p>
         </Card>
       </DropdownMenuTrigger>
@@ -90,4 +91,6 @@ export default function RatingButton({ deckId, userId, avgRating = 0 }) {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+});
+
+export default RatingButton;

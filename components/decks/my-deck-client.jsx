@@ -1,11 +1,11 @@
 "use client";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "../ui/dialog";
 import { motion } from "framer-motion";
 import { Loader2, Edit, Trash2, MoreVertical, BookOpen, Send, MessageCircleOff, SearchX } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Button } from "../ui/button";
+import { Card } from "../ui/card";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { deleteDeck } from "@/app/actions/deck";
@@ -14,13 +14,26 @@ import { getTimeIndicator } from "@/lib/utils";
 import { FloatInput } from "../ui/float-input";
 
 const container = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  hidden: {
+    opacity: 0
+  },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
 };
 
 const item = {
-  hidden: { y: 24, opacity: 0 },
-  show: { y: 0, opacity: 1 }
+  hidden: {
+    y: 24,
+    opacity: 0
+  },
+  show: {
+    y: 0,
+    opacity: 1
+  }
 };
 
 export default function MyDecksClient({ decks }) {
@@ -32,15 +45,14 @@ export default function MyDecksClient({ decks }) {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
   const pub = searchParams.get("pub") || "a";
-
-  const filteredDecks = decks.filter(deck => {
-    const publicQuery = ((pub === "a") || (pub === "t" ? deck.public : !deck.public));
-    if(!query) {
-      return publicQuery;
+  
+  const q = query ? query.toLowerCase() : "";
+  const filteredDecks = decks.filter((deck) => {
+    const pubCheck = (pub === "a" || (pub === "t" && deck.public) || (pub === "f" && !deck.public));
+    if(!q) {
+      return pubCheck;
     }
-    const q = query.toLowerCase();
-    const matchSearch = deck.name.toLowerCase().includes(q);
-    return matchSearch && publicQuery;
+    return deck.name.toLowerCase().includes(q) && pubCheck;
   });
   
   const handleInputBlur = value => {
@@ -72,7 +84,7 @@ export default function MyDecksClient({ decks }) {
       toast({
         title: "Success",
         description: `Deck '${deleteDialog.deckName}' has been deleted successfully`,
-        duration: 2500,
+        duration: 2500
       });
     }
     else {
@@ -80,7 +92,7 @@ export default function MyDecksClient({ decks }) {
         title: "Error",
         description: error?.message || error || "Failed to delete deck",
         variant: "destructive",
-        duration: 2500,
+        duration: 2500
       });
     }
     setIsDeleting(false);

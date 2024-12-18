@@ -3,20 +3,23 @@ import ReactCardFlip from "react-card-flip";
 import CommentList from "../comments/comment-list";
 import FavoritesButton from "../favorites-button";
 import RatingButton from "../ratings-button";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BookOpenText, ChevronLeft, ChevronRight, Cog } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
+import { useRouter } from "next/navigation";
+import { Progress } from "../ui/progress";
+import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Card } from "../ui/card";
-import { useRouter } from "next/navigation";
 
 export default function DeckViewer({ deck, cards, permissions, userId, avgRating, isFavorite }) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [inputValue, setInputValue] = useState("1");
   const router = useRouter();
-  const publicRef = useRef(deck.public);
+
+  const result = useMemo(() => {
+    return { deckId: deck.id, userId, pub: deck.public, avgRating, isFavorite };
+  }, []);
 
   useEffect(() => {
     router.prefetch(`/decks/${deck.id}/quiz`);
@@ -147,13 +150,13 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
           </Card>
         ) : (
           <>
-            <FavoritesButton deckId={deck.id} is_favorite={isFavorite} userId={userId} />
-            <RatingButton deckId={deck.id} userId={userId} avgRating={avgRating} />
+            <FavoritesButton deckId={result.deckId} userId={result.userId} is_favorite={result.isFavorite} />
+            <RatingButton deckId={result.deckId} userId={result.userId} avgRating={result.avgRating} />
           </>
         )}
       </div>
 
-      {publicRef.current && <CommentList deckId={deck.id} userId={userId} />}
+      <CommentList deckId={result.deckId} userId={result.userId} pub={result.pub} />
     </div>
   );
 }
