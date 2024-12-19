@@ -1,10 +1,10 @@
 import Link from "next/link";
-import FavoritesClient from "@/components/decks/favorites-client";
+import FavoritesClient from "./favorites-client";
 import DeckSkeleton from "@/components/deck-skeleton";
 import { auth } from "@clerk/nextjs/server";
-import { getFavoriteDecksWithCardsCount } from "../actions/deck";
 import { Button } from "@/components/ui/button";
 import { Suspense } from "react";
+import { getFavoriteDecksWithCardsCount } from "../actions/deck";
 
 export const metadata = {
   title: 'Favorites | CoinCard'

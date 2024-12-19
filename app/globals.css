@@ -153,3 +153,15 @@
   background: linear-gradient(90deg, transparent, rgb(255, 255, 255), transparent);
   animation: shine-streak 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}

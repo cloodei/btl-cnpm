@@ -1,5 +1,5 @@
-import DeckViewer from "@/components/decks/deck-viewer";
 import DeckViewerSkeleton from "@/components/dv-skeleton";
+import DeckViewer from "./deck-viewer";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Suspense } from "react";

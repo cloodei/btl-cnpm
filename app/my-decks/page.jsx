@@ -1,9 +1,9 @@
 import Link from "next/link";
-import MyDecksClient from "@/components/decks/my-deck-client";
 import DeckSkeleton from "@/components/deck-skeleton";
+import MyDecksClient from "./my-deck-client";
 import { auth } from "@clerk/nextjs/server";
-import { getCachedDecksWithCardsCount } from "../actions/deck";
 import { Suspense } from "react";
+import { getCachedDecksWithCardsCount } from "../actions/deck";
 
 export const metadata = {
   title: 'My Decks | CoinCard',

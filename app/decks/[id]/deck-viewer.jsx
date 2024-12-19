@@ -1,19 +1,18 @@
 "use client";
-import ReactCardFlip from "react-card-flip";
-import CommentList from "../comments/comment-list";
-import FavoritesButton from "../favorites-button";
-import RatingButton from "../ratings-button";
-import { useEffect, useMemo, useState } from "react";
+import CommentList from "@/components/comments/comment-list";
+import FavoritesButton from "@/components/favorites-button";
+import RatingButton from "@/components/ratings-button";
+import CardFlip from "@/components/flip-card";
 import { BookOpenText, ChevronLeft, ChevronRight, Cog } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Progress } from "../ui/progress";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Card } from "../ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 
 export default function DeckViewer({ deck, cards, permissions, userId, avgRating, isFavorite }) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [isFlipped, setIsFlipped] = useState(false);
   const [inputValue, setInputValue] = useState("1");
   const router = useRouter();
 
@@ -31,16 +30,15 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
   const updateCardIndex = (newIndex) => {
     setCurrentCardIndex(newIndex);
     setInputValue(newIndex + 1);
-    setIsFlipped(false);
   };
 
   const handleInputBlur = () => {
     let newIndex = inputValue - 1;
     if(newIndex >= cards.length) {
-      newIndex = 0;
+      newIndex = cards.length - 1;
     }
     else if(newIndex < 0) {
-      newIndex = cards.length - 1;
+      newIndex = 0;
     }
     updateCardIndex(newIndex);
   };
@@ -67,35 +65,9 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
           </span>
         </div>
       </div>
-
+      
       <div className="relative md:h-[264px] h-[228px] mb-8">
-        <ReactCardFlip
-          key={currentCardIndex}
-          isFlipped={isFlipped}
-          flipDirection="horizontal"
-          containerClassName="h-full"
-        >
-          <div className="h-full cursor-pointer rounded-xl p-8 bg-card border dark:border-[#303242] shadow-[0_2px_9px_rgba(0,0,0,0.26)]" onClick={() => setIsFlipped(!isFlipped)}>
-            <div className="flex flex-col justify-center items-center h-full">
-              <p className="md:text-3xl text-2xl font-semibold text-center">
-                {cards[currentCardIndex].front}
-              </p>
-              <p className="text-sm text-muted-foreground mt-4">
-                Click to flip
-              </p>
-            </div>
-          </div>
-          <div className="h-full cursor-pointer rounded-xl p-8 bg-card border dark:border-[#303242] shadow-[0_2px_9px_rgba(0,0,0,0.26)]" onClick={() => setIsFlipped(!isFlipped)}>
-            <div className="flex flex-col justify-center items-center h-full">
-              <p className="md:text-3xl text-2xl font-semibold text-center">
-                {cards[currentCardIndex].back}
-              </p>
-              <p className="text-sm text-muted-foreground mt-4">
-                Click to flip back
-              </p>
-            </div>
-          </div>
-        </ReactCardFlip>
+        <CardFlip front={cards[currentCardIndex].front} back={cards[currentCardIndex].back} />
       </div>
 
       <div className="flex justify-center items-center gap-4">
@@ -108,8 +80,8 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
           min={1}
           max={cards.length}
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
           onBlur={handleInputBlur}
+          onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleInputBlur()}
           className="md:w-[68px] w-16 text-center text-sm md:text-base text-primary pr-1 pl-5 py-[10px]"
         />

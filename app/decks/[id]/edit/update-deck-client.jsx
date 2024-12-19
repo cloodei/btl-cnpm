@@ -1,15 +1,15 @@
 "use client";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogFooter, DialogTitle } from "@/components/ui/dialog";
-import { FloatInput, FloatTextarea } from "@/components/ui/float-input";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Plus, Save, Trash2, X, Loader2 } from "lucide-react";
-import { updateDeck, deleteDeck } from "@/app/actions/deck";
 import { useToast } from "@/hooks/use-toast";
+import { updateDeck, deleteDeck } from "@/app/actions/deck";
+import { Plus, Save, Trash2, X, Loader2 } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { FloatInput, FloatTextarea } from "@/components/ui/float-input";
+import { Dialog, DialogContent, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 
 export default function UpdateDeckComponent({ deck, cards: initialCards }) {
   const [cards, setCards] = useState(initialCards);

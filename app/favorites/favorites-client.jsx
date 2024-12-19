@@ -1,13 +1,13 @@
 "use client";
 import { motion } from "framer-motion";
-import { CalendarDays, BookOpen, User, Heart, SearchX } from "lucide-react";
-import { getTimeIndicator } from "@/lib/utils";
-import { useRouter } from "next/navigation";
-import { removeFromFavorites } from "@/app/actions/deck";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "../ui/button";
-import { FloatInput } from "../ui/float-input";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { FloatInput } from "@/components/ui/float-input";
+import { getTimeIndicator } from "@/lib/utils";
+import { removeFromFavorites } from "@/app/actions/deck";
+import { CalendarDays, BookOpen, User, Heart, SearchX } from "lucide-react";
 
 const container = {
   hidden: { opacity: 0 },

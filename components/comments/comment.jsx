@@ -23,18 +23,6 @@ export default function Comment({ comment, permission }) {
   const [editedText, setEditedText] = useState(comment.comment);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-
-  console.log(
-      "Comment:", comment.comment,
-    "\nCreated:", getTimeIndicator(comment.created_at),
-    "\nUpdated:", getTimeIndicator(comment.updated_at),
-    "\nCreated Locale Date:", comment.created_at.toLocaleDateString(),
-    "\nUpdated Locale Date:", comment.updated_at.toLocaleDateString(),
-    "\nCreated Locale:", comment.created_at.toLocaleString(),
-    "\nUpdated Locale:", comment.updated_at.toLocaleString(),
-    "\nCreated DateTime:", comment.created_at,
-    "\nUpdated DateTime:", comment.updated_at,
-  );
   
   const updateMutation = useMutation({
     mutationFn: updateComment,

@@ -7,9 +7,12 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getTimeIndicator(timestamp: string | Date) {
   const date = (timestamp instanceof Date ? timestamp : new Date(timestamp));
-  const secondsPast = ((new Date()).getTime() - (new Date(date.getTime() - ((new Date()).getTimezoneOffset() * 60000))).getTime()) / 1000;
+  let secondsPast = ((new Date()).getTime() - (new Date(date.getTime() - ((new Date()).getTimezoneOffset() * 60000))).getTime()) / 1000;
   if(isNaN(secondsPast)) {
     return 'Invalid date';
+  }
+  if(process.env.NODE_ENV === "production") {
+    secondsPast += 25200; // Add 7 hours to match UTC+7
   }
   if(secondsPast < 60) {
     return 'Just now';

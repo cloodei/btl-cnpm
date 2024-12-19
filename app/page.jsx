@@ -13,7 +13,7 @@ export default function Home() {
             Master Any Subject with Smart Flashcards
           </h1>
           <p className="text-lg lg:text-xl text-muted-foreground mb-8">
-            CoinCard is a platform for creating, sharing, and studying flashcards. Enhance your learning experience with our smart flashcards and quizzes.
+            Dung co de y den cai ten Coin Card!! Merci Beaucoup Ronaldo
           </p>
           <div className="flex gap-4 justify-center">
             <Link href="/create">

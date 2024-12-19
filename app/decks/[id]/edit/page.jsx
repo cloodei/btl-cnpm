@@ -1,10 +1,10 @@
-import UpdateDeckComponent from "@/components/decks/update-deck-client";
 import Link from "next/link";
 import DeckViewerSkeleton from "@/components/dv-skeleton";
-import { getCachedDeck } from "@/app/actions/deck";
+import UpdateDeckComponent from "./update-deck-client";
 import { auth } from "@clerk/nextjs/server";
 import { Button } from "@/components/ui/button";
 import { Suspense } from "react";
+import { getCachedDeck } from "@/app/actions/deck";
 
 export const metadata = {
   title: "Edit | CoinCard",

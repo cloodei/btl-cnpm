@@ -1,17 +1,17 @@
 "use client";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "../ui/dialog";
-import { motion } from "framer-motion";
-import { Loader2, Edit, Trash2, MoreVertical, BookOpen, Send, MessageCircleOff, SearchX } from "lucide-react";
-import { Button } from "../ui/button";
-import { Card } from "../ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { deleteDeck } from "@/app/actions/deck";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Card } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { deleteDeck } from "@/app/actions/deck";
+import { FloatInput } from "@/components/ui/float-input";
 import { getTimeIndicator } from "@/lib/utils";
-import { FloatInput } from "../ui/float-input";
+import { Loader2, Edit, Trash2, MoreVertical, BookOpen, Send, MessageCircleOff, SearchX } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 const container = {
   hidden: {
@@ -120,12 +120,12 @@ export default function MyDecksClient({ decks }) {
             onBlur={(e) => handleInputBlur(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleInputBlur(e.target.value)}
             label="Search Decks..."
-            className="w-[184px] border-gray-300 dark:border-[rgba(35,40,46,0.75)] py-2 pr-2 max-sm:text-sm"
+            className="w-40 sm:w-[184px] border-gray-300 dark:border-[rgba(35,40,46,0.75)] py-2 pr-2 max-sm:text-sm"
             labelClassname="text-xs"
           />
 
           <Select defaultValue={pub} onValueChange={(value) => updateFilters(query, value)}>
-            <SelectTrigger className="w-32 text-sm sm:h-10 border-gray-300 dark:border-[rgba(35,40,46,0.75)]">
+            <SelectTrigger className="w-28 sm:w-32 text-xs sm:text-sm sm:h-10 border-gray-300 dark:border-[rgba(35,40,46,0.75)]">
               <SelectValue placeholder="Filter by public" />
             </SelectTrigger>
             <SelectContent>
@@ -218,7 +218,7 @@ export default function MyDecksClient({ decks }) {
       {!filteredDecks.length && (
         <div className="w-full mt-4">
           <div className="flex items-center justify-center gap-2 w-fit mx-auto max-sm:text-sm font-medium text-muted-foreground sm:border border-gray-300 dark:border-[rgba(46,47,49,0.8)] md:py-[10px] md:pl-[25px] md:pr-[21px] rounded-lg">
-            No decks match "{query}"{(pub !== "a") && (pub === "t" ? " and Public Only" : " and Private Only")}
+            No decks match "{query}"{(pub !== "a") && (pub === "t" ? " and is Public Only" : " and is Private Only")}
             <SearchX className="h-[21px] w-[21px]" />
           </div>
         </div>
