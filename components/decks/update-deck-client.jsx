@@ -102,7 +102,7 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
     setCards([...cards, { front: "", back: "" }]);
   };
 
-  const deleteCard = (del) => setCards(cards.filter((_, i) => i !== del))
+  const deleteCard = del => setCards(cards.filter((_, i) => i !== del))
 
   const updateCard = (index, side, value) => {
     const newCards = [...cards];
@@ -110,7 +110,7 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
     setCards(newCards);
   };
 
-  const handleOpenDialog = (type) => {
+  const handleOpenDialog = type => {
     setDialogAction(type);
     setOpenDialog(true);
   };
