@@ -157,14 +157,14 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
                     value={card.front}
                     onChange={(e) => updateCard(index, "front", e.target.value)}
                     className="border-gray-300 dark:border-[#212533bb] pl-[15px] pt-[14px] text-lg md:h-[140px] h-[120px]"
-                    maxLength={128}
+                    maxLength={192}
                   />
                   <FloatTextarea
                     label="Enter back side content"
                     value={card.back}
                     onChange={(e) => updateCard(index, "back", e.target.value)}
                     className="border-gray-300 dark:border-[#212533bb] pl-[15px] pt-[14px] text-lg md:h-[140px] h-[120px]"
-                    maxLength={128}
+                    maxLength={192}
                   />
                 </div>
               </Card>

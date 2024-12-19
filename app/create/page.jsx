@@ -104,7 +104,7 @@ export default function CreateComponent() {
       incompleteWarn = (incomplete > 1) ? `\n${incomplete} cards are incomplete and will not be saved.` : "\n1 card is incomplete and will not be saved.";
     }
     
-    return `Saving will create a new flashcard deck with ${complete} cards.${incompleteWarn}`;
+    return `Saving will create a new flashcard deck with ${complete} card${complete > 1 ? "s" : ""}.${incompleteWarn}`;
   }
 
   return (
@@ -153,14 +153,14 @@ export default function CreateComponent() {
                   value={card.front}
                   onChange={(e) => updateCard(index, "front", e.target.value)}
                   className="border-gray-300 dark:border-[#212533bb] px-[18px] text-lg md:h-[140px] h-[120px]"
-                  maxLength={128}
+                  maxLength={192}
                 />
                 <FloatTextarea
                   label="Enter back side content"
                   onChange={(e) => updateCard(index, "back", e.target.value)}
                   value={card.back}
                   className="border-gray-300 dark:border-[#212533bb] px-[18px] text-lg md:h-[140px] h-[120px]"
-                  maxLength={128}
+                  maxLength={192}
                 />
               </div>
             </Card>

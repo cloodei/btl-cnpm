@@ -153,8 +153,8 @@ export default function ExplorePage() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="hidden md:inline-flex" />
-              <CarouselNext className="hidden md:inline-flex" />
+              <CarouselPrevious className="max-sm:hidden" />
+              <CarouselNext className="max-sm:hidden" />
             </Carousel>
           </section>
         </TabsContent>
