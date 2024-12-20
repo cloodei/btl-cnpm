@@ -10,7 +10,7 @@ export const metadata = {
   title: "Edit | CoinCard",
 };
 
-const DeckException = ({ message }) => {
+const DeckException = ({ message }: { message: string }) => {
   return (
     <div className="m-auto py-12">
       <p className="text-center text-2xl md:text-3xl md:tracking-tight text-rose-700 dark:text-red-500 font-semibold">
@@ -28,19 +28,21 @@ const DeckException = ({ message }) => {
   )
 }
 
-export default async function EditDeckPage({ params }) {
-  const { id } = await params;
-
+export default function EditDeckPage({ params }: { params: Promise<{ id: string }> }) {
   const EditWrapper = async () => {
+    const { id } = await params;
     const deckId = parseInt(id);
-    const { userId } = await auth();
     if(isNaN(deckId) || deckId < 1) {
       return <DeckException message="Invalid Deck. Please check the URL and try again." />
     }
-    const { success, deck, cards, error } = await getCachedDeck({ deckId, userId });
+    const { userId } = await auth();
+    if(!userId) {
+      return <DeckException message="You need to be logged in to edit this deck." />
+    }
+    const { success, deck, cards, error } = await getCachedDeck({ deckId, userId, revalidate: 120 });
     if(!success) {
-      const err = error?.message || error || "Failed to load deck";
-      return <DeckException message={err} />
+      const err = error as any;
+      return <DeckException message={err?.message || err || "Failed to load deck"} />
     }
     if(!deck) {
       return <DeckException message="Deck Not Found" />
@@ -48,7 +50,7 @@ export default async function EditDeckPage({ params }) {
     if(deck.creator_id !== userId) {
       return <DeckException message="You are not authorized to edit this deck" />
     }
-    return <UpdateDeckComponent deck={deck} cards={cards} userId={userId} />
+    return <UpdateDeckComponent deck={deck} cards={cards} />
   }
 
   return (

@@ -33,12 +33,12 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/create/page.jsx",
-    "app/page.jsx",
-    "app/layout.jsx",
+    "app/create/page.tsx",
+    "app/page.tsx",
+    "app/layout.tsx",
     "app/login/layout.jsx",
-    "app/login/page.jsx"
-, "components/navbar.jsx", "app/my-decks/page.jsx", "components/auth/login-form.jsx", "components/mode-toggle.jsx"  ],
+    "app/login/page.tsx"
+, "components/navbar.jsx", "app/my-decks/page.tsx", "components/auth/login-form.jsx", "components/mode-toggle.jsx"  ],
   "exclude": [
     "node_modules"
   ]

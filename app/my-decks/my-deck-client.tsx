@@ -2,13 +2,13 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { deleteDeck } from "@/app/actions/deck";
-import { FloatInput } from "@/components/ui/float-input";
+import { deleteDeck } from "@/app/actions/deck-mutations";
 import { getTimeIndicator } from "@/lib/utils";
 import { Loader2, Edit, Trash2, MoreVertical, BookOpen, Send, MessageCircleOff, SearchX } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { FloatInput } from "@/components/ui/float-input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -36,8 +36,19 @@ const item = {
   }
 };
 
-export default function MyDecksClient({ decks }) {
-  const [deleteDialog, setDeleteDialog] = useState({ isOpen: false, deckId: null, deckName: "" });
+type MyDecksClientProps = {
+  decks: {
+    id: number;
+    name: string;
+    public: boolean;
+    created_at: Date;
+    updated_at: Date;
+    totalcards: number;
+  }[];
+};
+
+export default function MyDecksClient({ decks }: MyDecksClientProps) {
+  const [deleteDialog, setDeleteDialog] = useState({ isOpen: false, deckId: 0, deckName: "" });
   const [isDeleting, setIsDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
@@ -55,12 +66,12 @@ export default function MyDecksClient({ decks }) {
     return deck.name.toLowerCase().includes(q) && pubCheck;
   });
   
-  const handleInputBlur = value => {
+  const handleInputBlur = (value: string) => {
     const newQuery = value.trim() || undefined;
     updateFilters(newQuery, pub);
   };
 
-  const updateFilters = (newQuery, newPublic) => {
+  const updateFilters = (newQuery: string | undefined, newPublic: string) => {
     const params = new URLSearchParams(searchParams);
     if(newQuery) {
       params.set("q", newQuery);
@@ -88,15 +99,16 @@ export default function MyDecksClient({ decks }) {
       });
     }
     else {
+      const err = error as any;
       toast({
         title: "Error",
-        description: error?.message || error || "Failed to delete deck",
+        description: err?.message || err || "Failed to delete deck",
         variant: "destructive",
         duration: 2500
       });
     }
     setIsDeleting(false);
-    setDeleteDialog({ isOpen: false, deckId: null, deckName: "" });
+    setDeleteDialog({ isOpen: false, deckId: 0, deckName: "" });
     router.refresh();
   };
 
@@ -118,7 +130,7 @@ export default function MyDecksClient({ decks }) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onBlur={(e) => handleInputBlur(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleInputBlur(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleInputBlur(searchQuery)}
             label="Search Decks..."
             className="w-40 sm:w-[184px] border-gray-300 dark:border-[rgba(35,40,46,0.75)] py-2 pr-2 max-sm:text-sm"
             labelClassname="text-xs"
@@ -237,7 +249,7 @@ export default function MyDecksClient({ decks }) {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="mt-4 gap-2">
-          <Button variant="outline" onClick={() => setDeleteDialog({ isOpen: false, deckId: null, deckName: "" })} disabled={isDeleting}>
+          <Button variant="outline" onClick={() => setDeleteDialog({ isOpen: false, deckId: 0, deckName: "" })} disabled={isDeleting}>
             Cancel
           </Button>
           <Button variant="destructive" onClick={handleDeleteDeck} className="gap-2" disabled={isDeleting}>

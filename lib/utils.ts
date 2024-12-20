@@ -12,7 +12,7 @@ export function getTimeIndicator(timestamp: string | Date) {
     return 'Invalid date';
   }
   if(process.env.NODE_ENV === "production") {
-    secondsPast += 25200; // Add 7 hours to match UTC+7
+    secondsPast += 25200;
   }
   if(secondsPast < 60) {
     return 'Just now';

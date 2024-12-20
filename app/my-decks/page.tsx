@@ -9,7 +9,7 @@ export const metadata = {
   title: 'My Decks | CoinCard',
 };
 
-const DecksException = ({ message }) => {
+const DecksException = ({ message }: { message: string }) => {
   return (
     <div className="flex min-h-[70vh] items-center justify-center p-2">
       <div className="text-center space-y-4">
@@ -36,7 +36,8 @@ const MyDecksWrapper = async () => {
   }
   const { success, error, decks } = await getCachedDecksWithCardsCount(userId);
   if(!success) {
-    return <DecksException message={error?.message || error || "An error occurred"} />;
+    const err = error as any;
+    return <DecksException message={err?.message || err || "An error occurred"} />;
   }
   if(!decks?.length) {
     return <DecksException message="You haven't created any decks yet" />;

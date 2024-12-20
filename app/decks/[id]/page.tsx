@@ -11,7 +11,7 @@ export const metadata = {
   title: "View | CoinCard",
 };
 
-const NFBoundary = ({ message, description = "The deck you're looking for doesn't exist or has been removed." }) => {
+const NFBoundary = ({ message = "", description = "The deck you're looking for doesn't exist or has been removed." }) => {
   return (
     <div className="container mx-auto max-w-2xl py-8 px-4">
       <Card className="p-6">
@@ -36,28 +36,27 @@ const NFBoundary = ({ message, description = "The deck you're looking for doesn'
   );
 }
 
-export default async function DeckPage({ params }) {
-  const { id } = await params;
-
+export default function DeckPage({ params }: { params: Promise<{ id: string }> }) {
   const DeckWrapper = async () => {
+    const { id } = await params;
     const deckId = parseInt(id);
-    const { userId } = await auth();
     if(isNaN(deckId) || deckId < 1) {
       return <NFBoundary message="Invalid Deck ID" description="Please check the URL and try again." />
     }
+    const { userId } = await auth();
     if(!userId) {
       return <NFBoundary message="Unauthorized" description="You need to be logged in to view this deck." />
     }
     const revalidate = (deckId === 9 || deckId === 11 || deckId === 12) ? 900 : 120;
     const { success, deck, cards, avgRating, isFavorite, error } = await getCachedDeck({ deckId, userId, revalidate });
     if(!success) {
-      const err = error?.message || error || "Failed to load deck";
-      return <NFBoundary message={err} />
+      const err: any = error;
+      return <NFBoundary message={err?.message || err || "Failed to load deck"} />
     }
-    if(!deck || !cards?.length) {
+    if(!deck || !cards.length) {
       return <NFBoundary message="Deck Not Found" />
     }
-    return <DeckViewer deck={deck} cards={cards} userId={userId} permissions={deck.creator_id === userId} avgRating={avgRating} isFavorite={isFavorite} />;
+    return <DeckViewer deck={deck} cards={cards} permissions={deck.creator_id === userId} userId={userId} avgRating={avgRating} isFavorite={isFavorite} />;
   }
 
   return (

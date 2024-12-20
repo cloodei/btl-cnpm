@@ -133,7 +133,7 @@ export default function CommunityTabClient({ decks, userId }) {
             )}
             <div className="p-6 pb-4 xl:pt-5">
               <div className="mb-2 xl:mb-3 pr-9" title={deck.name}>
-                <h3 className="text-2xl font-bold truncate dark:[text-shadow:_0_2px_5px_rgb(145_164_203_/_0.85)]">
+                <h3 className="text-2xl font-bold truncate dark:[text-shadow:_0_0_5px_rgb(145_164_203_/_0.95)]">
                   {deck.name}
                 </h3>
               </div>

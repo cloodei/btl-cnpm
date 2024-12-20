@@ -8,8 +8,8 @@ export default function AuthContent() {
   const router = useRouter();
   const tab = useSearchParams().get('tab') || 'login';
 
-  const handleTabChange = (value) => {
-    router.push(`/login?tab=${value}`, { scroll: false, shallow: true });
+  const handleTabChange = (value: string) => {
+    router.push(`/login?tab=${value}`, { scroll: false });
   };
 
   return (

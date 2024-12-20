@@ -10,7 +10,7 @@ export const metadata = {
   title: "Quiz | CoinCard",
 };
 
-const IneligibleDeck = ({ message, cardCount = null }) => {
+const IneligibleDeck = ({ message, cardCount = null }: { message: string, cardCount?: number | null }) => {
   return (
     <div className="m-auto pt-12 pb-8">
       <p className={`text-center text-4xl font-medium mb-2 tracking-tighter ${cardCount ? "text-primary" : "text-rose-700"}`}>
@@ -33,20 +33,22 @@ const IneligibleDeck = ({ message, cardCount = null }) => {
   );
 }
 
-export default async function QuizPage({ params }) {
-  const { id } = await params;
-
+export default function QuizPage({ params }: { params: Promise<{ id: string }> }) {
   const QuizPageWrapper = async () => {
+    const { id } = await params;
     const deckId = parseInt(id);
     const { userId } = await auth();
+    if(!userId) {
+      return <IneligibleDeck message="Unauthorized" />;
+    }
     const revalidate = (deckId === 9 || deckId === 11 || deckId === 12) ? 900 : 120;
     const { success, deck, cards, error } = await getCachedDeck({ deckId, userId, revalidate });
     if(!success) {
-      const err = error?.message || error || "Failed to load deck";
-      return <IneligibleDeck message={err} />;
+      const err = error as any;
+      return <IneligibleDeck message={err?.message || err || "Failed to load deck"} />;
     }
-    if(cards.length < 4) {
-      return <IneligibleDeck message="Not enough cards for a test" cardCount={cards.length} />;
+    if(!cards || cards.length < 4) {
+      return <IneligibleDeck message="Not enough cards for a test" cardCount={cards?.length} />;
     }
     return <QuizPageClient deckTitle={deck.name} cards={cards} />;
   }

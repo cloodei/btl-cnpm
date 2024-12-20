@@ -1,13 +1,13 @@
 "use client";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { Settings } from "lucide-react";
+import { updateProfile } from "@/app/actions/update-user";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FloatInput } from "@/components/ui/float-input";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { updateProfile } from "@/app/actions/user";
-import { useToast } from "@/hooks/use-toast";
-import { Settings } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const DEFAULT_AVATARS = [
   "/astronaut2.png",

@@ -3,7 +3,6 @@ import { sql } from "@/lib/db";
 import { revalidateTag } from "next/cache";
 
 export async function rateDeck({ deckId, userId, rating }: { deckId: number, userId: string, rating: number }) {
-  "use server";
   await sql`
     INSERT INTO ratings (reviewer_id, deck_id, rating)
     VALUES (${userId}, ${deckId}, ${rating})
@@ -16,7 +15,6 @@ export async function rateDeck({ deckId, userId, rating }: { deckId: number, use
 }
 
 export async function getUserRating({ deckId, userId }: { deckId: number, userId: string }) {
-  "use server";
   try {
     const [{ rating }] = await sql`
       SELECT rating 

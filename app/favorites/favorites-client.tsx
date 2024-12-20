@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { FloatInput } from "@/components/ui/float-input";
 import { getTimeIndicator } from "@/lib/utils";
-import { removeFromFavorites } from "@/app/actions/deck";
+import { removeFromFavorites } from "@/app/actions/favorites";
 import { CalendarDays, BookOpen, User, Heart, SearchX } from "lucide-react";
 
 const container = {
@@ -22,14 +22,25 @@ const item = {
   show: { y: 0, opacity: 1 }
 }
 
-export default function FavoritesClient({ decks, userId }) {
+type FavoritesClientProps = {
+  decks: {
+    id: number;
+    name: string;
+    created_at: Date;
+    totalcards: number;
+    username: string;
+  }[];
+  userId: string;
+};
+
+export default function FavoritesClient({ decks, userId }: FavoritesClientProps) {
   const [filteredDecks, setFilteredDecks] = useState(decks);
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(null);
+  const [loading, setLoading] = useState<number | null>(null);
   const { toast } = useToast();
   const router = useRouter();
 
-  const handleInputBlur = (value) => {
+  const handleInputBlur = (value: string) => {
     const val = value.trim().toLowerCase();
     if(val) {
       setFilteredDecks(decks.filter((deck) => deck.name.toLowerCase().includes(val)));
@@ -38,7 +49,7 @@ export default function FavoritesClient({ decks, userId }) {
     setFilteredDecks(decks);
   }
 
-  const handleRemove = async (e, deckId, deckName) => {
+  const handleRemove = async (e: React.MouseEvent, deckId: number, deckName: string) => {
     e.preventDefault();
     e.stopPropagation();
     if(loading === deckId) {
@@ -56,9 +67,10 @@ export default function FavoritesClient({ decks, userId }) {
       router.refresh();
     }
     else {
+      const err = error as any;
       toast({
         title: "Error",
-        description: error?.message || error || "Failed to remove deck from favorites",
+        description: err?.message || err || "Failed to remove deck from favorites",
         variant: "destructive",
         duration: 2500,
       });
@@ -83,7 +95,7 @@ export default function FavoritesClient({ decks, userId }) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onBlur={(e) => handleInputBlur(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleInputBlur(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleInputBlur(searchQuery)}
             label="Search Decks..."
             className="w-[176px] border-gray-300 dark:border-[rgba(35,40,46,0.75)] py-2 pr-0 max-sm:text-sm"
             labelClassname="text-xs"

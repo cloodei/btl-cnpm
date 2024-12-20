@@ -2,7 +2,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { updateDeck, deleteDeck } from "@/app/actions/deck";
+import { updateDeck, deleteDeck } from "@/app/actions/deck-mutations";
 import { Plus, Save, Trash2, X, Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -11,7 +11,23 @@ import { Switch } from "@/components/ui/switch";
 import { FloatInput, FloatTextarea } from "@/components/ui/float-input";
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 
-export default function UpdateDeckComponent({ deck, cards: initialCards }) {
+type UpdateDeckComponentProps = {
+  deck: {
+    id: number,
+    creator_id: string,
+    name: string,
+    public: boolean,
+    created_at: Date,
+    updated_at: Date,
+    username: string
+  };
+  cards: {
+    front: string,
+    back: string
+  }[];
+};
+
+export default function UpdateDeckComponent({ deck, cards: initialCards }: UpdateDeckComponentProps) {
   const [cards, setCards] = useState(initialCards);
   const [isWaiting, setIsWaiting] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -63,9 +79,10 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
       router.push('/my-decks');
     }
     else {
+      const err = error as any;
       toast({
         title: "Error",
-        description: error?.message || error || "Failed to update deck",
+        description: err?.message || err || "Failed to update deck",
         variant: "destructive",
         duration: 2400
       });
@@ -86,9 +103,10 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
       router.push('/my-decks');
     }
     else {
+      const err = error as any;
       toast({
         title: "Error",
-        description: error?.message || error || "Failed to delete deck",
+        description: err?.message || err || "Failed to delete deck",
         variant: "destructive",
         duration: 2400,
       });
@@ -98,19 +116,20 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
   };
 
   const addCard = () => {
-    setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" }), 25);
+    const botRef: any = bottomRef.current;
+    setTimeout(() => botRef?.scrollIntoView({ behavior: "smooth", block: "end" }), 25);
     setCards([...cards, { front: "", back: "" }]);
   };
 
-  const deleteCard = del => setCards(cards.filter((_, i) => i !== del))
+  const deleteCard = (del: number) => setCards(cards.filter((_, i) => i !== del))
 
-  const updateCard = (index, side, value) => {
+  const updateCard = (index: number, side: "front" | "back", value: string) => {
     const newCards = [...cards];
     newCards[index][side] = value;
     setCards(newCards);
   };
 
-  const handleOpenDialog = type => {
+  const handleOpenDialog = (type: number) => {
     setDialogAction(type);
     setOpenDialog(true);
   };
@@ -123,6 +142,7 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
             <h1 className="md:text-3xl text-2xl md:mb-0 mb-2 font-bold [text-shadow:_0_3px_6px_rgb(18,18,24,0.25)] dark:[text-shadow:_0_1px_8px_rgb(145_164_203_/_0.6)]">
               Edit Deck
             </h1>
+            
             <div className="flex gap-2">
               <Button variant="destructive" onClick={() => handleOpenDialog(0)} disabled={isWaiting}>
                 <Trash2 className="mr-2 h-4 w-4" />
@@ -134,9 +154,11 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
               </Button>
             </div>
           </div>
+
           <div className="mb-5">
             <FloatInput label="Deck Title" value={deckTitle} onChange={(e) => setDeckTitle(e.target.value)} />
           </div>
+
           <div className="flex items-center space-x-2 mb-5 pl-2">
             <Switch id="public" checked={isPublic} onCheckedChange={setIsPublic} />
             <Label htmlFor="public">Make deck public</Label>
@@ -170,12 +192,13 @@ export default function UpdateDeckComponent({ deck, cards: initialCards }) {
               </Card>
             ))}
           </div>
-        <div ref={bottomRef} style={{ scrollMarginBottom: "32px" }}>
-          <Button onClick={addCard} className="border-[#c5cbd6] dark:border-[#222530] lg:mt-11 mt-8 w-full duration-200" variant="outline">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Card
-          </Button>
-        </div>
+
+          <div ref={bottomRef} style={{ scrollMarginBottom: "32px" }}>
+            <Button onClick={addCard} className="border-[#c5cbd6] dark:border-[#222530] lg:mt-11 mt-8 w-full duration-200" variant="outline">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Card
+            </Button>
+          </div>
         </div>
       </div>
 

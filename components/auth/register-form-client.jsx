@@ -5,7 +5,7 @@ import { useClerk, useSignUp } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UserPlus } from "lucide-react";
-import { revalidateUser } from "@/app/actions/user";
+import { revalidateUser } from "@/app/actions/update-user";
 
 const fields = [
   { name: 'username', type: 'text', placeholder: 'Account Name' },

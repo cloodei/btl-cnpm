@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LogIn } from "lucide-react";
 import { useSignIn } from "@clerk/nextjs";
-import { revalidateUser } from "@/app/actions/user";
+import { revalidateUser } from "@/app/actions/update-user";
 
 export default function LoginFormClient() {
   const [formData, setFormData] = useState({ username: "", password: "" });

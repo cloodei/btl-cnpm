@@ -10,7 +10,7 @@ export const metadata = {
   title: 'Favorites | CoinCard'
 };
 
-const EmptyState = ({ message, description = null }) => {
+const EmptyState = ({ message, description = null }: { message: string, description?: string | null }) => {
   return (
     <div className="flex min-h-[70vh] items-center justify-center p-4">
       <div className="text-center space-y-4">
@@ -39,8 +39,8 @@ const FavoritesWrapper = async () => {
   }
   const { success, decks, error } = await getFavoriteDecksWithCardsCount(userId);
   if(!success) {
-    const err = error?.message || error || "An error occurred";
-    return <EmptyState message={err} description="Please try again later" />
+    const err = error as any;
+    return <EmptyState message={err?.message || err || "An error occurred"} />
   }
   if(!decks?.length) {
     return <EmptyState message="No favorite decks" description="Start adding decks to your favorites!" />

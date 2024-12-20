@@ -20,7 +20,7 @@ export default async function CommunityTab() {
     const err = error?.message || error || "Error fetching public decks";
     return <TabException message={err} isCritical />;
   }
-  if(!decks?.length) {
+  if(!decks?.length || !decks) {
     return <TabException message="There are no public decks available" />;
   }
   return <CommunityClient decks={decks} userId={userId} />;

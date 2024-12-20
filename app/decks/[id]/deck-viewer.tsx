@@ -11,11 +11,31 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 
-export default function DeckViewer({ deck, cards, permissions, userId, avgRating, isFavorite }) {
+type DeckViewerProps = {
+  deck: {
+    id: number;
+    creator_id: string;
+    name: string;
+    public: boolean;
+    created_at: Date;
+    updated_at: Date;
+    username: string;
+  };
+  cards: {
+    front: string;
+    back: string;
+  }[];
+  permissions?: boolean;
+  userId?: string;
+  avgRating?: number;
+  isFavorite?: boolean;
+};
+
+export default function DeckViewer({ deck, cards, permissions, userId, avgRating, isFavorite }: DeckViewerProps) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [inputValue, setInputValue] = useState("1");
   const router = useRouter();
-
+  
   const result = useMemo(() => {
     return { deckId: deck.id, userId, pub: deck.public, avgRating, isFavorite };
   }, []);
@@ -27,13 +47,13 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
     }
   }, []);
 
-  const updateCardIndex = (newIndex) => {
+  const updateCardIndex = (newIndex: number) => {
     setCurrentCardIndex(newIndex);
-    setInputValue(newIndex + 1);
+    setInputValue(String(newIndex + 1));
   };
 
   const handleInputBlur = () => {
-    let newIndex = inputValue - 1;
+    let newIndex = parseInt(inputValue) - 1;
     if(newIndex >= cards.length) {
       newIndex = cards.length - 1;
     }
@@ -77,8 +97,8 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
         </Button>
         <Input
           type="number"
-          min={1}
-          max={cards.length}
+          min="1"
+          max={String(cards.length)}
           value={inputValue}
           onBlur={handleInputBlur}
           onChange={(e) => setInputValue(e.target.value)}

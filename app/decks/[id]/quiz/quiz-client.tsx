@@ -10,7 +10,7 @@ import { QuizSummary } from "@/components/quiz-summary";
 import { useRouter } from "next/navigation";
 import { useQuiz } from "@/app/provider";
 
-const shuffleArray = (arr) => {
+function shuffleArray<T = any>(arr: T[]) {
   let res = [...arr];
   for(let i = res.length - 1; i; i--) {
     const random = Math.floor(Math.random() * (i + 1));
@@ -21,8 +21,8 @@ const shuffleArray = (arr) => {
   return res;
 }
 
-const generateAnswers = (correctAnswer, allCards, useFront) => {
-  let wrongSet = new Set();
+function generateAnswers(correctAnswer: string, allCards: { front: string, back: string }[], useFront: boolean) {
+  let wrongSet = new Set<string>();
   for(const card of allCards) {
     wrongSet.add(useFront ? card.front : card.back);
   }
@@ -30,28 +30,46 @@ const generateAnswers = (correctAnswer, allCards, useFront) => {
   let res = [correctAnswer];
   const random = shuffleArray(shuffleArray(Array.from(wrongSet)));
   while(res.length != 4 && random.length) {
-    res.push(random.pop());
+    res.push(random.pop()!);
   }
   return shuffleArray(res);
 }
 
 const TIME_PER_QUESTION = 15;
 
-export default function QuizPageClient({ deckTitle, cards }) {
+type QuizPageProps = {
+  deckTitle: string;
+  cards: {
+    front: string;
+    back: string;
+  }[];
+};
+
+export default function QuizPageClient({ deckTitle, cards }: QuizPageProps) {
   const [stage, setStage] = useState(1);
   const [countdown, setCountdown] = useState(-1);
   const [questionCount, setQuestionCount] = useState(Math.min(10, cards.length));
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [answers, setAnswers] = useState([]);
+  const [answers, setAnswers] = useState<string[]>([]);
   const [timeLeft, setTimeLeft] = useState(-100);
   const [isFinished, setIsFinished] = useState(false);
-  const [questions, setQuestions] = useState([]);
-  const [results, setResults] = useState([]);
+  const [questions, setQuestions] = useState<{
+    question: string,
+    answer: string,
+    useFront: boolean
+  }[]>([]);
+  const [results, setResults] = useState<{
+    question: string;
+    correctAnswer: string;
+    userAnswer: string | null;
+    isCorrect: boolean;
+    isUnanswered?: boolean
+  }[]>([]);
   const { setIsQuizActive } = useQuiz();
   const router = useRouter();
 
-  const handleQuestionCountSubmit = (e) => {
+  const handleQuestionCountSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setQuestionCount(questionCount);
     setIsQuizActive(true);
@@ -67,12 +85,16 @@ export default function QuizPageClient({ deckTitle, cards }) {
   }, [isFinished]);
   
   useEffect(() => {
-    let timer2;
+    let timer2: NodeJS.Timeout;
     if(stage === 2 && countdown > 0) {
       timer2 = setInterval(() => setCountdown(prev => prev - 1), 1000);
     }
     else if(stage === 2 && countdown === 0) {
-      const pickQuestions = Array(questionCount);
+      const pickQuestions = Array<{
+        question: string,
+        answer: string,
+        useFront: boolean
+      }>(questionCount);
       const shuffledCards = shuffleArray(shuffleArray(cards));
       for(let i = 0; i != questionCount; i++) {
         const useFront = (Math.random() < 0.5);
@@ -92,13 +114,19 @@ export default function QuizPageClient({ deckTitle, cards }) {
   }, [countdown]);
   
   useEffect(() => {
-    let timer1;
+    let timer1: NodeJS.Timeout;
     if(timeLeft > 0 && !isFinished) {
       timer1 = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
     }
     else if(timeLeft === 0 && !isFinished) {
       if(results.length < questions.length) {
-        let endResult = Array(questions.length);
+        let endResult = Array<{
+          question: string;
+          correctAnswer: string;
+          userAnswer: string | null;
+          isCorrect: boolean;
+          isUnanswered?: boolean
+        }>(questions.length);
         for(let i = 0; i != questions.length; i++) {
           endResult[i] = (i < currentQuestionIndex) ? results[i] : {
             question: questions[i].question,
@@ -115,7 +143,7 @@ export default function QuizPageClient({ deckTitle, cards }) {
     return () => clearInterval(timer1);
   }, [timeLeft]);
 
-  const handleAnswer = (answer) => {
+  const handleAnswer = (answer: string) => {
     setLoading(true);
     const currentQuestion = questions[currentQuestionIndex];
     setResults(prev => [...prev, {
@@ -157,7 +185,9 @@ export default function QuizPageClient({ deckTitle, cards }) {
       <div className="min-h-[calc(100vh-48px)] bg-gradient-to-t from-background to-secondary/30 pt-[52px] px-5">
         <Card className="max-w-[384px] md:max-w-lg mx-auto md:p-9 p-7 md:pt-[22px] pt-4 relative shadow-[0_4px_10px_rgba(0,0,0,0.33)] dark:border-[#25262c]">
           <div className="mb-4 pr-1" title={deckTitle}>
-            <h1 className="text-xl md:text-2xl tracking-tight font-semibold truncate mb-[3px]">{deckTitle}</h1>
+            <h1 className="text-xl md:text-2xl tracking-tight font-semibold truncate mb-[3px]">
+              {deckTitle}
+            </h1>
             <p className="text-xs text-muted-foreground">Test your knowledge</p>
           </div>
           <form onSubmit={handleQuestionCountSubmit} className="space-y-4">

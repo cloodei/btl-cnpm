@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Comment from "./comment";
 
-const CommentList = memo(({ deckId, userId, pub }) => {
+function CommentList({ deckId, userId, pub }) {
   if(!pub) return null;
   const [newComment, setNewComment] = useState("");
   const router = useRouter();
@@ -118,6 +118,6 @@ const CommentList = memo(({ deckId, userId, pub }) => {
       )}
     </div>
   );
-});
+}
 
-export default CommentList;
+export default memo(CommentList);

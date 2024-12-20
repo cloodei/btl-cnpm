@@ -1,11 +1,11 @@
 "use client";
-import { memo, useState } from "react";
-import { addToFavorites, removeFromFavorites } from "@/app/actions/deck";
+import { Card } from "./ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { HandHeart } from "lucide-react";
-import { Card } from "./ui/card";
+import { memo, useState } from "react";
+import { addToFavorites, removeFromFavorites } from "@/app/actions/favorites";
 
-const FavoritesButton = memo(({ deckId, userId, is_favorite }) => {
+function FavoritesButton({ deckId, userId, is_favorite }) {
   const [isFavorite, setFavorite] = useState(is_favorite);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -46,6 +46,6 @@ const FavoritesButton = memo(({ deckId, userId, is_favorite }) => {
       </p>
     </Card>
   );
-});
+}
 
-export default FavoritesButton;
+export default memo(FavoritesButton);

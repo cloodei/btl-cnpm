@@ -1,16 +1,16 @@
 "use client";
 export const dynamic = "force-static";
 
-import { useRef, useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { FloatTextarea, FloatInput } from "@/components/ui/float-input";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Loader2, Plus, Save, X } from "lucide-react";
-import { createDeck } from "@/app/actions/deck";
 import { useToast } from "@/hooks/use-toast";
+import { useRef, useState } from "react";
+import { createDeck } from "@/app/actions/deck-mutations";
+import { Loader2, Plus, Save, X } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { FloatTextarea, FloatInput } from "@/components/ui/float-input";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 export default function CreateComponent() {
   const [cards, setCards] = useState([{ front: "", back: "" }]);
@@ -64,9 +64,10 @@ export default function CreateComponent() {
       setIsPublic(false);
     }
     else {
+      const err = error as any;
       toast({
         title: "Error",
-        description: error?.message || error || "An error occurred",
+        description: err?.message || err || "An error occurred",
         variant: "destructive",
         duration: 2400
       });
@@ -76,13 +77,14 @@ export default function CreateComponent() {
   };
 
   const addCard = () => {
-    setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" }), 25);
+    const botRef: any = bottomRef.current;
+    setTimeout(() => botRef?.scrollIntoView({ behavior: "smooth", block: "end" }), 25);
     setCards([...cards, { front: "", back: "" }]);
   };
 
-  const deleteCard = (del) => setCards(cards.filter((_, i) => i !== del));
+  const deleteCard = (del: number) => setCards(cards.filter((_, i) => i !== del));
 
-  const updateCard = (index, side, value) => {
+  const updateCard = (index: number, side: "front" | "back", value: string) => {
     const newCards = [...cards];
     newCards[index][side] = value;
     setCards(newCards);

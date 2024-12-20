@@ -8,7 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/compon
 import { Button } from "@/components/ui/button";
 import { Card } from "./ui/card";
 
-const RatingButton = memo(({ deckId, userId, avgRating }) => {
+function RatingButton({ deckId, userId, avgRating }) {
   const [hoverRating, setHoverRating] = useState(0);
   const [selectedRating, setSelectedRating] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -91,6 +91,6 @@ const RatingButton = memo(({ deckId, userId, avgRating }) => {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-});
+}
 
-export default RatingButton;
+export default memo(RatingButton);
