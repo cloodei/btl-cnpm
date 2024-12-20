@@ -67,7 +67,7 @@ export default function DeckViewer({ deck, cards, permissions, userId, avgRating
       </div>
       
       <div className="relative md:h-[264px] h-[228px] mb-8">
-        <CardFlip front={cards[currentCardIndex].front} back={cards[currentCardIndex].back} />
+        <CardFlip key={currentCardIndex} front={cards[currentCardIndex].front} back={cards[currentCardIndex].back} />
       </div>
 
       <div className="flex justify-center items-center gap-4">
